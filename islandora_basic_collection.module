@@ -13,75 +13,6 @@ define('ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS', 'migrate collect
 const ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND = 'islandora_basic_collection_legacy_sparql';
 
 /**
- * Implements hook_menu().
- */
-function islandora_basic_collection_menu() {
-  $ingest_object_menu_item = array(
-    'title' => 'Add an object to this Collection',
-    'page callback' => 'islandora_basic_collection_ingest_action',
-    'page arguments' => array(2),
-    'type' => MENU_LOCAL_ACTION,
-    'file' => 'includes/ingest.form.inc',
-    'access callback' => 'islandora_basic_collection_ingest_access',
-    'access arguments' => array(2),
-  );
-  return array(
-    'admin/islandora/solution_pack_config/basic_collection' => array(
-      'title' => 'Collection Solution Pack',
-      'description' => 'Configure the core Islandora collection functionality.',
-      'page callback' => 'drupal_get_form',
-      'access arguments' => array('administer site configuration'),
-      'page arguments' => array('islandora_basic_collection_admin'),
-      'file' => 'includes/admin.form.inc',
-      'type' => MENU_NORMAL_ITEM,
-    ),
-    'islandora/object/%islandora_object/manage/collection' => array(
-      'title' => 'Collection',
-      'page callback' => 'islandora_basic_collection_manage_object',
-      'page arguments' => array(2),
-      'type' => MENU_LOCAL_TASK,
-      'file' => 'includes/manage_collection.inc',
-      'access callback' => 'islandora_basic_collection_manage_access',
-      'access arguments' => array(2),
-    ),
-    'islandora/basic_collection/find_collections' => array(
-      'title' => 'Autocomplete Collection Search',
-      'page callback' => 'islandora_basic_collection_get_collections_filtered',
-      'type' => MENU_CALLBACK,
-      'file' => 'includes/utilities.inc',
-      'access arguments' => array(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS),
-    ),
-    'islandora/object/%islandora_object/manage/object/share' => array(
-      'title' => 'Share this Object with another collection',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('islandora_basic_collection_share_item_form', 2),
-      'type' => MENU_LOCAL_ACTION,
-      'file' => 'includes/share.form.inc',
-      'access callback' => 'islandora_basic_collection_share_migrate_access',
-      'access arguments' => array(2),
-    ),
-    'islandora/object/%islandora_object/manage/object/migrate' => array(
-      'title' => 'Migrate this Object to another collection',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('islandora_basic_collection_migrate_item_form', 2),
-      'type' => MENU_LOCAL_ACTION,
-      'file' => 'includes/migrate.form.inc',
-      'access callback' => 'islandora_basic_collection_share_migrate_access',
-      'access arguments' => array(2),
-    ),
-    'islandora/object/%islandora_object/manage/collection/ingest' => $ingest_object_menu_item,
-    'islandora/object/%islandora_object/manage/overview/ingest' => $ingest_object_menu_item,
-    'islandora/collection/count_ajax' => array(
-      'title' => 'AJAX callback to get count',
-      'page callback' => 'islandora_basic_collection_object_count_callback',
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-      'file' => 'includes/blocks.inc',
-    ),
-  );
-}
-
-/**
  * Access callback for ingest.
  *
  * @param AbstractObject $object
@@ -274,8 +205,8 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $output = theme('islandora_basic_collection_wrapper', array('islandora_object' => $object));
 
@@ -325,7 +256,7 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 // // to ensure that it uses the correct configuration object.
 // if (variable_get('islandora_collection_metadata_display', FALSE)) {
 //     module_load_include('inc', 'islandora', 'includes/metadata');
-// 
+//
 //     $to_return['description'] = array(
 //       '#type' => 'markup',
 //       '#theme_wrappers' => array('container'),
@@ -337,7 +268,7 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 //       ),
 //       '#markup' => islandora_retrieve_description_markup($object),
 //     );
-// 
+//
 //     // Add parent collections.
 //     $parent_collections = islandora_get_parents_from_rels_ext($object);
 //     if (!empty($parent_collections)) {
@@ -366,7 +297,7 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 //         );
 //       }
 //     }
-// 
+//
 //     // Preserve the 'wrapper' wrapper for legacy support.
 //     $to_return['wrapper'] = array(
 //       '#type' => 'item',
@@ -378,7 +309,7 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 //         ),
 //       ),
 //     );
-// 
+//
 //     // Add the metadata fieldset markup.
 //     $to_return['wrapper']['metadata'] = array(
 //       '#type' => 'markup',
@@ -543,8 +474,8 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $table = theme('table', array(
 //                'header' => array(t('Parent Collections')),
