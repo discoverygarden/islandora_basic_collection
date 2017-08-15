@@ -18,7 +18,7 @@ islandora_basic_collection.get_collections_filtered:
     _title: 'Autocomplete Collection Search'
     _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_get_collections_filtered'
   requirements:
-    _permission: ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS
+    _permission: 'migrate collection members'
 islandora_basic_collection.share_item_form:
   path: '/islandora/object/{islandora_object}/manage/object/share'
   defaults:
