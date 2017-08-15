@@ -8,4 +8,5 @@ stylesheets:
   all:
     - css/islandora_basic_collection.base.css
     - css/islandora_basic_collection.theme.css
+php: '5.5.9'
 type: module
