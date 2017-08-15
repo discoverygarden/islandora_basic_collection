@@ -1,0 +1,20 @@
+islandora_basic_collection.share_item_form:
+  route_name: islandora_basic_collection.share_item_form
+  title: 'Share this Object with another collection'
+  appears_on:
+    - islandora_basic_collection.share_item_form
+islandora_basic_collection.migrate_item_form:
+  route_name: islandora_basic_collection.migrate_item_form
+  title: 'Migrate this Object to another collection'
+  appears_on:
+    - islandora_basic_collection.migrate_item_form
+islandora_basic_collection.ingest_action:
+  route_name: islandora_basic_collection.ingest_action
+  title: 'Add an object to this Collection'
+  appears_on:
+    - islandora_basic_collection.ingest_action
+islandora_basic_collection.ingest_action_0:
+  route_name: islandora_basic_collection.ingest_action
+  title: 'Add an object to this Collection'
+  appears_on:
+    - islandora_basic_collection.ingest_action

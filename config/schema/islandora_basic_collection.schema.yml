@@ -1,0 +1,28 @@
+islandora_basic_collection.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    islandora_basic_collection_admin_page_size:
+      type: string
+    islandora_basic_collection_page_size:
+      type: string
+    islandora_basic_collection_disable_count_object:
+      type: boolean
+    islandora_basic_collection_default_view:
+      type: string
+    islandora_basic_collection_disable_display_generation:
+      type: boolean
+    islandora_basic_collection_disable_collection_policy_delete:
+      type: boolean
+    islandora_basic_collection_object_count_listing_placeholder:
+      type: string
+    islandora_basic_collection_object_count_listing_content_models_to_restrict:
+      type: boolean
+    islandora_basic_collection_object_count_listing_phrase:
+      type: string
+    islandora_basic_collection_listing_block_links_to_render:
+      type: integer
+    islandora_basic_collection_listing_block_content_models_to_restrict:
+      type: boolean
+    islandora_basic_collection_generate_uuid:
+      type: boolean

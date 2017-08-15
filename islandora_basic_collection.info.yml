@@ -1,0 +1,11 @@
+name: 'Islandora basic collection'
+description: 'Models simple collections'
+dependencies:
+  - islandora
+package: 'Islandora Solution Packs'
+core: 8.x
+stylesheets:
+  all:
+    - css/islandora_basic_collection.base.css
+    - css/islandora_basic_collection.theme.css
+type: module

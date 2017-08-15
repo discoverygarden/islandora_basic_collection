@@ -1,0 +1,9 @@
+ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION:
+  title: 'Create child collections'
+  description: 'Create new collections within an existing collection.'
+ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY:
+  title: 'Manage collection policies'
+  description: 'Define which content models are available for each collection.'
+ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS:
+  title: 'Migrate collection members'
+  description: 'Move objects from one collection to another.'

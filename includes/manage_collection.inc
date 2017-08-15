@@ -56,7 +56,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   // Build forms for only the accessible elements.
   foreach ($access as $element => $accessible) {
     $form = "islandora_basic_collection_{$element}_form";
-    $forms[$element] = $accessible ? drupal_get_form($form, $object) : NULL;
+    $forms[$element] = $accessible ? \Drupal::formBuilder()->getForm($form, $object) : NULL;
   }
   $form_state['manage_collection_object']['policy_management'] = array(
     '#id' => 'policy-management',
@@ -113,7 +113,7 @@ function islandora_basic_collection_create_child_collection_form(array $form, ar
 
   $parent_object = islandora_object_load($form_state['islandora']['shared_storage']['parent']);
   // Permissions handling.
-  if (!user_access(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
+  if (!\Drupal::currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
     drupal_set_message(t('You do not have permissions to create collections.'), 'error');
     drupal_goto('islandora/object/' . $parent_object->id);
   }
@@ -255,7 +255,15 @@ function islandora_basic_collection_create_child_collection_form_undo_submit(arr
  */
 function islandora_basic_collection_policy_management_form(array $form, array &$form_state, AbstractObject $object) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_add_css(drupal_get_path('module', 'islandora_basic_collection') . "/css/collection_policy_table.css");
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css(drupal_get_path('module', 'islandora_basic_collection') . "/css/collection_policy_table.css");
+
   $form_state['collection'] = $object;
   if (isset($object['COLLECTION_POLICY'])) {
     $policy = new CollectionPolicy($object['COLLECTION_POLICY']->content);
@@ -265,7 +273,7 @@ function islandora_basic_collection_policy_management_form(array $form, array &$
   }
   $policy_content_models = $policy->getContentModels();
   $content_models = islandora_get_content_models();
-  $default_namespace = drupal_substr($object->id, 0, strpos($object->id, ":"));
+  $default_namespace = \Drupal\Component\Utility\Unicode::substr($object->id, 0, strpos($object->id, ":"));
   $rows = array();
   foreach ($content_models as $pid => $content_model) {
     $label = $content_model['label'];
@@ -278,23 +286,26 @@ function islandora_basic_collection_policy_management_form(array $form, array &$
       '#default_value' => isset($policy_content_models[$pid]) ? $policy_content_models[$pid]['name'] : $content_model['label'],
     );
     unset($namespace_element['#title'], $namespace_element['#description']);
-    $rows[$pid] = array(
-      'selected' => array(
-        '#type' => 'checkbox',
-        '#default_value' => $content_model_in_policy,
-      ),
-      'title' => array(
-        '#markup' => l(t('@label (@pid)', array('@label' => $label, '@pid' => $pid)), "islandora/object/{$pid}"),
-      ),
-      'prompt' => $prompt_element,
-      'namespace' => $namespace_element,
-    );
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $rows[$pid] = array(
+//       'selected' => array(
+//         '#type' => 'checkbox',
+//         '#default_value' => $content_model_in_policy,
+//       ),
+//       'title' => array(
+//         '#markup' => l(t('@label (@pid)', array('@label' => $label, '@pid' => $pid)), "islandora/object/{$pid}"),
+//       ),
+//       'prompt' => $prompt_element,
+//       'namespace' => $namespace_element,
+//     );
+
   }
   return array(
     '#action' => request_uri() . '#policy-management',
     'help' => array(
       '#type' => 'item',
-      '#markup' => l(t('About Collection Policies'), 'https://wiki.duraspace.org/display/ISLANDORA715/How+to+Manage+Collection+Policies', array()),
+      '#markup' => \Drupal::l(t('About Collection Policies'), \Drupal\Core\Url::fromUri('https://wiki.duraspace.org/display/ISLANDORA715/How+to+Manage+Collection+Policies')),
     ),
     'table' => array(
       '#tree' => TRUE,

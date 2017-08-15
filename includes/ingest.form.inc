@@ -20,7 +20,7 @@ define('ISLANDORA_BASIC_COLLECTION_FAKE_PID', 'fake:pid');
 function islandora_basic_collection_ingest_action(AbstractObject $collection) {
   if (($configuration = islandora_basic_collection_get_ingest_configuration($collection)) !== FALSE) {
     module_load_include('inc', 'islandora', 'includes/ingest.form');
-    return drupal_get_form('islandora_ingest_form', $configuration);
+    return \Drupal::formBuilder()->getForm('islandora_ingest_form', $configuration);
   }
   drupal_not_found();
 }
@@ -199,7 +199,7 @@ function islandora_basic_collection_ingest_form_select_model(array &$form_state,
   // at ingest time. Hell ideally Fedora would do it when just provided with a
   // namespace at ingest time.
   if ($object->id == ISLANDORA_BASIC_COLLECTION_FAKE_PID || islandora_get_namespace($object->id) !== $namespace) {
-    $object->id = $object->repository->getNextIdentifier($namespace, variable_get('islandora_basic_collection_generate_uuid', FALSE));
+    $object->id = $object->repository->getNextIdentifier($namespace, \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_generate_uuid'));
   }
   // Limit the list of models to the selected model. We may not want to do this
   // in the future when we'll support ingesting multiple content models, at

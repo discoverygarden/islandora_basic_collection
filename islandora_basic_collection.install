@@ -43,8 +43,12 @@ function islandora_basic_collection_uninstall() {
  * Default collection paging update.
  */
 function islandora_basic_collection_update_7001() {
-  $old_var = variable_get('islandora_basic_collection_page_size');
+  // @FIXME
+// Could not extract the default value because it is either indeterminate, or
+// not scalar. You'll need to provide a default value in
+// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
+$old_var = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size');
   if ($old_var == '10') {
-    variable_set('islandora_basic_collection_page_size', '12');
+    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_page_size', '12')->save();
   }
 }
