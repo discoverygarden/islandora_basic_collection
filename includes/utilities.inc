@@ -48,7 +48,7 @@ function islandora_basic_collection_get_content_models_as_form_options(array $co
  */
 function islandora_basic_collection_get_other_collections_as_form_options(AbstractObject $object) {
   $map_options = function($o) {
-    return filter_xss($o['label']);
+    return \Drupal\Component\Utility\Xss::filter($o['label']);
   };
   $options = array_map($map_options, islandora_basic_collection_get_collections());
   // Ignore given collection.
@@ -67,13 +67,18 @@ function islandora_basic_collection_get_other_collections_as_form_options(Abstra
  */
 function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $restrict_namespace = variable_get('islandora_namespace_restriction_enforced', FALSE);
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $restrict_namespace = variable_get('islandora_namespace_restriction_enforced', FALSE);
+
   return array(
     '#type' => $restrict_namespace ? 'select' : 'textfield',
     '#title' => 'Children namespace',
     '#description' => t('Namespace for objects with selected content models.'),
     '#size' => 15,
-    '#options' => $restrict_namespace ? drupal_map_assoc(islandora_get_allowed_namespaces()) : NULL,
+    '#options' => $restrict_namespace ? array_combine(islandora_get_allowed_namespaces(), islandora_get_allowed_namespaces()) : NULL,
     '#default_value' => $default_value,
   );
 }
@@ -94,17 +99,17 @@ function islandora_basic_collection_get_namespace_form_element($default_value) {
 function islandora_basic_collection_get_children_select_table_form_element(AbstractObject $object, array $pager_options) {
   // Assumes all results are returned although the function description
   // states otherwise.
-  $limit = variable_get('islandora_basic_collection_admin_page_size', 10);
+  $limit = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_admin_page_size');
   $page = pager_find_page($pager_options['element']);
   list($count, $results) = islandora_basic_collection_get_member_objects($object, $page, $limit, 'manage');
   $page = pager_default_initialize($count, $limit, $pager_options['element']);
   $rows = array();
   foreach ($results as $result) {
     $pid = $result['object']['value'];
-    $label = empty($result['title']['value']) ? t('Untitled') : filter_xss($result['title']['value']);
+    $label = empty($result['title']['value']) ? t('Untitled') : \Drupal\Component\Utility\Xss::filter($result['title']['value']);
     $label = $label . " (" . $pid . ")";
-    $owner = empty($result['owner']['value']) ? t('Unowned') : filter_xss($result['owner']['value']);
-    $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : filter_xss($result['date_modified']['value']);
+    $owner = empty($result['owner']['value']) ? t('Unowned') : \Drupal\Component\Utility\Xss::filter($result['owner']['value']);
+    $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : \Drupal\Component\Utility\Xss::filter($result['date_modified']['value']);
     $rows[$pid] = array(
       'owner' => array(
         'data' => array(
@@ -122,7 +127,16 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
           '#title' => $label,
           '#href' => "islandora/object/{$pid}")));
   }
-  $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
+
   $pager = islandora_basic_collection_append_fragment_to_pager_url($pager, $pager_options['fragment']);
   return array(
     '#type' => 'tableselect',

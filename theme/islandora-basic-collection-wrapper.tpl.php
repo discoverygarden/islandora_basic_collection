@@ -18,7 +18,7 @@
       <ul class="links inline">
         <?php foreach ($view_links as $link): ?>
           <li>
-            <a <?php print drupal_attributes($link['attributes']) ?>><?php print filter_xss($link['title']) ?></a>
+            <a <?php print drupal_attributes($link['attributes']) ?>><?php print \Drupal\Component\Utility\Xss::filter($link['title']) ?></a>
           </li>
         <?php endforeach ?>
       </ul>
@@ -35,7 +35,10 @@
           <h2><?php print t('In collections'); ?></h2>
           <ul>
             <?php foreach ($parent_collections as $collection): ?>
-              <li><?php print l($collection->label, "islandora/object/{$collection->id}"); ?></li>
+              <li><?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l($collection->label, "islandora/object/{$collection->id}");
+ ?></li>
             <?php endforeach; ?>
           </ul>
         </div>

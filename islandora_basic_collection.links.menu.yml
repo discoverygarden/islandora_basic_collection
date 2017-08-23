@@ -1,0 +1,4 @@
+islandora_basic_collection.admin:
+  route_name: islandora_basic_collection.admin
+  title: 'Collection Solution Pack'
+  description: 'Configure the core Islandora collection functionality.'

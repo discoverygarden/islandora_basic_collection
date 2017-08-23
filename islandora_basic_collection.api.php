@@ -95,7 +95,7 @@ function hook_islandora_basic_collection_build_manage_object($form_state, $objec
     '#access' => TRUE,
     '#type' => 'fieldset',
     '#title' => t('Manage lock objects'),
-    'form' => drupal_get_form('islandora_object_lock_length_manage_lock_form', $object),
+    'form' => \Drupal::formBuilder()->getForm('islandora_object_lock_length_manage_lock_form', $object),
   );
   $form_state['manage_collection_object']['manage_obj_lock']['form']['#submit'][] = 'islandora_object_lock_length_manage_lock_form_submit';
   return $form_state;

@@ -1,5 +1,4 @@
-# Collection Solution Pack [![Build Status](https://travis-ci.org/Islandora/islandora_solution_pack_collection.png?branch=7.x)](https://travis-ci.org/Islandora/islandora_solution_pack_collection)
-
+# Collection Solution Pack
 ## Introduction
 
 Adds all required Fedora objects to allow for the creation of collections and the management of collections and child objects.
@@ -34,11 +33,6 @@ Having problems or solved a problem? Check out the Islandora google groups for a
 
 * [Islandora Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora)
 * [Islandora Dev Group](https://groups.google.com/forum/?hl=en&fromgroups#!forum/islandora-dev)
-
-## Maintainers/Sponsors
-Current maintainers:
-
-* [William Panting](https://github.com/willtp87)
 
 ## Development
 

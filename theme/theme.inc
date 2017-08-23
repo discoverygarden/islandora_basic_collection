@@ -17,7 +17,7 @@ function template_preprocess_islandora_basic_collection_grid(&$variables) {
  */
 function template_preprocess_islandora_basic_collection_wrapper(&$variables) {
   $page_number = (empty($_GET['page'])) ? 0 : $_GET['page'];
-  $page_size = (empty($_GET['pagesize'])) ? variable_get('islandora_basic_collection_page_size', '12') : $_GET['pagesize'];
+  $page_size = (empty($_GET['pagesize'])) ? \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') : $_GET['pagesize'];
   $islandora_object = $variables['islandora_object'];
   try {
     $dc = $islandora_object['DC']->content;
@@ -29,10 +29,31 @@ function template_preprocess_islandora_basic_collection_wrapper(&$variables) {
   $variables['islandora_dublin_core'] = isset($dc_object) ? $dc_object : NULL;
   $variables['dc_array'] = isset($dc_object) ? $dc_object->asArray() : array();
   $variables['islandora_object_label'] = $islandora_object->label;
-  $variables['display_metadata'] = variable_get('islandora_collection_metadata_display', FALSE);
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $variables['display_metadata'] = variable_get('islandora_collection_metadata_display', FALSE);
+
   if ($variables['display_metadata']) {
-    drupal_add_js('misc/form.js');
-    drupal_add_js('misc/collapse.js');
+    // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('misc/form.js');
+
+    // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('misc/collapse.js');
+
     module_load_include('inc', 'islandora', 'includes/metadata');
     $variables['parent_collections'] = islandora_get_parents_from_rels_ext($islandora_object);
     $variables['metadata'] = islandora_retrieve_metadata_markup($islandora_object);
@@ -41,42 +62,75 @@ function template_preprocess_islandora_basic_collection_wrapper(&$variables) {
   list($total_count, $results) = islandora_basic_collection_get_member_objects($islandora_object, $page_number, $page_size);
 
   pager_default_initialize($total_count, $page_size);
-  $variables['collection_pager'] = theme('pager', array('quantity' => 10));
-  $display = (empty($_GET['display'])) ? variable_get('islandora_basic_collection_default_view', 'grid') : $_GET['display'];
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $variables['collection_pager'] = theme('pager', array('quantity' => 10));
+
+  $display = (empty($_GET['display'])) ? \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view') : $_GET['display'];
   $link_text = (empty($_GET['display'])) ? 'grid' : $_GET['display'];
-  $query_params = drupal_get_query_parameters($_GET);
+  $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters($_GET);
 
   $query_params['display'] = 'list';
-  $list_link = array(
-    'title' => t('List view'),
-    'attributes' => array(
-      'href' => url("islandora/object/$islandora_object->id", array('query' => $query_params)),
-      'class' => array('islandora-view-list'),
-    ),
-  );
+  // @FIXME
+// url() expects a route name or an external URI.
+// $list_link = array(
+//     'title' => t('List view'),
+//     'attributes' => array(
+//       'href' => url("islandora/object/$islandora_object->id", array('query' => $query_params)),
+//       'class' => array('islandora-view-list'),
+//     ),
+//   );
+
   $query_params['display'] = 'grid';
-  $grid_link = array(
-    'title' => t('Grid view'),
-    'attributes' => array(
-      'href' => url("islandora/object/$islandora_object->id", array('query' => $query_params)),
-      'class' => array('islandora-view-grid'),
-    ),
-  );
+  // @FIXME
+// url() expects a route name or an external URI.
+// $grid_link = array(
+//     'title' => t('Grid view'),
+//     'attributes' => array(
+//       'href' => url("islandora/object/$islandora_object->id", array('query' => $query_params)),
+//       'class' => array('islandora-view-grid'),
+//     ),
+//   );
+
 
   if ($display == 'grid') {
     $grid_link['attributes']['class'][] = 'active';
-    $collection_content = theme('islandora_basic_collection_grid', array(
-      'islandora_object' => $islandora_object,
-      'collection_results' => $results,
-      )
-    );
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $collection_content = theme('islandora_basic_collection_grid', array(
+//       'islandora_object' => $islandora_object,
+//       'collection_results' => $results,
+//       )
+//     );
+
   }
   else {
     $list_link['attributes']['class'][] = 'active';
-    $collection_content = theme('islandora_basic_collection', array(
-      'islandora_object' => $islandora_object,
-      'collection_results' => $results,
-    ));
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $collection_content = theme('islandora_basic_collection', array(
+//       'islandora_object' => $islandora_object,
+//       'collection_results' => $results,
+//     ));
+
   }
 
   $variables['view_links'] = array($grid_link, $list_link);
@@ -98,8 +152,15 @@ function template_preprocess_islandora_basic_collection_wrapper(&$variables) {
  */
 function theme_islandora_basic_collection_metadata_table_drag_components($vars) {
   $element = $vars['element'];
-  $clean_id = drupal_html_id('islandora_basic_collection_meta_page_element_table');
-  drupal_add_tabledrag($clean_id, 'order', 'sibling', 'item-row-weight');
+  $clean_id = \Drupal\Component\Utility\Html::getId('islandora_basic_collection_meta_page_element_table');
+  // @FIXME
+// TableDrag is now attached with the #tabledrag property of certain render
+// arrays. drupal_add_tabledrag() is now internal and should never be called directly.
+// 
+// 
+// @see https://www.drupal.org/node/2160571
+// drupal_add_tabledrag($clean_id, 'order', 'sibling', 'item-row-weight');
+
 
   $header = array(
     'label' => t('Attribute'),
@@ -109,21 +170,30 @@ function theme_islandora_basic_collection_metadata_table_drag_components($vars) 
   );
 
   $rows = array();
-  foreach (element_children($element) as $key) {
+  foreach (\Drupal\Core\Render\Element::children($element) as $key) {
     $row = array();
     $row['data'] = array();
     foreach ($header as $fieldname => $title) {
-      $row['data'][] = drupal_render($element[$key][$fieldname]);
+      $row['data'][] = \Drupal::service("renderer")->render($element[$key][$fieldname]);
       $row['class'] = array('draggable');
     }
     $rows[] = $row;
   }
 
-  return theme('table', array(
-    'header' => $header,
-    'rows' => $rows,
-    'attributes' => array('id' => $clean_id),
-  ));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// return theme('table', array(
+//     'header' => $header,
+//     'rows' => $rows,
+//     'attributes' => array('id' => $clean_id),
+//   ));
+
 }
 
 /**
@@ -140,7 +210,7 @@ function template_preprocess_islandora_basic_collection(&$variables) {
     drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
   }
   $page_number = (empty($_GET['page'])) ? 0 : $_GET['page'];
-  $page_size = (empty($_GET['pagesize'])) ? variable_get('islandora_basic_collection_page_size', '12') : $_GET['pagesize'];
+  $page_size = (empty($_GET['pagesize'])) ? \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') : $_GET['pagesize'];
   $results = $variables['collection_results'];
   $total_count = count($results);
   $variables['islandora_dublin_core'] = isset($dc_object) ? $dc_object : array();
@@ -153,25 +223,61 @@ function template_preprocess_islandora_basic_collection(&$variables) {
     $variables['theme_hook_suggestions'][] = 'islandora_basic_collection__' . str_replace(':', '_', $islandora_object->id);
   }
   if (isset($islandora_object['OBJ'])) {
-    $full_size_url = url("islandora/object/{$islandora_object->id}/datastram/OBJ/view");
+    // @FIXME
+// url() expects a route name or an external URI.
+// $full_size_url = url("islandora/object/{$islandora_object->id}/datastram/OBJ/view");
+
     $params = array(
       'title' => $islandora_object->label,
       'path' => $full_size_url);
-    $variables['islandora_full_img'] = theme('image', $params);
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $variables['islandora_full_img'] = theme('image', $params);
+
   }
   if (isset($islandora_object['TN'])) {
-    $full_size_url = url("islandora/objects/{$islandora_object->id}/datastream/TN/view");
+    // @FIXME
+// url() expects a route name or an external URI.
+// $full_size_url = url("islandora/objects/{$islandora_object->id}/datastream/TN/view");
+
     $params = array(
       'title' => $islandora_object->label,
       'path' => $full_size_url);
-    $variables['islandora_thumbnail_img'] = theme('image', $params);
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $variables['islandora_thumbnail_img'] = theme('image', $params);
+
   }
   if (isset($islandora_object['MEDIUM_SIZE'])) {
-    $full_size_url = url("islandora/object/{$islandora_object->id}/datastream/MEDIUM_SIZE/view");
+    // @FIXME
+// url() expects a route name or an external URI.
+// $full_size_url = url("islandora/object/{$islandora_object->id}/datastream/MEDIUM_SIZE/view");
+
     $params = array(
       'title' => $islandora_object->label,
       'path' => $full_size_url);
-    $variables['islandora_medium_img'] = theme('params', $params);
+    // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $variables['islandora_medium_img'] = theme('params', $params);
+
   }
 
   $associated_objects_array = array();
@@ -198,17 +304,41 @@ function template_preprocess_islandora_basic_collection(&$variables) {
     $associated_objects_array[$pid]['pid'] = $pid;
     $associated_objects_array[$pid]['path'] = $object_url;
     $associated_objects_array[$pid]['title'] = $title;
-    $associated_objects_array[$pid]['class'] = drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $pid));
+    $associated_objects_array[$pid]['class'] = \Drupal\Component\Utility\Unicode::strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $pid));
     if (isset($fc_object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $fc_object['TN'])) {
-      $thumbnail_img = theme('image', array('path' => "$object_url/datastream/TN/view", 'alt' => $title));
+      // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $thumbnail_img = theme('image', array('path' => "$object_url/datastream/TN/view", 'alt' => $title));
+
     }
     else {
       $image_path = drupal_get_path('module', 'islandora');
-      $thumbnail_img = theme('image', array('path' => "$image_path/images/folder.png", 'alt' => $title));
+      // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $thumbnail_img = theme('image', array('path' => "$image_path/images/folder.png", 'alt' => $title));
+
     }
     $associated_objects_array[$pid]['thumbnail'] = $thumbnail_img;
-    $associated_objects_array[$pid]['title_link'] = l($title, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
-    $associated_objects_array[$pid]['thumb_link'] = l($thumbnail_img, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $associated_objects_array[$pid]['title_link'] = l($title, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
+
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $associated_objects_array[$pid]['thumb_link'] = l($thumbnail_img, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
+
   }
   $variables['associated_objects_array'] = $associated_objects_array;
 }
@@ -224,18 +354,26 @@ function template_preprocess_islandora_basic_collection(&$variables) {
  */
 function theme_islandora_basic_collection_policy_management_table(array $variables) {
   // Manually add the table select javascript as we are using a custom table.
-  drupal_add_js('misc/tableselect.js');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js('misc/tableselect.js');
+
   $table = $variables['table'];
   $row_elements = $table['rows'];
   $rows = array();
-  foreach (element_children($row_elements) as $key) {
+  foreach (\Drupal\Core\Render\Element::children($row_elements) as $key) {
     $columns = array();
     $row_element = $row_elements[$key];
-    foreach (element_children($row_element) as $key) {
+    foreach (\Drupal\Core\Render\Element::children($row_element) as $key) {
       $column_element = $row_element[$key];
       $class = "collection_policy_table_${key}";
       $columns[] = array(
-        'data' => drupal_render($column_element),
+        'data' => \Drupal::service("renderer")->render($column_element),
         'class' => isset($cell_element['#attributes']['class']) ? $column_element['#attributes']['class'] : $class,
       );
     }
@@ -250,5 +388,14 @@ function theme_islandora_basic_collection_policy_management_table(array $variabl
     'sticky' => NULL,
     'empty' => t("No content models"),
   );
-  return theme('table', $variables);
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// return theme('table', $variables);
+
 }

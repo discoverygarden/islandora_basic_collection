@@ -1,0 +1,49 @@
+islandora_basic_collection.admin:
+  path: /admin/islandora/solution_pack_config/basic_collection
+  defaults:
+    _title: 'Collection Solution Pack'
+    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionAdmin
+  requirements:
+    _permission: 'administer site configuration'
+islandora_basic_collection.manage_object:
+  path: '/islandora/object/{object}/manage/collection'
+  defaults:
+    _title: Collection
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_manage_object'
+  requirements:
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_manage_access'
+islandora_basic_collection.get_collections_filtered:
+  path: /islandora/basic_collection/find_collections
+  defaults:
+    _title: 'Autocomplete Collection Search'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_get_collections_filtered'
+  requirements:
+    _permission: 'migrate collection members'
+islandora_basic_collection.share_item_form:
+  path: '/islandora/object/{islandora_object}/manage/object/share'
+  defaults:
+    _title: 'Share this Object with another collection'
+    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionShareItemForm
+  requirements:
+    _custom_access: '\Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionShareItemForm::islandora_basic_collection_share_migrate_access'
+islandora_basic_collection.migrate_item_form:
+  path: '/islandora/object/{islandora_object}/manage/object/migrate'
+  defaults:
+    _title: 'Migrate this Object to another collection'
+    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionMigrateItemForm
+  requirements:
+    _custom_access: '\Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionMigrateItemForm::islandora_basic_collection_share_migrate_access'
+islandora_basic_collection.ingest_action:
+  path: '/islandora/object/{collection}/manage/overview/ingest'
+  defaults:
+    _title: 'Add an object to this Collection'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_ingest_action'
+  requirements:
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_ingest_access'
+islandora_basic_collection.object_count_callback:
+  path: /islandora/collection/count_ajax
+  defaults:
+    _title: 'AJAX callback to get count'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_object_count_callback'
+  requirements:
+    _access: 'true'

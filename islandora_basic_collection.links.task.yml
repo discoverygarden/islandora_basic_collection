@@ -1,0 +1,3 @@
+islandora_basic_collection.manage_object:
+  route_name: islandora_basic_collection.manage_object
+  title: Collection
