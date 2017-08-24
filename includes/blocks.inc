@@ -60,18 +60,6 @@ function islandora_basic_collection_get_object_count_block_cache_id() {
 }
 
 /**
- * Clear the cache of content for the object count block.
- */
-function islandora_basic_collection_clear_object_count_cache() {
-  $block = block_load('islandora_basic_collection', 'collection_object_count');
-
-  $cid_parts[] = $block->module;
-  $cid_parts[] = $block->delta;
-
-  cache_clear_all(implode(':', $cid_parts), 'cache', TRUE);
-}
-
-/**
  * AJAX callback to get info about the count of objects and collections.
  *
  * Outputs a JSON string to the buffer.
