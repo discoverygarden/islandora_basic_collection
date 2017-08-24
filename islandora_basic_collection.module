@@ -1163,23 +1163,3 @@ EOQ;
     }
   }
 }
-
-/**
- * Implements hook_menu_links_discovered_alter().
- */
-function islandora_basic_collection_menu_links_discovered_alter(array &$links) {}
-
-/**
- * Implements hook_menu_local_tasks_alter().
- */
-function islandora_basic_collection_menu_local_tasks_alter(array &$data, $route_name) {}
-
-/**
- * Implements hook_menu_local_actions_alter().
- */
-function islandora_basic_collection_menu_local_actions_alter(array &$local_actions) {}
-
-/**
- * Implements hook_contextual_links_view_alter().
- */
-function islandora_basic_collection_contextual_links_view_alter(array &$element, array $items) {}
