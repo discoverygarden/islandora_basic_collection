@@ -514,7 +514,19 @@ EOQ;
   $query_filters = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_filters', [$type]);
   $query_optionals = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_optionals', [$type]);
   $query_statements = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_statements', [$type]);
-  \Drupal::moduleHandler()->alter('islandora_basic_collection_query_param', $query_filters, $query_statements, $params, $query_optionals);
+
+  $alter_data = [
+    'filters' => $query_filters,
+    'statements' => $query_statements,
+    'params' => $params,
+    'optionals' => $query_optionals,
+  ];
+  \Drupal::moduleHandler()->alter('islandora_basic_collection_query_param', $alter_data);
+  $query_filters = $alter_data['filters'];
+  $query_statements = $alter_data['statements'];
+  $params = $alter_data['params'];
+  $query_optionals = $alter_data['optionals'];
+
 
   foreach ($query_filters as $filter) {
     $filters[] = "FILTER($filter)";
@@ -609,6 +621,9 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
   }
   $query_array = islandora_basic_collection_get_query_info($params, $type);
   try {
+
+kint($query_array);
+return array(0,array());
     $count = $object->repository->ri->countQuery($query_array['query'], $query_array['type']);
     $is_itql = strcasecmp('itql', $query_array['type']) === 0;
 
@@ -635,7 +650,6 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
       // Add in the final semi-colon.
       $query_array['query'] .= ';';
     }
-
     $results = $object->repository->ri->query($query_array['query'], $query_array['type']);
   }
   catch (Exception $e) {
@@ -643,7 +657,7 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
       '@message' => $e->getMessage(),
       '@stack' => $e->getTraceAsString(),
     );
-    \Drupal::logger('islandora_basic_collection')->error('Islandora basic collection failed to retrieve associated objects.<br/>Error:<br/>@message<br/>Stack: <br/>@stack', []);
+    \Drupal::logger('islandora_basic_collection')->error('Islandora basic collection failed to retrieve associated objects.<br/>Error:<br/>@message<br/>Stack: <br/>@stack', $variables);
     return FALSE;
   }
   return array($count, $results);
@@ -1057,7 +1071,11 @@ function islandora_basic_collection_block_view($delta = '') {
  * cases. That is, we want to retain all the other present statements and
  * filters that may be present, for example XACML.
  */
-function islandora_basic_collection_islandora_basic_collection_query_param_alter(&$filters, &$statements, $params, $optionals) {
+function islandora_basic_collection_islandora_basic_collection_query_param_alter(&$query_data) {
+  $filters = $query_data['filters'];
+  $statements = $query_data['statements'];
+  $params = $query_data['params'];
+
   if (isset($params['collection_listing']) && $params['collection_listing']) {
     // Need to find the basic collection statement and filter to nuke for our
     // use.
