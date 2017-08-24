@@ -531,14 +531,14 @@ EOQ;
   foreach ($query_filters as $filter) {
     $filters[] = "FILTER($filter)";
   }
-  $query = format_string($query, array(
+  $query = strtr($query, array(
     '@statements' => implode(' . ', $query_statements),
     '@optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
     '@filters' => implode(' ', $filters),
     '@vars' => $params['vars'],
   ));
 
-  $query = format_string($query, array(
+  $query = strtr($query, array(
     '@pid' => $object->id,
     '@model' => $params['model'],
   ));
@@ -621,9 +621,6 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
   }
   $query_array = islandora_basic_collection_get_query_info($params, $type);
   try {
-
-kint($query_array);
-return array(0,array());
     $count = $object->repository->ri->countQuery($query_array['query'], $query_array['type']);
     $is_itql = strcasecmp('itql', $query_array['type']) === 0;
 
