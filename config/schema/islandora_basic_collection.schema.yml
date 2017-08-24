@@ -10,6 +10,8 @@ islandora_basic_collection.settings:
       type: boolean
     islandora_basic_collection_default_view:
       type: string
+    islandora_basic_collection_display_backend:
+      type: string
     islandora_basic_collection_disable_display_generation:
       type: boolean
     islandora_basic_collection_disable_collection_policy_delete:
