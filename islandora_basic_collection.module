@@ -10,7 +10,7 @@ define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child colle
 define('ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY', 'manage collection policy');
 define('ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS', 'migrate collection members');
 
-const ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND = 'islandora_basic_collection_legacy_sparql';
+const ISLANDORA_BASIC_COLLECTION_SPARQL_QUERY_BACKEND = 'islandora_basic_collection_sparql_query_backend';
 
 /**
  * Access callback for ingest.
@@ -194,59 +194,44 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
   }
   else {
     // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
-$backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
+    // Could not extract the default value because it is either indeterminate, or
+    // not scalar. You'll need to provide a default value in
+    // config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
+    $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
     $backends = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
-    if ($backend === ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND || !isset($backends[$backend])) {
-      // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_basic_collection_wrapper', array('islandora_object' => $object));
-
-      return array('Collection View' => $output);
+    $limit = ((empty($_GET['pagesize'])) ?
+      \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') :
+      $_GET['pagesize']);
+    $pager_element = 0;
+    $passed_page = pager_find_page($pager_element);
+    if (isset($backends[$backend]['file'])) {
+      require_once $backends[$backend]['file'];
     }
-    else {
-      $limit = ((empty($_GET['pagesize'])) ?
-        \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') :
-        $_GET['pagesize']);
-      $pager_element = 0;
-      $passed_page = pager_find_page($pager_element);
-      if (isset($backends[$backend]['file'])) {
-        require_once $backends[$backend]['file'];
-      }
-      list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $passed_page, $limit);
-      $page = pager_default_initialize($total, $limit, $pager_element);
-      if ($page < $passed_page) {
-        // If we were somehow on a page past the end, let us go to the last page
-        // of results.
-        list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $page, $limit);
-      }
+    list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $passed_page, $limit);
+    $page = pager_default_initialize($total, $limit, $pager_element);
+    if ($page < $passed_page) {
+      // If we were somehow on a page past the end, let us go to the last page
+      // of results.
+      list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $page, $limit);
+    }
 
-      $to_return = array(
-        'islandora_basic_collection_display' => array(
-          '#type' => 'markup',
-          '#theme' => 'islandora_objects_subset',
-          '#objects' => $pids,
-          '#total' => $total,
-          '#limit' => $limit,
-          '#pager_element' => $pager_element,
-          '#display' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
-          '#theme_wrappers' => array('container'),
-          '#attributes' => array(
-            'class' => array(
-              'islandora-solr-collection-display',
-            ),
+    $to_return = array(
+      'islandora_basic_collection_display' => array(
+        '#type' => 'markup',
+        '#theme' => 'islandora_objects_subset',
+        '#objects' => $pids,
+        '#total' => $total,
+        '#limit' => $limit,
+        '#pager_element' => $pager_element,
+        '#display' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
+        '#theme_wrappers' => array('container'),
+        '#attributes' => array(
+          'class' => array(
+            'islandora-solr-collection-display',
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 
   // Add collection description metadata.
@@ -328,7 +313,7 @@ $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandor
 // Could not extract the default value because it is either indeterminate, or
 // not scalar. You'll need to provide a default value in
 // config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
-foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
+  foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
     if ($config['omit']) {
       unset($to_return[$key]);
     }
@@ -347,12 +332,6 @@ foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_
 function islandora_basic_collection_islandora_basic_collection_query_backends() {
   $module_path = drupal_get_path('module', 'islandora_basic_collection');
   return array(
-    ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND => array(
-      // XXX: "callable" not required, since this one is the original/legacy
-      // case which gets handled as it used to (inline in our implementation of
-      // hook_islandora_collectionCModel_islandora_view_object()).
-      'title' => t('SPARQL (Legacy)'),
-    ),
     'islandora_basic_collection_sparql_query_backend' => array(
       'title' => t('SPARQL'),
       'callable' => 'islandora_basic_collection_display_query_sparql',

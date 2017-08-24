@@ -133,7 +133,6 @@ function islandora_basic_collection_admin(array $form, array &$form_state) {
     '#description' => t('Use the table below to determine the rendering order of page and metadata content.'),
     '#states' => array(
       'visible' => array(
-        ':input[name="islandora_basic_collection_display_backend"]' => array('!value' => ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND),
         ':input[name="islandora_collection_metadata_display"]' => array('checked' => TRUE),
       ),
     ),
