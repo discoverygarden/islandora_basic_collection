@@ -482,9 +482,9 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
  */
 function islandora_basic_collection_get_query_info(array $params, $type = 'view') {
   if (!isset($params['object'])) {
-    throw new Exception(t('!function requires "!object_parameter" to be given in the array of parameters.', array(
-      '!function' => __FUNCTION__,
-      '!object_parameter' => 'object',
+    throw new Exception(t('@function requires "@object_parameter" to be given in the array of parameters.', array(
+      '@function' => __FUNCTION__,
+      '@object_parameter' => 'object',
     )));
   }
 
@@ -501,12 +501,12 @@ function islandora_basic_collection_get_query_info(array $params, $type = 'view'
   $object = $params['object'];
 
   $query = <<<EOQ
-SELECT DISTINCT !vars
+SELECT DISTINCT @vars
 FROM <#ri>
 WHERE {
-  !statements .
-  !optionals
-  !filters
+  @statements .
+  @optionals
+  @filters
 }
 EOQ;
 
@@ -520,15 +520,15 @@ EOQ;
     $filters[] = "FILTER($filter)";
   }
   $query = format_string($query, array(
-    '!statements' => implode(' . ', $query_statements),
-    '!optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
-    '!filters' => implode(' ', $filters),
-    '!vars' => $params['vars'],
+    '@statements' => implode(' . ', $query_statements),
+    '@optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
+    '@filters' => implode(' ', $filters),
+    '@vars' => $params['vars'],
   ));
 
   $query = format_string($query, array(
-    '!pid' => $object->id,
-    '!model' => $params['model'],
+    '@pid' => $object->id,
+    '@model' => $params['model'],
   ));
 
   if ($params['order_by']) {
@@ -552,11 +552,11 @@ EOQO;
 function islandora_basic_collection_islandora_basic_collection_get_query_statements($type = 'view') {
   $to_return = array();
   $to_return[] = <<<EOQ
-?object ?collection_predicate <info:fedora/!pid> ;
+?object ?collection_predicate <info:fedora/@pid> ;
         <fedora-model:label> ?title ;
         <fedora-model:ownerId> ?owner ;
         <fedora-view:lastModifiedDate> ?date_modified ;
-        <fedora-model:hasModel> !model
+        <fedora-model:hasModel> @model
 EOQ;
 
   if ($type == 'view') {
@@ -936,7 +936,7 @@ function islandora_basic_collection_block_configure($delta = '') {
     $block['islandora_basic_collection_title_phrase'] = array(
       '#type' => 'textfield',
       '#title' => t('The sentence to appear to describe the number of objects and collections present.'),
-      '#description' => t('For the number of objects use !objects, for the number of container objects use !collections.'),
+      '#description' => t('For the number of objects use @objects, for the number of container objects use @collections.'),
       '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
     );
     $block['islandora_basic_collection_title_placeholder'] = array(
