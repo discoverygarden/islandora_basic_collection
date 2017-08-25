@@ -28,3 +28,5 @@ islandora_basic_collection.settings:
       type: boolean
     islandora_basic_collection_generate_uuid:
       type: boolean
+    islandora_basic_collection_metadata_info_table_drag_attributes:
+      type: sequence

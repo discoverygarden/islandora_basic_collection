@@ -11,3 +11,4 @@ islandora_basic_collection_object_count_listing_phrase: '!objects Items in !coll
 islandora_basic_collection_listing_block_links_to_render: 10
 islandora_basic_collection_listing_block_content_models_to_restrict: false
 islandora_basic_collection_generate_uuid: false
+islandora_basic_collection_metadata_info_table_drag_attributes: []
