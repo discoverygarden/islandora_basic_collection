@@ -218,84 +218,75 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
   }
 
   // Add collection description metadata.
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// if (variable_get('islandora_collection_metadata_display', FALSE)) {
-//     module_load_include('inc', 'islandora', 'includes/metadata');
-//
-//     $to_return['description'] = array(
-//       '#type' => 'markup',
-//       '#theme_wrappers' => array('container'),
-//       '#attributes' => array(
-//         'class' => array(
-//           'islandora-collection-metadata',
-//           'islandora-collection-metadata-description',
-//         ),
-//       ),
-//       '#markup' => islandora_retrieve_description_markup($object),
-//     );
-//
-//     // Add parent collections.
-//     $parent_collections = islandora_get_parents_from_rels_ext($object);
-//     if (!empty($parent_collections)) {
-//       $to_return['collections'] = array(
-//         '#type' => 'markup',
-//         '#theme_wrappers' => array('container'),
-//         '#attributes' => array(
-//           'class' => array(
-//             'islandora-collection-metadata-in-collections',
-//             'islandora-collection-metadata',
-//           ),
-//         ),
-//       );
-//       $to_return['collections']['heading'] = array(
-//         '#markup' => t('<h2>In collections</h2>'),
-//       );
-//       $to_return['collections']['list'] = array(
-//         '#prefix' => '<ul>',
-//         '#suffix' => '</ul>',
-//       );
-//       foreach ($parent_collections as $parent) {
-//         $to_return['collections']['list'][] = array(
-//           '#markup' => l($parent->label, "islandora/object/{$parent->id}"),
-//           '#prefix' => '<li>',
-//           '#suffix' => '</li>',
-//         );
-//       }
-//     }
-//
-//     // Preserve the 'wrapper' wrapper for legacy support.
-//     $to_return['wrapper'] = array(
-//       '#type' => 'item',
-//       '#theme_wrappers' => array('container'),
-//       '#attributes' => array(
-//         'class' => array(
-//           'islandora-collection-metadata',
-//           'islandora-collection-metadata-markup',
-//         ),
-//       ),
-//     );
-//
-//     // Add the metadata fieldset markup.
-//     $to_return['wrapper']['metadata'] = array(
-//       '#type' => 'markup',
-//       '#attached' => array(
-//         'js' => array(
-//           'misc/form.js',
-//           'misc/collapse.js',
-//         ),
-//       ),
-//       '#markup' => islandora_retrieve_metadata_markup($object),
-//     );
-//   }
+  if (\Drupal::config('islandora_basic_collection.settings')->get('islandora_collection_metadata_display')) {
+    module_load_include('inc', 'islandora', 'includes/metadata');
 
+    $to_return['description'] = array(
+      '#type' => 'markup',
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array(
+        'class' => array(
+          'islandora-collection-metadata',
+          'islandora-collection-metadata-description',
+        ),
+      ),
+      '#markup' => islandora_retrieve_description_markup($object),
+    );
 
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
+    // Add parent collections.
+    $parent_collections = islandora_get_parents_from_rels_ext($object);
+    if (!empty($parent_collections)) {
+      $to_return['collections'] = array(
+        '#type' => 'markup',
+        '#theme_wrappers' => array('container'),
+        '#attributes' => array(
+          'class' => array(
+            'islandora-collection-metadata-in-collections',
+            'islandora-collection-metadata',
+          ),
+        ),
+      );
+      $to_return['collections']['heading'] = array(
+        '#markup' => t('<h2>In collections</h2>'),
+      );
+      $to_return['collections']['list'] = array(
+        '#prefix' => '<ul>',
+        '#suffix' => '</ul>',
+      );
+      foreach ($parent_collections as $parent) {
+        $to_return['collections']['list'][] = array(
+          '#markup' => l($parent->label, "islandora/object/{$parent->id}"),
+          '#prefix' => '<li>',
+          '#suffix' => '</li>',
+        );
+      }
+    }
+
+    // Preserve the 'wrapper' wrapper for legacy support.
+    $to_return['wrapper'] = array(
+      '#type' => 'item',
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array(
+        'class' => array(
+          'islandora-collection-metadata',
+          'islandora-collection-metadata-markup',
+        ),
+      ),
+    );
+
+    // Add the metadata fieldset markup.
+    $to_return['wrapper']['metadata'] = array(
+      '#type' => 'markup',
+      '#attached' => array(
+        'js' => array(
+          'misc/form.js',
+          'misc/collapse.js',
+        ),
+      ),
+      '#markup' => islandora_retrieve_metadata_markup($object),
+    );
+  }
+
   foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
     if ($config['omit']) {
       unset($to_return[$key]);
