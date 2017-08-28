@@ -503,17 +503,12 @@ EOQ;
   $query_statements = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_statements', [$type]);
 
   $alter_data = [
-    'filters' => $query_filters,
-    'statements' => $query_statements,
-    'params' => $params,
-    'optionals' => $query_optionals,
+    'filters' => &$query_filters,
+    'statements' => &$query_statements,
+    'params' => &$params,
+    'optionals' => &$query_optionals,
   ];
   \Drupal::moduleHandler()->alter('islandora_basic_collection_query_param', $alter_data);
-  $query_filters = $alter_data['filters'];
-  $query_statements = $alter_data['statements'];
-  $params = $alter_data['params'];
-  $query_optionals = $alter_data['optionals'];
-
 
   foreach ($query_filters as $filter) {
     $filters[] = "FILTER($filter)";
