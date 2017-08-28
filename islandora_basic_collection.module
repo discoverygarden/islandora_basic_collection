@@ -196,7 +196,6 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
 
     $to_return = array(
       'islandora_basic_collection_display' => array(
-        '#type' => 'markup',
         '#theme' => 'islandora_objects_subset',
         '#objects' => $pids,
         '#total' => $total,
