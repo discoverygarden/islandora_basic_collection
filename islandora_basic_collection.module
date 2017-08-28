@@ -399,9 +399,9 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     $content['total'] = array('#markup' => t('Total members: %total', array('%total' => $total_count)));
     $content['table']['#header']['count'] = array('data' => t('Count'));
   }
-  return array(
-    'collection' => \Drupal::service("renderer")->render($content),
-  );
+  return [ 
+    '#markup' => \Drupal::service("renderer")->render($content),
+  ];
 }
 
 /**
