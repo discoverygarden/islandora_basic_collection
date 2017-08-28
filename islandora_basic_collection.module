@@ -176,10 +176,6 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     $to_return = array('Collection View' => '');
   }
   else {
-    // @FIXME
-    // Could not extract the default value because it is either indeterminate, or
-    // not scalar. You'll need to provide a default value in
-    // config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
     $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
     $backends = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
     $limit = ((empty($_GET['pagesize'])) ?
@@ -400,7 +396,7 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     $content['total'] = array('#markup' => t('Total members: %total', array('%total' => $total_count)));
     $content['table']['#header']['count'] = array('data' => t('Count'));
   }
-  return [ 
+  return [
     '#markup' => \Drupal::service("renderer")->render($content),
   ];
 }
