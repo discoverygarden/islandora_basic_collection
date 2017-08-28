@@ -489,12 +489,12 @@ function islandora_basic_collection_get_query_info(array $params, $type = 'view'
   $object = $params['object'];
 
   $query = <<<EOQ
-SELECT DISTINCT @vars
+SELECT DISTINCT !vars
 FROM <#ri>
 WHERE {
-  @statements .
-  @optionals
-  @filters
+  !statements .
+  !optionals
+  !filters
 }
 EOQ;
 
@@ -520,15 +520,15 @@ EOQ;
     $filters[] = "FILTER($filter)";
   }
   $query = strtr($query, array(
-    '@statements' => implode(' . ', $query_statements),
-    '@optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
-    '@filters' => implode(' ', $filters),
-    '@vars' => $params['vars'],
+    '!statements' => implode(' . ', $query_statements),
+    '!optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
+    '!filters' => implode(' ', $filters),
+    '!vars' => $params['vars'],
   ));
 
   $query = strtr($query, array(
-    '@pid' => $object->id,
-    '@model' => $params['model'],
+    '!pid' => $object->id,
+    '!model' => $params['model'],
   ));
 
   if ($params['order_by']) {
@@ -552,11 +552,11 @@ EOQO;
 function islandora_basic_collection_islandora_basic_collection_get_query_statements($type = 'view') {
   $to_return = array();
   $to_return[] = <<<EOQ
-?object ?collection_predicate <info:fedora/@pid> ;
+?object ?collection_predicate <info:fedora/!pid> ;
         <fedora-model:label> ?title ;
         <fedora-model:ownerId> ?owner ;
         <fedora-view:lastModifiedDate> ?date_modified ;
-        <fedora-model:hasModel> @model
+        <fedora-model:hasModel> !model
 EOQ;
 
   if ($type == 'view') {
