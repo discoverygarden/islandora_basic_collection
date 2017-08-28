@@ -1051,9 +1051,9 @@ function islandora_basic_collection_block_view($delta = '') {
  * filters that may be present, for example XACML.
  */
 function islandora_basic_collection_islandora_basic_collection_query_param_alter(&$query_data) {
-  $filters = $query_data['filters'];
-  $statements = $query_data['statements'];
-  $params = $query_data['params'];
+  $filters = &$query_data['filters'];
+  $statements = &$query_data['statements'];
+  $params = &$query_data['params'];
 
   if (isset($params['collection_listing']) && $params['collection_listing']) {
     // Need to find the basic collection statement and filter to nuke for our
