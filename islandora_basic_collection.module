@@ -217,7 +217,6 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     module_load_include('inc', 'islandora', 'includes/metadata');
 
     $to_return['description'] = array(
-      '#type' => 'markup',
       '#theme_wrappers' => array('container'),
       '#attributes' => array(
         'class' => array(
@@ -232,7 +231,6 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     $parent_collections = islandora_get_parents_from_rels_ext($object);
     if (!empty($parent_collections)) {
       $to_return['collections'] = array(
-        '#type' => 'markup',
         '#theme_wrappers' => array('container'),
         '#attributes' => array(
           'class' => array(
@@ -271,7 +269,6 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
 
     // Add the metadata fieldset markup.
     $to_return['wrapper']['metadata'] = array(
-      '#type' => 'markup',
       '#attached' => array(
         'js' => array(
           'misc/form.js',
