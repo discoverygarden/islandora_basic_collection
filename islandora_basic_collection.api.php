@@ -57,8 +57,11 @@ function hook_islandora_basic_collection_get_query_optionals() {
 
 /**
  * Hook to modify query.
+ *
+ * @param array $query_data
+ *   Array containing details of the query for altering.
  */
-function islandora_basic_collection_query_param_alter(array $filters, array $statements, array $params, array $optionals) {
+function islandora_basic_collection_query_param_alter(array $query_data) {
 }
 
 /**

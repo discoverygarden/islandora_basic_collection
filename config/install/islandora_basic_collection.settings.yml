@@ -2,6 +2,7 @@ islandora_basic_collection_admin_page_size: '10'
 islandora_basic_collection_page_size: '12'
 islandora_basic_collection_disable_count_object: false
 islandora_basic_collection_default_view: grid
+islandora_basic_collection_display_backend: 'islandora_basic_collection_sparql_query_backend'
 islandora_basic_collection_disable_display_generation: false
 islandora_basic_collection_disable_collection_policy_delete: true
 islandora_basic_collection_object_count_listing_placeholder: 'Counting items in collections...'
@@ -9,4 +10,6 @@ islandora_basic_collection_object_count_listing_content_models_to_restrict: fals
 islandora_basic_collection_object_count_listing_phrase: '!objects Items in !collections Collections'
 islandora_basic_collection_listing_block_links_to_render: 10
 islandora_basic_collection_listing_block_content_models_to_restrict: false
+islandora_collection_metadata_display: false
 islandora_basic_collection_generate_uuid: false
+islandora_basic_collection_metadata_info_table_drag_attributes: []

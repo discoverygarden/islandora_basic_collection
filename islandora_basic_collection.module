@@ -10,7 +10,7 @@ define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child colle
 define('ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY', 'manage collection policy');
 define('ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS', 'migrate collection members');
 
-const ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND = 'islandora_basic_collection_legacy_sparql';
+const ISLANDORA_BASIC_COLLECTION_SPARQL_QUERY_BACKEND = 'islandora_basic_collection_sparql_query_backend';
 
 /**
  * Access callback for ingest.
@@ -155,23 +155,6 @@ function islandora_basic_collection_manage_access($object = NULL) {
  */
 function islandora_basic_collection_theme($existing, $type, $theme, $path) {
   return array(
-    'islandora_basic_collection' => array(
-      'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-basic-collection',
-      'pattern' => 'islandora_basic_collection__',
-      'variables' => array('islandora_object' => NULL),
-    ),
-    'islandora_basic_collection_grid' => array(
-      'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-basic-collection-grid',
-      'pattern' => 'islandora_basic_collection_grid__',
-      'variables' => array('islandora_object' => NULL, 'collection_results' => NULL),
-    ),
-    'islandora_basic_collection_wrapper' => array(
-      'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-basic-collection-wrapper',
-      'variables' => array('islandora_object' => NULL),
-    ),
     'islandora_basic_collection_policy_management_table' => array(
       'file' => 'theme/theme.inc',
       'render element' => 'table',
@@ -193,142 +176,110 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     $to_return = array('Collection View' => '');
   }
   else {
-    // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
-$backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
+    $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
     $backends = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
-    if ($backend === ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND || !isset($backends[$backend])) {
-      // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $output = theme('islandora_basic_collection_wrapper', array('islandora_object' => $object));
-
-      return array('Collection View' => $output);
+    $limit = ((empty($_GET['pagesize'])) ?
+      \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') :
+      $_GET['pagesize']);
+    $pager_element = 0;
+    $passed_page = pager_find_page($pager_element);
+    if (isset($backends[$backend]['file'])) {
+      require_once $backends[$backend]['file'];
     }
-    else {
-      $limit = ((empty($_GET['pagesize'])) ?
-        \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') :
-        $_GET['pagesize']);
-      $pager_element = 0;
-      $passed_page = pager_find_page($pager_element);
-      if (isset($backends[$backend]['file'])) {
-        require_once $backends[$backend]['file'];
-      }
-      list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $passed_page, $limit);
-      $page = pager_default_initialize($total, $limit, $pager_element);
-      if ($page < $passed_page) {
-        // If we were somehow on a page past the end, let us go to the last page
-        // of results.
-        list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $page, $limit);
-      }
+    list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $passed_page, $limit);
+    $page = pager_default_initialize($total, $limit, $pager_element);
+    if ($page < $passed_page) {
+      // If we were somehow on a page past the end, let us go to the last page
+      // of results.
+      list($total, $pids) = call_user_func($backends[$backend]['callable'], $object, $page, $limit);
+    }
 
-      $to_return = array(
-        'islandora_basic_collection_display' => array(
-          '#type' => 'markup',
-          '#theme' => 'islandora_objects_subset',
-          '#objects' => $pids,
-          '#total' => $total,
-          '#limit' => $limit,
-          '#pager_element' => $pager_element,
-          '#display' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
-          '#theme_wrappers' => array('container'),
-          '#attributes' => array(
-            'class' => array(
-              'islandora-solr-collection-display',
-            ),
+    $to_return = array(
+      'islandora_basic_collection_display' => array(
+        '#theme' => 'islandora_objects_subset',
+        '#objects' => $pids,
+        '#total' => $total,
+        '#limit' => $limit,
+        '#pager_element' => $pager_element,
+        '#display' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
+        '#theme_wrappers' => array('container'),
+        '#attributes' => array(
+          'class' => array(
+            'islandora-solr-collection-display',
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 
   // Add collection description metadata.
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// if (variable_get('islandora_collection_metadata_display', FALSE)) {
-//     module_load_include('inc', 'islandora', 'includes/metadata');
-//
-//     $to_return['description'] = array(
-//       '#type' => 'markup',
-//       '#theme_wrappers' => array('container'),
-//       '#attributes' => array(
-//         'class' => array(
-//           'islandora-collection-metadata',
-//           'islandora-collection-metadata-description',
-//         ),
-//       ),
-//       '#markup' => islandora_retrieve_description_markup($object),
-//     );
-//
-//     // Add parent collections.
-//     $parent_collections = islandora_get_parents_from_rels_ext($object);
-//     if (!empty($parent_collections)) {
-//       $to_return['collections'] = array(
-//         '#type' => 'markup',
-//         '#theme_wrappers' => array('container'),
-//         '#attributes' => array(
-//           'class' => array(
-//             'islandora-collection-metadata-in-collections',
-//             'islandora-collection-metadata',
-//           ),
-//         ),
-//       );
-//       $to_return['collections']['heading'] = array(
-//         '#markup' => t('<h2>In collections</h2>'),
-//       );
-//       $to_return['collections']['list'] = array(
-//         '#prefix' => '<ul>',
-//         '#suffix' => '</ul>',
-//       );
-//       foreach ($parent_collections as $parent) {
-//         $to_return['collections']['list'][] = array(
-//           '#markup' => l($parent->label, "islandora/object/{$parent->id}"),
-//           '#prefix' => '<li>',
-//           '#suffix' => '</li>',
-//         );
-//       }
-//     }
-//
-//     // Preserve the 'wrapper' wrapper for legacy support.
-//     $to_return['wrapper'] = array(
-//       '#type' => 'item',
-//       '#theme_wrappers' => array('container'),
-//       '#attributes' => array(
-//         'class' => array(
-//           'islandora-collection-metadata',
-//           'islandora-collection-metadata-markup',
-//         ),
-//       ),
-//     );
-//
-//     // Add the metadata fieldset markup.
-//     $to_return['wrapper']['metadata'] = array(
-//       '#type' => 'markup',
-//       '#attached' => array(
-//         'js' => array(
-//           'misc/form.js',
-//           'misc/collapse.js',
-//         ),
-//       ),
-//       '#markup' => islandora_retrieve_metadata_markup($object),
-//     );
-//   }
+  if (\Drupal::config('islandora_basic_collection.settings')->get('islandora_collection_metadata_display')) {
+    module_load_include('inc', 'islandora', 'includes/metadata');
 
+    $to_return['description'] = array(
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array(
+        'class' => array(
+          'islandora-collection-metadata',
+          'islandora-collection-metadata-description',
+        ),
+      ),
+      '#markup' => islandora_retrieve_description_markup($object),
+    );
 
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
-foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
+    // Add parent collections.
+    $parent_collections = islandora_get_parents_from_rels_ext($object);
+    if (!empty($parent_collections)) {
+      $to_return['collections'] = array(
+        '#theme_wrappers' => array('container'),
+        '#attributes' => array(
+          'class' => array(
+            'islandora-collection-metadata-in-collections',
+            'islandora-collection-metadata',
+          ),
+        ),
+      );
+      $to_return['collections']['heading'] = array(
+        '#markup' => t('<h2>In collections</h2>'),
+      );
+      $to_return['collections']['list'] = array(
+        '#prefix' => '<ul>',
+        '#suffix' => '</ul>',
+      );
+      foreach ($parent_collections as $parent) {
+        $to_return['collections']['list'][] = array(
+          '#markup' => l($parent->label, "islandora/object/{$parent->id}"),
+          '#prefix' => '<li>',
+          '#suffix' => '</li>',
+        );
+      }
+    }
+
+    // Preserve the 'wrapper' wrapper for legacy support.
+    $to_return['wrapper'] = array(
+      '#type' => 'item',
+      '#theme_wrappers' => array('container'),
+      '#attributes' => array(
+        'class' => array(
+          'islandora-collection-metadata',
+          'islandora-collection-metadata-markup',
+        ),
+      ),
+    );
+
+    // Add the metadata fieldset markup.
+    $to_return['wrapper']['metadata'] = array(
+      '#attached' => array(
+        'js' => array(
+          'misc/form.js',
+          'misc/collapse.js',
+        ),
+      ),
+      '#markup' => islandora_retrieve_metadata_markup($object),
+    );
+  }
+
+  foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
     if ($config['omit']) {
       unset($to_return[$key]);
     }
@@ -347,12 +298,6 @@ foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_
 function islandora_basic_collection_islandora_basic_collection_query_backends() {
   $module_path = drupal_get_path('module', 'islandora_basic_collection');
   return array(
-    ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND => array(
-      // XXX: "callable" not required, since this one is the original/legacy
-      // case which gets handled as it used to (inline in our implementation of
-      // hook_islandora_collectionCModel_islandora_view_object()).
-      'title' => t('SPARQL (Legacy)'),
-    ),
     'islandora_basic_collection_sparql_query_backend' => array(
       'title' => t('SPARQL'),
       'callable' => 'islandora_basic_collection_display_query_sparql',
@@ -421,12 +366,13 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
       'model' => "<info:fedora/$model_pid>",
     ));
     $model_object = islandora_object_load($model_pid);
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $rows[$model_pid] = array(
-//       $model_object ? l($model_object->label, "islandora/object/{$model_object->id}") : $model_pid,
-//     );
-
+    if ($model_object) {
+      $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $model_object->id]);
+      $rows[$model_pid][] = \Drupal\Core\Link::fromTextAndUrl($model_object->label, $url);
+    }
+    else {
+      $rows[$model_pid][] = $model_pid;
+    }
     if (!$disable_count) {
       $rows[$model_pid][] = $object->repository->ri->countQuery($model_count_query['query'], $model_count_query['type']);
     }
@@ -446,9 +392,9 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     $content['total'] = array('#markup' => t('Total members: %total', array('%total' => $total_count)));
     $content['table']['#header']['count'] = array('data' => t('Count'));
   }
-  return array(
-    'collection' => \Drupal::service("renderer")->render($content),
-  );
+  return [
+    '#markup' => \Drupal::service("renderer")->render($content),
+  ];
 }
 
 /**
@@ -520,9 +466,9 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
  */
 function islandora_basic_collection_get_query_info(array $params, $type = 'view') {
   if (!isset($params['object'])) {
-    throw new Exception(t('!function requires "!object_parameter" to be given in the array of parameters.', array(
-      '!function' => __FUNCTION__,
-      '!object_parameter' => 'object',
+    throw new Exception(t('@function requires "@object_parameter" to be given in the array of parameters.', array(
+      '@function' => __FUNCTION__,
+      '@object_parameter' => 'object',
     )));
   }
 
@@ -552,19 +498,26 @@ EOQ;
   $query_filters = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_filters', [$type]);
   $query_optionals = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_optionals', [$type]);
   $query_statements = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_statements', [$type]);
-  \Drupal::moduleHandler()->alter('islandora_basic_collection_query_param', $query_filters, $query_statements, $params, $query_optionals);
+
+  $alter_data = [
+    'filters' => &$query_filters,
+    'statements' => &$query_statements,
+    'params' => &$params,
+    'optionals' => &$query_optionals,
+  ];
+  \Drupal::moduleHandler()->alter('islandora_basic_collection_query_param', $alter_data);
 
   foreach ($query_filters as $filter) {
     $filters[] = "FILTER($filter)";
   }
-  $query = format_string($query, array(
+  $query = strtr($query, array(
     '!statements' => implode(' . ', $query_statements),
     '!optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
     '!filters' => implode(' ', $filters),
     '!vars' => $params['vars'],
   ));
 
-  $query = format_string($query, array(
+  $query = strtr($query, array(
     '!pid' => $object->id,
     '!model' => $params['model'],
   ));
@@ -673,7 +626,6 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
       // Add in the final semi-colon.
       $query_array['query'] .= ';';
     }
-
     $results = $object->repository->ri->query($query_array['query'], $query_array['type']);
   }
   catch (Exception $e) {
@@ -681,7 +633,7 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
       '@message' => $e->getMessage(),
       '@stack' => $e->getTraceAsString(),
     );
-    \Drupal::logger('islandora_basic_collection')->error('Islandora basic collection failed to retrieve associated objects.<br/>Error:<br/>@message<br/>Stack: <br/>@stack', []);
+    \Drupal::logger('islandora_basic_collection')->error('Islandora basic collection failed to retrieve associated objects.<br/>Error:<br/>@message<br/>Stack: <br/>@stack', $variables);
     return FALSE;
   }
   return array($count, $results);
@@ -757,8 +709,8 @@ function islandora_basic_collection_permission() {
 /**
  * Implements hook_form_islandora_object_properties_form_alter().
  */
-function islandora_basic_collection_form_islandora_object_properties_form_alter(array &$form, array &$form_state) {
-  $object = $form_state['object'];
+function islandora_basic_collection_form_islandora_object_properties_form_alter(array &$form, $form_state) {
+  $object = $form_state->getStorage()['object'];
   if (in_array('islandora:collectionCModel', $object->models)) {
     $form['delete']['#value'] = t('Delete Collection');
   }
@@ -767,8 +719,8 @@ function islandora_basic_collection_form_islandora_object_properties_form_alter(
 /**
  * Implements hook_form_islandora_object_properties_form_alter().
  */
-function islandora_basic_collection_form_islandora_delete_object_form_alter(array &$form, array &$form_state) {
-  $object = $form_state['object'];
+function islandora_basic_collection_form_islandora_delete_object_form_alter(array &$form, $form_state) {
+  $object = $form_state->getStorage()['object'];
   if (in_array('islandora:collectionCModel', $object->models)) {
     $form['description']['#markup'] = t('This will remove the collection object and all its child objects. If child objects are collection objects, their children will not be deleted, and will become orphaned. Child objects currently shared with other collections will not be deleted. This action cannot be undone.');
     $form['#submit'] = array('islandora_basic_collection_islandora_delete_object_form_delete_children_submit');
@@ -974,7 +926,7 @@ function islandora_basic_collection_block_configure($delta = '') {
     $block['islandora_basic_collection_title_phrase'] = array(
       '#type' => 'textfield',
       '#title' => t('The sentence to appear to describe the number of objects and collections present.'),
-      '#description' => t('For the number of objects use !objects, for the number of container objects use !collections.'),
+      '#description' => t('For the number of objects use @objects, for the number of container objects use @collections.'),
       '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
     );
     $block['islandora_basic_collection_title_placeholder'] = array(
@@ -1095,7 +1047,11 @@ function islandora_basic_collection_block_view($delta = '') {
  * cases. That is, we want to retain all the other present statements and
  * filters that may be present, for example XACML.
  */
-function islandora_basic_collection_islandora_basic_collection_query_param_alter(&$filters, &$statements, $params, $optionals) {
+function islandora_basic_collection_islandora_basic_collection_query_param_alter(&$query_data) {
+  $filters = &$query_data['filters'];
+  $statements = &$query_data['statements'];
+  $params = &$query_data['params'];
+
   if (isset($params['collection_listing']) && $params['collection_listing']) {
     // Need to find the basic collection statement and filter to nuke for our
     // use.
