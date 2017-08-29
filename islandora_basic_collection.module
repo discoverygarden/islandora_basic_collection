@@ -712,7 +712,7 @@ function islandora_basic_collection_permission() {
 /**
  * Implements hook_form_islandora_object_properties_form_alter().
  */
-function islandora_basic_collection_form_islandora_object_properties_form_alter(array &$form, array &$form_state) {
+function islandora_basic_collection_form_islandora_object_properties_form_alter(array &$form, $form_state) {
   $object = $form_state['object'];
   if (in_array('islandora:collectionCModel', $object->models)) {
     $form['delete']['#value'] = t('Delete Collection');
@@ -722,7 +722,7 @@ function islandora_basic_collection_form_islandora_object_properties_form_alter(
 /**
  * Implements hook_form_islandora_object_properties_form_alter().
  */
-function islandora_basic_collection_form_islandora_delete_object_form_alter(array &$form, array &$form_state) {
+function islandora_basic_collection_form_islandora_delete_object_form_alter(array &$form, $form_state) {
   $object = $form_state['object'];
   if (in_array('islandora:collectionCModel', $object->models)) {
     $form['description']['#markup'] = t('This will remove the collection object and all its child objects. If child objects are collection objects, their children will not be deleted, and will become orphaned. Child objects currently shared with other collections will not be deleted. This action cannot be undone.');
