@@ -1,5 +1,5 @@
 islandora_basic_collection.admin:
-  path: /admin/islandora/solution_pack_config/basic_collection
+  path: /admin/config/islandora/solution_pack_config/basic_collection
   defaults:
     _title: 'Collection Solution Pack'
     _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionAdmin
