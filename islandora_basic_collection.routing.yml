@@ -34,10 +34,14 @@ islandora_basic_collection.migrate_item_form:
   requirements:
     _custom_access: '\Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionMigrateItemForm::islandora_basic_collection_share_migrate_access'
 islandora_basic_collection.ingest_action:
-  path: '/islandora/object/{collection}/manage/overview/ingest'
+  path: '/islandora/object/{object}/manage/overview/ingest'
   defaults:
     _title: 'Add an object to this Collection'
     _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_ingest_action'
+  options:
+    parameters:
+      object:
+        type: object
   requirements:
     _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_ingest_access'
 islandora_basic_collection.object_count_callback:

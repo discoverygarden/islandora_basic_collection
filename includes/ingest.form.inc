@@ -1,9 +1,10 @@
 <?php
-
 /**
  * @file
  * Handles the ingestion of child objects that are not collections.
  */
+
+use Drupal\islandora_basic_collection\CollectionPolicy;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_FAKE_PID', 'fake:pid');
