@@ -12,9 +12,4 @@ islandora_basic_collection.ingest_action:
   route_name: islandora_basic_collection.ingest_action
   title: 'Add an object to this Collection'
   appears_on:
-    - islandora_basic_collection.ingest_action
-islandora_basic_collection.ingest_action_0:
-  route_name: islandora_basic_collection.ingest_action
-  title: 'Add an object to this Collection'
-  appears_on:
-    - islandora_basic_collection.ingest_action
+    - islandora.manage_overview_object

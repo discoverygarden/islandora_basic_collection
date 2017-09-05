@@ -1,4 +1,5 @@
-<?php /**
+<?php
+/**
  * @file
  * Contains \Drupal\islandora_basic_collection\Controller\DefaultController.
  */
@@ -6,6 +7,9 @@
 namespace Drupal\islandora_basic_collection\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Access\AccessResult;
+
+use AbstractObject;
 
 /**
  * Default controller for the islandora_basic_collection module.
@@ -52,10 +56,10 @@ EOQ;
     drupal_json_output($return);
   }
 
-  public function islandora_basic_collection_ingest_access(AbstractObject $collection, Drupal\Core\Session\AccountInterface $account) {
+  public function islandora_basic_collection_ingest_access(AbstractObject $object, \Drupal\Core\Session\AccountInterface $account) {
     $collection_models = islandora_basic_collection_get_collection_content_models();
     $is_a_collection = (
-      (count(array_intersect($collection_models, $collection->models)) > 0) && isset($collection['COLLECTION_POLICY'])
+      (count(array_intersect($collection_models, $object->models)) > 0) && isset($object['COLLECTION_POLICY'])
       );
 
     if (!$is_a_collection) {
@@ -64,14 +68,14 @@ EOQ;
 
     module_load_include('inc', 'islandora', 'includes/ingest.form');
     module_load_include('inc', 'islandora_basic_collection', 'includes/ingest.form');
-    $configuration = islandora_basic_collection_get_ingest_configuration($collection);
+    $configuration = islandora_basic_collection_get_ingest_configuration($object);
     $has_ingest_steps = islandora_ingest_can_display_ingest_form($configuration);
 
-    return $has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $collection);
+    return AccessResult::allowedIf($has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object));
   }
 
-  public function islandora_basic_collection_ingest_action(AbstractObject $collection) {
-    if (($configuration = islandora_basic_collection_get_ingest_configuration($collection)) !== FALSE) {
+  public function islandora_basic_collection_ingest_action(AbstractObject $object) {
+    if (($configuration = islandora_basic_collection_get_ingest_configuration($object)) !== FALSE) {
       module_load_include('inc', 'islandora', 'includes/ingest.form');
       return \Drupal::formBuilder()->getForm('islandora_ingest_form', $configuration);
     }

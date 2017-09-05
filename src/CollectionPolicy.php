@@ -1,10 +1,11 @@
 <?php
-
 /**
  * @file
  * Defines CollectionPolicy class to process the COLLECTION_POLICY datastream.
  * As defined here http://syn.lib.umanitoba.ca/collection_policy.xsd.
  */
+
+namespace Drupal\islandora_basic_collection;
 
 /**
  * Collection Policy
@@ -44,7 +45,7 @@ EOT;
    *   The COLLECTION_POLICY xml in string form.
    */
   public function __construct($xml) {
-    $this->xml = new DOMDocument();
+    $this->xml = new \DOMDocument();
     $this->xml->preserveWhiteSpace = FALSE;
     $this->xml->formatOutput = TRUE;
     $this->xml->loadXML($xml);
