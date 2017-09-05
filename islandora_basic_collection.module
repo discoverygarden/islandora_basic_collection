@@ -1,9 +1,10 @@
 <?php
-
 /**
  * @file
  * Provides functionality for creating/managing/deleting/viewing collections.
  */
+
+use Drupal\Core\Link;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child collection');
@@ -403,30 +404,27 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
 function islandora_basic_collection_islandora_overview_object(AbstractObject $object) {
   module_load_include('inc', 'islandora_basic_collection', 'includes/utilities');
   if (!in_array('islandora:collectionCModel', $object->models)) {
-    $map_to_row = function($o) {
-      $o = islandora_object_load($o);
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// return ($o ?
-//         array(l($o->label, "islandora/object/{$o->id}")) :
-//         FALSE);
-
+    $map_to_row = function($pid) {
+      $map_object = islandora_object_load($pid);
+      if ($map_object) {
+        $link = Link::createFromRoute(
+          $map_object->label,
+          'islandora.view_object',
+          ['object' => $map_object->id]
+        );
+        return [$link];
+      }
+      return FALSE;
     };
     $pids = islandora_basic_collection_get_parent_pids($object);
     $rows = array_map($map_to_row, $pids);
     $rows = array_filter($rows);
-    // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $table = theme('table', array(
-//                'header' => array(t('Parent Collections')),
-//                'rows' => $rows,
-//                'empty' => t('No parent collections')));
+    $table = [
+      '#theme' => 'table',
+      '#header' => [t('Parent Collections')],
+      '#rows' => $rows,
+      '#empty' => t('No parent collections'),
+    ];
 
     return array('collection' => $table);
   }
