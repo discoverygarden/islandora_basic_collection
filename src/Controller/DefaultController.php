@@ -63,7 +63,7 @@ EOQ;
       );
 
     if (!$is_a_collection) {
-      return FALSE;
+      return AccessResult::forbidden();
     }
 
     module_load_include('inc', 'islandora', 'includes/ingest.form');
