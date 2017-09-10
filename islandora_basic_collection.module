@@ -5,6 +5,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Core\Form\FormStateInterface;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child collection');
@@ -762,7 +763,7 @@ function islandora_basic_collection_form_islandora_repository_admin_alter(&$form
 /**
  * Implements hook_islandora_ingest_steps().
  */
-function islandora_basic_collection_islandora_ingest_steps(array &$form_state) {
+function islandora_basic_collection_islandora_ingest_steps(FormStateInterface $form_state) {
   // Assumes that only a single object will get created.
   $shared_storage = islandora_ingest_form_get_shared_storage($form_state);
   // Not ingesting into a collection.
@@ -789,7 +790,7 @@ function islandora_basic_collection_islandora_ingest_steps(array &$form_state) {
 /**
  * Implements hook_islandora_ingest_steps_alter().
  */
-function islandora_basic_collection_islandora_ingest_steps_alter(array &$steps, array $form_state) {
+function islandora_basic_collection_islandora_ingest_steps_alter(array &$steps, FormStateInterface $form_state) {
   $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection_select_content_model');
   if (!empty($step_storage)) {
     // Convert the select content model form step to a callback when only one
