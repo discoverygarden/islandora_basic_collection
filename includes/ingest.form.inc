@@ -5,6 +5,7 @@
  */
 
 use Drupal\islandora_basic_collection\CollectionPolicy;
+use Drupal\Core\Form\FormStateInterface;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_FAKE_PID', 'fake:pid');
@@ -156,34 +157,34 @@ function islandora_basic_collection_select_content_model_form_undo_submit(array 
 /**
  * Callback step for setting the ingest object's content model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param string $model
  *   The model to select.
  */
-function islandora_basic_collection_set_content_model_callback(array &$form_state, $model) {
+function islandora_basic_collection_set_content_model_callback(FormStateInterface $form_state, $model) {
   islandora_basic_collection_ingest_form_select_model($form_state, $model);
 }
 
 /**
  * Undo callback step for setting the ingest object's content model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_basic_collection_set_content_model_undo_callback(array &$form_state) {
+function islandora_basic_collection_set_content_model_undo_callback(FormStateInterface $form_state) {
   islandora_basic_collection_ingest_form_unselect_model($form_state);
 }
 
 /**
  * Update the ingest object with collection policy data for the given model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param string $model
  *   The PID of the selected model.
  */
-function islandora_basic_collection_ingest_form_select_model(array &$form_state, $model) {
+function islandora_basic_collection_ingest_form_select_model(FormStateInterface $form_state, $model) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
   $collection = $shared_storage['collection'];
