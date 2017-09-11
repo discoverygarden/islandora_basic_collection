@@ -30,7 +30,6 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     // If the form has step_storage values set, use them instead of the defaults.
     $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
     $form_values = isset($step_storage['values']) ? $step_storage['values'] : NULL;
-
     $parent_object = islandora_object_load($form_state->getValue(['islandora', 'shared_storage', 'parent']));
     // Permissions handling.
     if (!\Drupal::currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
@@ -40,7 +39,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $policy = new CollectionPolicy($parent_object['COLLECTION_POLICY']->content);
     $policy_content_models = $policy->getContentModels();
     $content_models = islandora_get_content_models();
-    $form_state['content_models'] = $content_models;
+    $form_state->setValue('content_models', $content_models);
     $default_namespace = islandora_get_namespace($policy_content_models['islandora:collectionCModel']['namespace']);
     $the_namespace = isset($form_values['namespace']) ? $form_values['namespace'] : $default_namespace;
     $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : array();
