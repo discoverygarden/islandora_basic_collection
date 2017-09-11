@@ -67,11 +67,7 @@ function islandora_basic_collection_get_other_collections_as_form_options(Abstra
  */
 function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $restrict_namespace = variable_get('islandora_namespace_restriction_enforced', FALSE);
+ $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
   return array(
     '#type' => $restrict_namespace ? 'select' : 'textfield',
