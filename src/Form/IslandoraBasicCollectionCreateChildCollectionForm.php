@@ -44,38 +44,38 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $the_namespace = isset($form_values['namespace']) ? $form_values['namespace'] : $default_namespace;
     $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : array();
 
-    return array(
-      '#action' => request_uri() . '#create-child-collection',
-      'pid' => array(
+    return [
+      '#action' => \Drupal::request()->getUri() . '#create-child-collection',
+      'pid' => [
         '#type' => 'textfield',
-        '#title' => t('Collection PID'),
-        '#description' => t("Unique PID for this collection. Leave blank to use the default.<br/>PIDs take the general form of <strong>namespace:collection</strong> (e.g., islandora:pamphlets)"),
+        '#title' => $this->t('Collection PID'),
+        '#description' => $this->t("Unique PID for this collection. Leave blank to use the default.<br/>PIDs take the general form of <strong>namespace:collection</strong> (e.g., islandora:pamphlets)"),
         '#size' => 15,
         '#default_value' => isset($form_values['pid']) ? $form_values['pid'] : '',
-      ),
-      'inherit_policy' => array(
+      ],
+      'inherit_policy' => [
         '#type' => 'checkbox',
-        '#title' => t('Inherit collection policy?'),
+        '#title' => $this->t('Inherit collection policy?'),
         '#default_value' => isset($form_values['inherit_policy']) ? $form_values['inherit_policy'] == 1 : TRUE,
-      ),
-      'policy' => array(
+      ],
+      'policy' => [
         '#type' => 'fieldset',
-        '#title' => t('Collection Policy'),
-        '#states' => array(
-          'visible' => array(
-            ':input[name="inherit_policy"]' => array('checked' => FALSE),
-          ),
-        ),
+        '#title' => $this->t('Collection Policy'),
+        '#states' => [
+          'visible' => [
+            ':input[name="inherit_policy"]' => ['checked' => FALSE],
+          ],
+        ],
         'namespace' => islandora_basic_collection_get_namespace_form_element($the_namespace),
-        'content_models' => array(
+        'content_models' => [
           '#title' => "Allowable content models",
           '#type' => 'checkboxes',
           '#options' => islandora_basic_collection_get_content_models_as_form_options($content_models),
           '#default_value' => $content_models_values,
-          '#description' => t("Content models describe the behaviours of objects with which they are associated."),
-        ),
-      ),
-    );
+          '#description' => $this->t("Content models describe the behaviours of objects with which they are associated."),
+        ],
+      ],
+    ];
   }
 
   /**
@@ -120,10 +120,10 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     if (!empty($form_state['values']['pid'])) {
       $pid = $form_state['values']['pid'];
       if (!islandora_is_valid_pid($pid)) {
-        $form_state->setErrorByName('pid', t('Collection PID is invalid.'));
+        $form_state->setErrorByName('pid', $this->t('Collection PID is invalid.'));
       }
       elseif (islandora_object_load($pid)) {
-        $form_state->setErrorByName('pid', t('Collection PID already exists.'));
+        $form_state->setErrorByName('pid', $this->t('Collection PID already exists.'));
       }
     }
   }
