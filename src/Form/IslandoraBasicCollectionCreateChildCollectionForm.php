@@ -30,7 +30,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     // If the form has step_storage values set, use them instead of the defaults.
     $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
     $form_values = isset($step_storage['values']) ? $step_storage['values'] : NULL;
-    $parent_object = islandora_object_load($form_state->getValue(['islandora', 'shared_storage', 'parent']));
+    $parent_object = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
     // Permissions handling.
     if (!\Drupal::currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
       drupal_set_message(t('You do not have permissions to create collections.'), 'error');
