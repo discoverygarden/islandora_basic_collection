@@ -94,25 +94,6 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
 }
 
 /**
- * Undo setting the COLLECTION_POLICY, purging the datastream that was created.
- *
- * @param array $form
- *   The Drupal form definition.
- * @param array $form_state
- *   The Drupal form state.
- */
-function islandora_basic_collection_create_child_collection_form_undo_submit(array &$form, array &$form_state) {
-  $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
-  $object = islandora_ingest_form_get_object($form_state);
-  foreach ($step_storage['created'] as $dsid => $created) {
-    if ($created) {
-      $object->purgeDatastream($dsid);
-    }
-  }
-  unset($step_storage['created']);
-}
-
-/**
  * Define collection policy management form.
  *
  * @param array $form
