@@ -85,21 +85,21 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     module_load_include('inc', 'islandora', 'includes/utilities');
 
     // Prepare Object.
-    $new_collection = $form_state['islandora']['objects'][0];
-    if (!empty($form_state['values']['pid'])) {
-      $new_collection->id = $form_state['values']['pid'];
+    $new_collection = $form_state->get(['islandora', 'objects', 0]);
+    if (!empty($form_state->getValue('pid'))) {
+      $new_collection->id = $form_state->getValue('pid');
     }
 
     // Add COLLECTION_POLICY datastream.
-    $parent_collection = islandora_object_load($form_state['islandora']['shared_storage']['parent']);
-    if ($form_state['values']['inherit_policy']) {
+    $parent_collection = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
+    if ($form_state->getValue('inherit_policy')) {
       $collection_policy = $parent_collection['COLLECTION_POLICY']->content;
     }
     else {
       $policy = CollectionPolicy::emptyPolicy();
-      $content_models = array_filter($form_state['values']['content_models']);
+      $content_models = array_filter($form_state->getValue(['values', 'content_models']));
       foreach (array_keys($content_models) as $pid) {
-        $policy->addContentModel($pid, $form_state['content_models'][$pid]['label'], $form_state['values']['namespace']);
+        $policy->addContentModel($pid, $form_state->get(['content_models', $pid, 'label']), $form_state->getValue('namespace'));
       }
       $collection_policy = $policy->getXML();
     }
@@ -117,8 +117,8 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     module_load_include('inc', 'islandora', 'includes/utilities');
-    if (!empty($form_state['values']['pid'])) {
-      $pid = $form_state['values']['pid'];
+    if (!empty($form_state->getValue('pid'))) {
+      $pid = $form_state->getValue('pid');
       if (!islandora_is_valid_pid($pid)) {
         $form_state->setErrorByName('pid', $this->t('Collection PID is invalid.'));
       }
