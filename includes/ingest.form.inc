@@ -138,10 +138,10 @@ function islandora_basic_collection_ingest_form_select_model(FormStateInterface 
  * We don't remove the objects PID here, as in most cases the namespace won't
  * change and there is no need for wasting good PID's.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_basic_collection_ingest_form_unselect_model(array &$form_state) {
+function islandora_basic_collection_ingest_form_unselect_model(FormStateInterface $form_state) {
   // Remove hasModel relationships.
   $object = islandora_ingest_form_get_object($form_state);
   $object->relationships->remove(FEDORA_MODEL_URI, 'hasModel');
