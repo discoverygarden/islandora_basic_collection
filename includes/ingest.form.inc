@@ -65,13 +65,13 @@ function islandora_basic_collection_get_ingest_configuration(AbstractObject $col
  *
  * @param array $form
  *   The Drupal form definition.
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  *
  * @return array
  *   The Drupal form definition.
  */
-function islandora_basic_collection_select_content_model_form_ajax_callback(array $form, array &$form_state) {
+function islandora_basic_collection_select_content_model_form_ajax_callback(array $form, FormStateInterface $form_state) {
   return $form;
 }
 
