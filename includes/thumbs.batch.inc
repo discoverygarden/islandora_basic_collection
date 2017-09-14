@@ -113,9 +113,9 @@ EOQ;
     $replaced = TRUE;
   }
 
-  // Throw warning to watchdog if final try had no TN.
+  // Throw a log if final try had no TN.
   if ($retry && !$replaced) {
-    \Drupal::logger('warning')->notice("Couldn't replace TN for !current_pid, this can still be done manually.", array('!current_pid', $current_pid));
+    \Drupal::logger('warning')->notice("Couldn't replace TN for @current_pid, this can still be done manually.", array('@current_pid', $current_pid));
   }
   // Abort and return to stack if not retry and child has default TN.
   elseif (!$retry && !$replaced) {
