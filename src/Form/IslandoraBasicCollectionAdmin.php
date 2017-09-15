@@ -160,7 +160,6 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
         ],
       '#tree' => TRUE,
       '#title' => t("Page content placement"),
-      '#theme' => 'islandora_basic_collection_metadata_table_drag_components',
       '#description' => t('Use the table below to determine the rendering order of page and metadata content.'),
       '#states' => [
         'visible' => [

@@ -160,10 +160,6 @@ function islandora_basic_collection_theme($existing, $type, $theme, $path) {
       'file' => 'theme/theme.inc',
       'render element' => 'table',
     ),
-    'islandora_basic_collection_metadata_table_drag_components' => array(
-      'render element' => 'element',
-      'file' => 'theme/theme.inc',
-    ),
   );
 }
 
