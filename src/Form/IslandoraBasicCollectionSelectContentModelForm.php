@@ -80,6 +80,7 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/ingest.form');
     $model = $form_state->getValue('models');
     islandora_basic_collection_ingest_form_select_model($form_state, $model);
   }
@@ -88,6 +89,7 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
    * Undo selection of a content model for the ingest object.
    */
   function undoSubmit(array &$form, FormStateInterface $form_state) {
+    $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/ingest.form');
     islandora_basic_collection_ingest_form_unselect_model($form_state);
   }
 
