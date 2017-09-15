@@ -25,7 +25,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $args = NULL) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
+    $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
 
     // If the form has step_storage values set, use them instead of the defaults.
     $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
@@ -82,7 +82,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
+    $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
 
     // Prepare Object.
     $new_collection = $form_state->get(['islandora', 'objects', 0]);
@@ -116,7 +116,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    module_load_include('inc', 'islandora', 'includes/utilities');
+    $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
     if (!empty($form_state->getValue('pid'))) {
       $pid = $form_state->getValue('pid');
       if (!islandora_is_valid_pid($pid)) {

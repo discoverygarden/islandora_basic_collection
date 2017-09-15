@@ -38,7 +38,7 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
    *   The Drupal form definition.
    */
   public function buildForm(array $form, FormStateInterface $form_state, array $models = []) {
-    module_load_include('inc', 'islandora', 'includes/ingest.form');
+    $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
     $options = array();
     $steps = islandora_ingest_form_get_shared_storage($form_state);
     $parent_pid = $steps['parent'];
