@@ -32,7 +32,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $form_values = isset($step_storage['values']) ? $step_storage['values'] : NULL;
     $parent_object = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
     // Permissions handling.
-    if (!\Drupal::currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
+    if (!$this->currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
       drupal_set_message($this->t('You do not have permissions to create collections.'), 'error');
       $form_state->setRedirect('islandora.view_object', ['object' => $parent_object->id]);
     }
@@ -45,7 +45,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : array();
 
     return [
-      '#action' => \Drupal::request()->getUri() . '#create-child-collection',
+      '#action' => $this->getRequest()->getUri() . '#create-child-collection',
       'pid' => [
         '#type' => 'textfield',
         '#title' => $this->t('Collection PID'),
