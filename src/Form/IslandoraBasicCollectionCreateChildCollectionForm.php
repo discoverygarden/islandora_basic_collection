@@ -33,8 +33,8 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $parent_object = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
     // Permissions handling.
     if (!\Drupal::currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
-      drupal_set_message(t('You do not have permissions to create collections.'), 'error');
-      drupal_goto('islandora/object/' . $parent_object->id);
+      drupal_set_message($this->t('You do not have permissions to create collections.'), 'error');
+      $form_state->setRedirect('islandora.view_object', ['object' => $parent_object->id]);
     }
     $policy = new CollectionPolicy($parent_object['COLLECTION_POLICY']->content);
     $policy_content_models = $policy->getContentModels();
@@ -68,7 +68,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
         ],
         'namespace' => islandora_basic_collection_get_namespace_form_element($the_namespace),
         'content_models' => [
-          '#title' => "Allowable content models",
+          '#title' => $this->t('Allowable content models'),
           '#type' => 'checkboxes',
           '#options' => islandora_basic_collection_get_content_models_as_form_options($content_models),
           '#default_value' => $content_models_values,
