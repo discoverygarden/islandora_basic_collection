@@ -41,36 +41,12 @@ function islandora_basic_collection_object_count_listing_content() {
 }
 
 /**
- * Build an ID for caching.
- *
- * Grabbed the internals of _block_get_cache_id(): Since we're not setting
- * the general block cache to be used, we cannot depend call it.
- *
- * @return string
- *   The ID to use for the object count block.
- */
-function islandora_basic_collection_get_object_count_block_cache_id() {
-  $block = block_load('islandora_basic_collection', 'collection_object_count');
-
-  $cid_parts[] = $block->module;
-  $cid_parts[] = $block->delta;
-  $cid_parts = array_merge($cid_parts, drupal_render_cid_parts($block->cache));
-
-  return implode(':', $cid_parts);
-}
-
-/**
  * AJAX callback to get info about the count of objects and collections.
  *
  * Outputs a JSON string to the buffer.
  */
 function islandora_basic_collection_object_count_callback() {
-  $cid = islandora_basic_collection_get_object_count_block_cache_id();
 
-  if ($value = \Drupal::cache('cache')->get($cid)) {
-    $substitutions = $value->data;
-  }
-  else {
     $tuque = islandora_get_tuque_connection();
     // @FIXME
 // // @FIXME
@@ -109,8 +85,6 @@ function islandora_basic_collection_object_count_callback() {
       '!objects' => $total_object_count,
       '!collections' => $total_collection_count,
     );
-    \Drupal::cache('cache')->set($cid, $substitutions);
-  }
 
   $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
   $text = format_string($title_phrase, $substitutions);

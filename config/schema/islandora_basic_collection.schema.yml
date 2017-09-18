@@ -19,13 +19,13 @@ islandora_basic_collection.settings:
     islandora_basic_collection_object_count_listing_placeholder:
       type: string
     islandora_basic_collection_object_count_listing_content_models_to_restrict:
-      type: boolean
+      type: sequence
     islandora_basic_collection_object_count_listing_phrase:
       type: string
     islandora_basic_collection_listing_block_links_to_render:
       type: integer
     islandora_basic_collection_listing_block_content_models_to_restrict:
-      type: boolean
+      type: sequence
     islandora_basic_collection_generate_uuid:
       type: boolean
     islandora_collection_metadata_display:
