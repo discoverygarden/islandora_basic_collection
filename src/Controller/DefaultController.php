@@ -83,56 +83,8 @@ EOQ;
   }
 
   public function islandora_basic_collection_object_count_callback() {
-    $cid = islandora_basic_collection_get_object_count_block_cache_id();
-
-    if ($value = \Drupal::cache('cache')->get($cid)) {
-      $substitutions = $value->data;
-    }
-    else {
-      $tuque = islandora_get_tuque_connection();
-      // @FIXME
-      // // @FIXME
-      // // This looks like another module's variable. You'll need to rewrite this call
-      // // to ensure that it uses the correct configuration object.
-      // $objects_query_array = islandora_basic_collection_get_query_info(array(
-      //       'object' => islandora_object_load(variable_get('islandora_repository_pid', 'islandora:root')),
-      //       'collection_listing' => TRUE,
-      //       'all_objects' => TRUE,
-      //     ));
-
-      // @FIXME
-      // // @FIXME
-      // // This looks like another module's variable. You'll need to rewrite this call
-      // // to ensure that it uses the correct configuration object.
-      // $collection_query_array = islandora_basic_collection_get_query_info(array(
-      //       'object' => islandora_object_load(variable_get('islandora_repository_pid', 'islandora:root')),
-      //       'collection_listing' => TRUE,
-      //       'all_objects' => FALSE,
-      //     ));
-
-      $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
-      $total_object_count = $tuque->repository->ri->countQuery($objects_query_array['query'], $objects_query_array['type']);
-
-      $collections = [];
-      foreach ($collection_objects as $collection) {
-        $collections[$collection['object']['value']] = $collection['object']['value'];
-      }
-      $models_to_exclude = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
-      if ($models_to_exclude) {
-        $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
-      }
-      $total_collection_count = count($collections);
-
-      $substitutions = [
-        '!objects' => $total_object_count,
-        '!collections' => $total_collection_count,
-      ];
-      \Drupal::cache('cache')->set($cid, $substitutions);
-    }
-
-    $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
-    $text = format_string($title_phrase, $substitutions);
-    drupal_json_output($text);
+    module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
+    return islandora_basic_collection_object_count_callback();
   }
 
 }

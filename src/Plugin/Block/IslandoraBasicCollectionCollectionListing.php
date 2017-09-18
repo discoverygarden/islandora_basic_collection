@@ -25,7 +25,7 @@ class IslandoraBasicCollectionCollectionListing extends BlockBase {
    */
   public function build() {
     module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
-    $block = islandora_basic_collection_collection_listing_content();
+    $block['#markup'] = islandora_basic_collection_collection_listing_content();
     $block['#title'] = $this->t('Collections');
     return $block;
   }

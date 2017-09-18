@@ -4,6 +4,10 @@
  * Provides block functionality for the basic collection module.
  */
 
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 /**
  * Constructs the contents of the object count block.
  *
@@ -11,31 +15,24 @@
  *   The markup to be rendered inside the block.
  */
 function islandora_basic_collection_object_count_listing_content() {
-  $block = array();
+  $block = [];
   $id = \Drupal\Component\Utility\Html::getId('islandora_basic_collection_object_count_block_count');
-  // @FIXME
-// url() expects a route name or an external URI.
-// $block['counts'] = array(
-//     '#attached' => array(
-//       'js' => array(
-//         drupal_get_path('module', 'islandora_basic_collection') . '/js/collection-block-count.js',
-//         array(
-//           'type' => 'setting',
-//           'data' => array(
-//             'islandora_basic_collection' => array(
-//               'count_block' => array(
-//                 'id' => $id,
-//                 'callback' => url('islandora/collection/count_ajax'),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     ),
-//     '#prefix' => "<span id='$id'>",
-//     '#suffix' => '</span>',
-//     '#markup' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
-//   );
+  $block['counts'] = [
+    '#attached' => [
+      'library' => ['islandora_basic_collection/islandora-basic-collection-block-count'],
+      'drupalSettings' => [
+        'islandora_basic_collection' => [
+          'count_block' => [
+            'id' => $id,
+            'callback' => Url::fromRoute('islandora_basic_collection.object_count_callback')->toString(),
+          ],
+        ],
+      ],
+    ],
+    '#prefix' => "<span id='$id'>",
+    '#suffix' => '</span>',
+    '#markup' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
+  ];
 
   return $block;
 }
@@ -46,49 +43,41 @@ function islandora_basic_collection_object_count_listing_content() {
  * Outputs a JSON string to the buffer.
  */
 function islandora_basic_collection_object_count_callback() {
+  $tuque = islandora_get_tuque_connection();
+  $root_pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
+  $objects_query_array = islandora_basic_collection_get_query_info([
+    'object' => islandora_object_load($root_pid),
+    'collection_listing' => TRUE,
+    'all_objects' => TRUE,
+  ]);
 
-    $tuque = islandora_get_tuque_connection();
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $objects_query_array = islandora_basic_collection_get_query_info(array(
-//       'object' => islandora_object_load(variable_get('islandora_repository_pid', 'islandora:root')),
-//       'collection_listing' => TRUE,
-//       'all_objects' => TRUE,
-//     ));
+  $collection_query_array = islandora_basic_collection_get_query_info([
+    'object' => islandora_object_load($root_pid),
+    'collection_listing' => TRUE,
+    'all_objects' => FALSE,
+  ]);
 
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $collection_query_array = islandora_basic_collection_get_query_info(array(
-//       'object' => islandora_object_load(variable_get('islandora_repository_pid', 'islandora:root')),
-//       'collection_listing' => TRUE,
-//       'all_objects' => FALSE,
-//     ));
+  $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
+  $total_object_count = $tuque->repository->ri->countQuery($objects_query_array['query'], $objects_query_array['type']);
 
-    $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
-    $total_object_count = $tuque->repository->ri->countQuery($objects_query_array['query'], $objects_query_array['type']);
+  $collections = [];
+  foreach ($collection_objects as $collection) {
+    $collections[$collection['object']['value']] = $collection['object']['value'];
+  }
+  $models_to_exclude = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
+  if ($models_to_exclude) {
+    $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
+  }
+  $total_collection_count = count($collections);
 
-    $collections = array();
-    foreach ($collection_objects as $collection) {
-      $collections[$collection['object']['value']] = $collection['object']['value'];
-    }
-    $models_to_exclude = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
-    if ($models_to_exclude) {
-      $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
-    }
-    $total_collection_count = count($collections);
-
-    $substitutions = array(
-      '!objects' => $total_object_count,
-      '!collections' => $total_collection_count,
-    );
+  $substitutions = array(
+    '!objects' => $total_object_count,
+    '!collections' => $total_collection_count,
+  );
 
   $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
   $text = format_string($title_phrase, $substitutions);
-  drupal_json_output($text);
+  return new JsonResponse($text);
 }
 
 /**
@@ -100,11 +89,11 @@ function islandora_basic_collection_object_count_callback() {
 function islandora_basic_collection_collection_listing_content() {
   $block = array();
   $tuque = islandora_get_tuque_connection();
-  $collection_query_array = islandora_basic_collection_get_query_info(array(
+  $collection_query_array = islandora_basic_collection_get_query_info([
     'object' => islandora_object_load('islandora:root'),
     'collection_listing' => TRUE,
     'all_objects' => FALSE,
-  ));
+  ]);
   $collections_to_display = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render');
   $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
   $collections = array();
@@ -121,31 +110,21 @@ function islandora_basic_collection_collection_listing_content() {
 
   $formatted_objects = array();
   foreach ($collections as $pid) {
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $formatted_objects[$pid] = l($stored_collections[$pid], "islandora/object/$pid");
-
+    $formatted_objects[$pid] = Link::createFromRoute($stored_collections[$pid], 'islandora.view_object', ['object' => $pid])->toString();
   }
   $block['collections'] = array(
     '#theme' => 'item_list',
     '#items' => array_slice($formatted_objects, 0, $collections_to_display),
     '#type' => 'ul',
   );
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $root_pid = variable_get('islandora_repository_pid', 'islandora:root');
-
-  // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $block['browse_repository'] = array(
-//     '#type' => 'item',
-//     '#markup' => l(t('Browse repository'), "islandora/object/$root_pid"),
-//     '#attributes' => array(
-//       'class' => array('islandora-basic-collection-read-more'),
-//     ),
-//   );
+  $root_pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
+  $block['browse_repository'] = [
+    '#type' => 'item',
+    '#markup' => Link::createFromRoute(t('Browse repository'), 'islandora.view_object', ['object' => $pid])->toString(),
+    '#attributes' => [
+      'class' => ['islandora-basic-collection-read-more'],
+    ],
+  ];
 
   return \Drupal::service("renderer")->render($block);
 }
