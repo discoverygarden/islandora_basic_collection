@@ -5,6 +5,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Core\Form\FormStateInterface;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child collection');
@@ -747,13 +748,23 @@ function islandora_basic_collection_islandora_delete_object_form_delete_children
  * Alters islandora_repository_admin form.
  * Adds in a setting for site-wide UUID generation on ingest.
  */
-function islandora_basic_collection_form_islandora_repository_admin_alter(&$form, &$form_state) {
-  $form['islandora_tabs']['islandora_general']['islandora_basic_collection_generate_uuid'] = array(
+function islandora_basic_collection_form_islandora_repository_admin_alter(&$form, FormStateInterface $form_state) {
+  $form['islandora_general']['islandora_basic_collection_generate_uuid'] = array(
     '#type' => 'checkbox',
     '#title' => t('UUID PID Generation'),
     '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_generate_uuid'),
     '#description' => t('Generate Fedora object PIDs with v4 UUIDs.'),
   );
+  $form['actions']['submit']['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
+}
+
+/**
+ * Save this module's additions to the Islandora admin form.
+ */
+function islandora_basic_collection_islandora_repository_admin_form_submit($form, FormStateInterface $form_state) {
+  \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')
+  ->set('islandora_basic_collection_generate_uuid', $form_state->getValue('islandora_basic_collection_generate_uuid'))
+  ->save();
 }
 
 /**
