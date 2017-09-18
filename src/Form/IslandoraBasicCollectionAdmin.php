@@ -25,12 +25,18 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('islandora_basic_collection.settings');
-kint($form_state->getValues());
-/*    foreach (Element::children($form) as $variable) {
-      $config->set($variable, $form_state->getValue($form[$variable]['#parents']));
-    }
+
+    $config->set('islandora_basic_collection_admin_page_size', $form_state->getValue('islandora_basic_collection_admin_page_size'));
+    $config->set('islandora_basic_collection_page_size', $form_state->getValue('islandora_basic_collection_page_size'));
+    $config->set('islandora_basic_collection_disable_count_object', $form_state->getValue('islandora_basic_collection_disable_count_object'));
+    $config->set('islandora_basic_collection_default_view', $form_state->getValue('islandora_basic_collection_default_view'));
+    $config->set('islandora_basic_collection_display_backend', $form_state->getValue('islandora_basic_collection_display_backend'));
+    $config->set('islandora_basic_collection_disable_display_generation', $form_state->getValue('islandora_basic_collection_disable_display_generation'));
+    $config->set('islandora_basic_collection_disable_collection_policy_delete', $form_state->getValue('islandora_basic_collection_disable_collection_policy_delete'));
+    $config->set('islandora_collection_metadata_display', $form_state->getValue('islandora_collection_metadata_display'));
+    $config->set('islandora_basic_collection_metadata_info_table_drag_attributes', $form_state->getValue('collection_display'));
     $config->save();
-*/
+
     parent::submitForm($form, $form_state);
   }
 
@@ -41,6 +47,9 @@ kint($form_state->getValues());
     return ['islandora_basic_collection.settings'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $backend_options = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
     $map_to_title = function ($backend) {
@@ -95,12 +104,12 @@ kint($form_state->getValues());
         '#description' => $this->t('Disabling display generation allows for alternate collection displays to be used.'),
       ],
       'islandora_basic_collection_admin_page_size' => [
-        '#type' => 'textfield',
+        '#type' => 'number',
         '#title' => $this->t('Objects per page during collection management'),
         '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_admin_page_size'),
         '#description' => $this->t('The number of child objects to show per page in the migrate/share/delete interface.'),
-        '#element_validate' => ['element_validate_integer_positive'],
         '#required' => TRUE,
+        '#min' => 0,
       ],
       'islandora_basic_collection_disable_collection_policy_delete' => [
         '#type' => 'checkbox',
@@ -217,6 +226,10 @@ kint($form_state->getValues());
         ],
       ];
     }
+    uasort(
+      $form['metadata_display_details']['islandora_basic_collection_metadata_info_table_drag_attributes']['collection_display'],
+      ['Drupal\Component\Utility\SortArray', 'sortByWeightProperty']
+    );
 
     return parent::buildForm($form, $form_state);
   }
