@@ -76,7 +76,7 @@ function islandora_basic_collection_object_count_callback() {
   );
 
   $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
-  $text = format_string($title_phrase, $substitutions);
+  $text = strtr($title_phrase, $substitutions);
   return new JsonResponse($text);
 }
 
