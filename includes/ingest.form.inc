@@ -5,6 +5,7 @@
  */
 
 use Drupal\islandora_basic_collection\CollectionPolicy;
+use Drupal\Core\Form\FormStateInterface;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_FAKE_PID', 'fake:pid');
@@ -60,130 +61,51 @@ function islandora_basic_collection_get_ingest_configuration(AbstractObject $col
 }
 
 /**
- * Defines the select content model ingest step form.
- *
- * Assumes that only a single content model can be selected, and only a single
- * object will be ingested.
- *
- * @param array $form
- *   The Drupal form definition.
- * @param array $form_state
- *   The Drupal form state.
- * @param array $models
- *   The models to include in the form.
- *
- * @return array
- *   The Drupal form definition.
- */
-function islandora_basic_collection_select_content_model_form(array $form, array &$form_state, array $models) {
-  module_load_include('inc', 'islandora', 'includes/ingest.form');
-  $options = array();
-  $steps = islandora_ingest_form_get_shared_storage($form_state);
-  $parent_pid = $steps['parent'];
-
-  $collection = islandora_object_load($parent_pid);
-  $policy = new CollectionPolicy($collection['COLLECTION_POLICY']->content);
-  $cmodels = $policy->getContentModels();
-  foreach ($models as $pid) {
-    $object = islandora_object_load($pid);
-    if ($object) {
-      $options[$pid] = isset($cmodels[$pid]['name']) ? $cmodels[$pid]['name'] : $object->label;
-    }
-  }
-
-  $model = isset($form_state['values']['models']) ? $form_state['values']['models'] : key($options);
-  $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
-  $shared_storage['models'] = array($model);
-  $return_form = array(
-    '#prefix' => '<div id="islandora-select-content-model-wrapper">',
-    '#suffix' => '</div>',
-    'models' => array(
-      '#type' => 'select',
-      '#title' => t('Select a Content Model to Ingest'),
-      '#options' => $options,
-      '#default_value' => $model,
-      '#ajax' => array(
-        'callback' => 'islandora_basic_collection_select_content_model_form_ajax_callback',
-        'wrapper' => 'islandora-select-content-model-wrapper',
-        'method' => 'replace',
-        'effect' => 'fade',
-      ),
-    ),
-  );
-  return $return_form;
-}
-
-/**
  * Ajax callback for the select content model form element.
  *
  * @param array $form
  *   The Drupal form definition.
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  *
  * @return array
  *   The Drupal form definition.
  */
-function islandora_basic_collection_select_content_model_form_ajax_callback(array $form, array &$form_state) {
+function islandora_basic_collection_select_content_model_form_ajax_callback(array $form, FormStateInterface $form_state) {
   return $form;
-}
-
-/**
- * Select a content model for the ingest object.
- *
- * @param array $form
- *   The Drupal form definition.
- * @param array $form_state
- *   The Drupal form state.
- */
-function islandora_basic_collection_select_content_model_form_submit(array $form, array &$form_state) {
-  $model = $form_state['values']['models'];
-  islandora_basic_collection_ingest_form_select_model($form_state, $model);
-}
-
-/**
- * Select a content model for the ingest object.
- *
- * @param array $form
- *   The Drupal form definition.
- * @param array $form_state
- *   The Drupal form state.
- */
-function islandora_basic_collection_select_content_model_form_undo_submit(array $form, array &$form_state) {
-  islandora_basic_collection_ingest_form_unselect_model($form_state);
 }
 
 /**
  * Callback step for setting the ingest object's content model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param string $model
  *   The model to select.
  */
-function islandora_basic_collection_set_content_model_callback(array &$form_state, $model) {
+function islandora_basic_collection_set_content_model_callback(FormStateInterface $form_state, $model) {
   islandora_basic_collection_ingest_form_select_model($form_state, $model);
 }
 
 /**
  * Undo callback step for setting the ingest object's content model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_basic_collection_set_content_model_undo_callback(array &$form_state) {
+function islandora_basic_collection_set_content_model_undo_callback(FormStateInterface $form_state) {
   islandora_basic_collection_ingest_form_unselect_model($form_state);
 }
 
 /**
  * Update the ingest object with collection policy data for the given model.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param string $model
  *   The PID of the selected model.
  */
-function islandora_basic_collection_ingest_form_select_model(array &$form_state, $model) {
+function islandora_basic_collection_ingest_form_select_model(FormStateInterface $form_state, $model) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
   $collection = $shared_storage['collection'];
@@ -216,10 +138,10 @@ function islandora_basic_collection_ingest_form_select_model(array &$form_state,
  * We don't remove the objects PID here, as in most cases the namespace won't
  * change and there is no need for wasting good PID's.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_basic_collection_ingest_form_unselect_model(array &$form_state) {
+function islandora_basic_collection_ingest_form_unselect_model(FormStateInterface $form_state) {
   // Remove hasModel relationships.
   $object = islandora_ingest_form_get_object($form_state);
   $object->relationships->remove(FEDORA_MODEL_URI, 'hasModel');
