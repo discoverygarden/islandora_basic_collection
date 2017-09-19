@@ -175,7 +175,6 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
       ],
       '#states' => [
         'visible' => [
-          ':input[name="islandora_basic_collection_display_backend"]' => array('!value' => ISLANDORA_BASIC_COLLECTION_LEGACY_BACKEND),
           ':input[name="islandora_collection_metadata_display"]' => [
             'checked' => TRUE
           ],
