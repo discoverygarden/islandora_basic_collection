@@ -22,9 +22,9 @@
 function islandora_basic_collection_get_content_models_as_form_options(array $content_models) {
   $map_content_models_to_options = function($o) {
     $label = isset($o['label']) ? $o['label'] : $o['name'];
-    return format_string('!pid ~ !label', array(
-      '!pid' => $o['pid'],
-      '!label' => $label,
+    return format_string('@pid ~ @label', array(
+      '@pid' => $o['pid'],
+      '@label' => $label,
     ));
   };
   return array_map($map_content_models_to_options, $content_models);
@@ -67,11 +67,7 @@ function islandora_basic_collection_get_other_collections_as_form_options(Abstra
  */
 function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $restrict_namespace = variable_get('islandora_namespace_restriction_enforced', FALSE);
+ $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
   return array(
     '#type' => $restrict_namespace ? 'select' : 'textfield',
@@ -132,8 +128,8 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
 // Calling _theme() directly can alter the expected output and potentially
 // introduce security issues (see https://www.drupal.org/node/2195739). You
 // should use renderable arrays instead.
-// 
-// 
+//
+//
 // @see https://www.drupal.org/node/2195739
 // $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
 
