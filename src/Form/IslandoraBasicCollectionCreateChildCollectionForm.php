@@ -26,6 +26,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $args = NULL) {
     $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
+    $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/utilities');
     $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
 
     // If the form has step_storage values set, use them instead of the defaults.
