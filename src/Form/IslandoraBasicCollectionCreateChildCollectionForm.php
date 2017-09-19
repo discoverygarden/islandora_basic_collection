@@ -82,7 +82,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
+    $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
 
     // Prepare Object.
     $new_collection = $form_state->get(['islandora', 'objects', 0]);
