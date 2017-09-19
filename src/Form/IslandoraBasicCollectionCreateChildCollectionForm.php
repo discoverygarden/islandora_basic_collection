@@ -34,7 +34,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     // Permissions handling.
     if (!$this->currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
       drupal_set_message($this->t('You do not have permissions to create collections.'), 'error');
-      $form_state->setRedirect('islandora.view_object', ['object' => $parent_object->id]);
+      return $this->redirect('islandora.view_object', ['object' => $parent_object->id]);
     }
     $policy = new CollectionPolicy($parent_object['COLLECTION_POLICY']->content);
     $policy_content_models = $policy->getContentModels();
