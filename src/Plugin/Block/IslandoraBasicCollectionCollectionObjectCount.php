@@ -38,7 +38,7 @@ class IslandoraBasicCollectionCollectionObjectCount extends BlockBase {
     $form['islandora_basic_collection_title_phrase'] = [
       '#type' => 'textfield',
       '#title' => $this->t('The sentence to appear to describe the number of objects and collections present.'),
-      '#description' => $this->t('For the number of objects use @objects, for the number of container objects use @collections.'),
+      '#description' => $this->t('For the number of objects use !objects, for the number of container objects use !collections.'),
       '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
     ];
     $form['islandora_basic_collection_title_placeholder'] = [
