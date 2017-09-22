@@ -161,10 +161,6 @@ function islandora_basic_collection_theme($existing, $type, $theme, $path) {
       'file' => 'theme/theme.inc',
       'render element' => 'table',
     ),
-    'islandora_basic_collection_metadata_table_drag_components' => array(
-      'render element' => 'element',
-      'file' => 'theme/theme.inc',
-    ),
   );
 }
 
@@ -751,13 +747,23 @@ function islandora_basic_collection_islandora_delete_object_form_delete_children
  * Alters islandora_repository_admin form.
  * Adds in a setting for site-wide UUID generation on ingest.
  */
-function islandora_basic_collection_form_islandora_repository_admin_alter(&$form, &$form_state) {
-  $form['islandora_tabs']['islandora_general']['islandora_basic_collection_generate_uuid'] = array(
+function islandora_basic_collection_form_islandora_repository_admin_alter(&$form, FormStateInterface $form_state) {
+  $form['islandora_general']['islandora_basic_collection_generate_uuid'] = array(
     '#type' => 'checkbox',
     '#title' => t('UUID PID Generation'),
     '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_generate_uuid'),
     '#description' => t('Generate Fedora object PIDs with v4 UUIDs.'),
   );
+  $form['actions']['submit']['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
+}
+
+/**
+ * Save this module's additions to the Islandora admin form.
+ */
+function islandora_basic_collection_islandora_repository_admin_form_submit($form, FormStateInterface $form_state) {
+  \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')
+  ->set('islandora_basic_collection_generate_uuid', $form_state->getValue('islandora_basic_collection_generate_uuid'))
+  ->save();
 }
 
 /**
@@ -900,143 +906,6 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_object_
     $thumbnail_datastream->mimetype = 'image/png';
     $fedora_object->ingestDatastream($thumbnail_datastream);
   }
-}
-
-/**
- * Implements hook_block_info().
- */
-function islandora_basic_collection_block_info() {
-  $blocks['collection_object_count'] = array(
-    'info' => t('Islandora Collection Object Count Listing'),
-    'cache' => DRUPAL_CACHE_PER_USER,
-  );
-  $blocks['collection_listing'] = array(
-    'info' => t('Islandora Collection Listing'),
-    'cache' => DRUPAL_NO_CACHE,
-  );
-  return $blocks;
-}
-
-/**
- * Implements hook_block_configure().
- */
-function islandora_basic_collection_block_configure($delta = '') {
-  if ($delta == 'collection_object_count') {
-    $block['islandora_basic_collection_title_phrase'] = array(
-      '#type' => 'textfield',
-      '#title' => t('The sentence to appear to describe the number of objects and collections present.'),
-      '#description' => t('For the number of objects use @objects, for the number of container objects use @collections.'),
-      '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
-    );
-    $block['islandora_basic_collection_title_placeholder'] = array(
-      '#type' => 'textfield',
-      '#title' => t('AJAX Placeholder'),
-      '#description' => t('Placeholder to output, to be replaced by phrase populated by AJAX.'),
-      '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
-    );
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    $formatted_models = array();
-    $models = islandora_get_content_models();
-    foreach ($models as $pid => $values) {
-      $formatted_models[$pid] = $values['label'];
-    }
-    $default_cmodel_options = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
-    $default_checked = array();
-    // If we have default values previously set, add them now.
-    if ($default_cmodel_options) {
-      foreach ($default_cmodel_options as $pid => $val) {
-        if ($val) {
-          $default_checked[$pid] = $pid;
-        }
-      }
-    }
-    else {
-      foreach ($formatted_models as $pid => $label) {
-        $default_checked[$pid] = $pid;
-      }
-    }
-    $block['content_models'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Content models to include:'),
-      '#description' => t('When selected objects with a specific content model will not appear in the total count of results.'),
-      '#options' => $formatted_models,
-      '#default_value' => $default_checked,
-    );
-    return $block;
-  }
-
-  if ($delta == 'collection_listing') {
-    $block = array();
-    module_load_include('inc', 'islandora', 'includes/utilities');
-    $block['islandora_basic_collection_links_to_render'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Number of collections to display'),
-      '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render'),
-      '#element_validate' => array(
-        'element_validate_integer_positive',
-      ),
-    );
-    $formatted_models = array();
-    $models = islandora_get_content_models();
-    foreach ($models as $pid => $values) {
-      $formatted_models[$pid] = $values['label'];
-    }
-    $default_cmodel_options = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_content_models_to_restrict');
-    $default_checked = array();
-    // If we have default values previously set, add them now.
-    if ($default_cmodel_options) {
-      foreach ($default_cmodel_options as $pid => $val) {
-        if ($val) {
-          $default_checked[$pid] = $pid;
-        }
-      }
-    }
-    else {
-      foreach ($formatted_models as $pid => $label) {
-        $default_checked[$pid] = $pid;
-      }
-    }
-    $block['content_models'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Content models to include:'),
-      '#description' => t('When selected objects with a specific content model will not appear in the total count of results.'),
-      '#options' => $formatted_models,
-      '#default_value' => $default_checked,
-    );
-    return $block;
-  }
-}
-
-/**
- * Implements hook_block_save().
- */
-function islandora_basic_collection_block_save($delta = '', $edit = array()) {
-  if ($delta == 'collection_object_count') {
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_object_count_listing_content_models_to_restrict', $edit['content_models'])->save();
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_object_count_listing_phrase', $edit['islandora_basic_collection_title_phrase'])->save();
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_object_count_listing_placeholder', $edit['islandora_basic_collection_title_placeholder'])->save();
-  }
-  if ($delta == 'collection_listing') {
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_listing_block_links_to_render', $edit['islandora_basic_collection_links_to_render'])->save();
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_listing_block_content_models_to_restrict', $edit['content_models'])->save();
-  }
-}
-
-/**
- * Implements hook_block_view().
- */
-function islandora_basic_collection_block_view($delta = '') {
-  $block = array();
-  if ($delta == 'collection_object_count') {
-    module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
-    $block['content'] = islandora_basic_collection_object_count_listing_content();
-  }
-  if ($delta == 'collection_listing') {
-    module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
-    $block['content'] = islandora_basic_collection_collection_listing_content();
-    $block['title'] = t('Collections');
-  }
-  return $block;
 }
 
 /**

@@ -1,0 +1,7 @@
+islandora-basic-collection-block-count:
+  js:
+    js/collection-block-count.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
