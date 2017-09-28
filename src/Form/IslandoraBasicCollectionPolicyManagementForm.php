@@ -93,7 +93,7 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
     $filter_selected = function($o) {
       return $o['selected'];
     };
-    $selected = array_filter($form_state->getValue(['table']['rows']), $filter_selected);
+    $selected = array_filter($form_state->getValue(['table', 'rows']), $filter_selected);
     $policy = CollectionPolicy::emptyPolicy();
     foreach ($selected as $pid => $properties) {
       $content_model = islandora_object_load($pid);

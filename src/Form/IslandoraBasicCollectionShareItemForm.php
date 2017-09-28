@@ -17,21 +17,21 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     return 'islandora_basic_collection_share_item_form';
   }
 
-  public function buildForm(array $form, FormStateInterface $form_state, $islandora_object = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, $object = NULL) {
     $form['description'] = [
       '#type' => 'item',
-      '#title' => t('Share single item'),
+      '#title' => $this->t('Share single item'),
     ];
     $form['new_collection_name'] = [
-      '#autocomplete_path' => 'islandora/basic_collection/find_collections',
+      '#autocomplete_route_name' => 'islandora_basic_collection.get_collections_filtered',
       '#type' => 'textfield',
-      '#title' => t('Name'),
+      '#title' => $this->t('Name'),
     ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => 'Share Object',
+      '#value' => $this->t('Share Object'),
     ];
-    $form_state->set(['basic_collection_share'], $islandora_object->id);
+    $form_state->set('basic_collection_share', $object->id);
     return $form;
   }
 
@@ -47,16 +47,16 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
         );
     }
     if (!$is_a_collection) {
-      $form_state->setErrorByName('new_collection_name', t('Not a valid collection'));
+      $form_state->setErrorByName('new_collection_name', $this->t('Not a valid collection'));
     }
     $has_ingest_permissions = islandora_object_access(ISLANDORA_INGEST, $new_collection);
     if (!$has_ingest_permissions) {
-      $form_state->setErrorByName('new_collection_name', t('You do not have permission to ingest objects to this collection'));
+      $form_state->setErrorByName('new_collection_name', $this->t('You do not have permission to ingest objects to this collection'));
     }
   }
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    module_load_include('inc', 'islandora_basic_collection', 'includes/utilities');
+    $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/utilities');
     $object = islandora_object_load($form_state->get(['basic_collection_share']));
     $new_collection = islandora_object_load($form_state->getValue(['new_collection_name']));
 

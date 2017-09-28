@@ -9,7 +9,10 @@ namespace Drupal\islandora_basic_collection\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBuilderInterface;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 use AbstractObject;
 
@@ -75,7 +78,11 @@ class DefaultController extends ControllerBase {
     return $data;
   }
 
-  public function islandora_basic_collection_get_collections_filtered($search_value) {
+ /**
+  * Searches through available collection objects.
+  */
+  public function islandora_basic_collection_get_collections_filtered(Request $request) {
+    $search_value = $request->query->get('q');
     $tuque = islandora_get_tuque_connection();
     $sparql_query = <<<EOQ
 SELECT ?pid ?label
@@ -88,12 +95,15 @@ EOQ;
     $results = $tuque->repository->ri->sparqlQuery($sparql_query);
     $return = [];
     foreach ($results as $objects) {
-      $return[$objects['pid']['value']] = t('@label (@pid)', [
-        '@label' => $objects['label']['value'],
-        '@pid' => $objects['pid']['value'],
-      ]);
+      $return[] = [
+        'value' => $objects['pid']['value'],
+        'label' => t('@label (@pid)', [
+          '@label' => $objects['label']['value'],
+          '@pid' => $objects['pid']['value'],
+        ]),
+      ];
     }
-    drupal_json_output($return);
+    return new JsonResponse($return);
   }
 
   public function islandora_basic_collection_ingest_access(AbstractObject $object, \Drupal\Core\Session\AccountInterface $account) {
