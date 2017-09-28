@@ -1,16 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionShareItemForm.
- */
-
 namespace Drupal\islandora_basic_collection\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
+/**
+ * Shares an object that is not a collection to an additional collection.
+ */
 class IslandoraBasicCollectionShareItemForm extends FormBase {
 
   /**
@@ -20,7 +17,7 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     return 'islandora_basic_collection_share_item_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, $islandora_object = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, $islandora_object = NULL) {
     $form['description'] = [
       '#type' => 'item',
       '#title' => t('Share single item'),
@@ -38,10 +35,10 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     return $form;
   }
 
-  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $new_collection = islandora_object_load($form_state->getValue([
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $new_collection = islandora_object_load($form_state->getValue(
       'new_collection_name'
-      ]));
+      ));
     $collection_models = islandora_basic_collection_get_collection_content_models();
     $is_a_collection = FALSE;
     if (is_object($new_collection)) {
@@ -71,8 +68,6 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
       ]);
       drupal_set_message($message);
     }
-
   }
 
 }
-?>

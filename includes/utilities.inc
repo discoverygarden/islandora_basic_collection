@@ -99,7 +99,7 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
   $page = pager_find_page($pager_options['element']);
   list($count, $results) = islandora_basic_collection_get_member_objects($object, $page, $limit, 'manage');
   $page = pager_default_initialize($count, $limit, $pager_options['element']);
-  $rows = array();
+  $rows = [];
   foreach ($results as $result) {
     $pid = $result['object']['value'];
     $label = empty($result['title']['value']) ? t('Untitled') : \Drupal\Component\Utility\Xss::filter($result['title']['value']);
@@ -134,17 +134,18 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
 // $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
 
   $pager = islandora_basic_collection_append_fragment_to_pager_url($pager, $pager_options['fragment']);
-  return array(
+  return [
     '#type' => 'tableselect',
     '#header' => array(
       'label' => array('data' => t('Label')),
       'owner' => array('data' => t('Owner')),
-      'date_modified' => array('data' => t('Date Modified'))),
+      'date_modified' => array('data' => t('Date Modified')),
+    ),
     '#options' => $rows,
     '#empty' => t('Collection is empty.'),
     '#prefix' => $pager,
     '#suffix' => $pager,
-  );
+  ];
 }
 
 /**

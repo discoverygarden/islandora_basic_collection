@@ -41,16 +41,31 @@ class DefaultController extends ControllerBase {
     $this->formBuilder = $form_builder;
   }
 
-  public function islandora_basic_collection_manage_access($object = NULL, Drupal\Core\Session\AccountInterface $account) {
-    $collection_models = islandora_basic_collection_get_collection_content_models();
-    $is_a_collection = count(array_intersect($collection_models, $object->models)) > 0;
-
-    return $is_a_collection && (
-      islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object) || islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object) || islandora_object_access(ISLANDORA_INGEST, $object) || islandora_object_access(ISLANDORA_PURGE, $object)
-      );
+  /**
+   * Callback to determine whether or not to show this modules manage tab.
+   */
+  public function islandora_basic_collection_manage_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+    $object = islandora_object_load($object);
+    $perm = islandora_basic_collection_manage_access($object);
+    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
+  /**
+   * Callback to determine whether or not to show share/migrate actions.
+   */
+  public function islandora_basic_collection_share_migrate_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+    $object = islandora_object_load($object);
+    $perm = islandora_basic_collection_share_migrate_access($object);
+    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
+  }
+
+  /**
+   * Manage Collection local task.
+   *
+   * Defines the actions to appear in the collection section of the Manage tab.
+   */
   public function islandora_basic_collection_manage_object(AbstractObject $object) {
+    module_load_include('inc', 'islandora_basic_collection', 'includes/manage_collection');
     $return_form = ['manage_collection_object' => []];
     $data = islandora_invoke_hook_list(ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK, $object->models, [
       $return_form,
