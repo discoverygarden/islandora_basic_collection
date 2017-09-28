@@ -57,12 +57,12 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
 
   public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/utilities');
-    $object = islandora_object_load($form_state->get(['basic_collection_share']));
-    $new_collection = islandora_object_load($form_state->getValue(['new_collection_name']));
+    $object = islandora_object_load($form_state->get('basic_collection_share'));
+    $new_collection = islandora_object_load($form_state->getValue('new_collection_name'));
 
     if ($object && $new_collection) {
       islandora_basic_collection_add_to_collection($object, $new_collection);
-      $message = t('The object @object has been added to @collection', [
+      $message = t('The object @object has been added to @collection.', [
         '@object' => $object->label,
         '@collection' => $new_collection->label,
       ]);
