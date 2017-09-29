@@ -69,12 +69,11 @@ class DefaultController extends ControllerBase {
    */
   public function islandora_basic_collection_manage_object(AbstractObject $object) {
     module_load_include('inc', 'islandora_basic_collection', 'includes/manage_collection');
-    $return_form = ['manage_collection_object' => []];
+    $render_array = ['manage_collection_object' => []];
     $data = islandora_invoke_hook_list(ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK, $object->models, [
-      $return_form,
+      $render_array,
       $object,
     ]);
-    $data['manage_collection_object']['#type'] = 'vertical_tabs';
     return $data;
   }
 

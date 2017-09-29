@@ -106,33 +106,32 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
     $label = $label . " (" . $pid . ")";
     $owner = empty($result['owner']['value']) ? t('Unowned') : \Drupal\Component\Utility\Xss::filter($result['owner']['value']);
     $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : \Drupal\Component\Utility\Xss::filter($result['date_modified']['value']);
-    $rows[$pid] = array(
-      'owner' => array(
-        'data' => array(
+    $rows[$pid] = [
+      'owner' => [
+        'data' => [
           '#markup' => '<div>' . $owner . '</div>',
-        ),
-      ),
-      'date_modified' => array(
-        'data' => array(
+        ],
+      ],
+      'date_modified' => [
+        'data' => [
           '#markup' => '<div>' . $date_modified . '</div>',
-        ),
-      ),
-      'label' => array(
-        'data' => array(
+        ],
+      ],
+      'label' => [
+        'data' => [
           '#type' => 'link',
           '#title' => $label,
-          '#href' => "islandora/object/{$pid}")));
+          '#href' => "islandora/object/{$pid}",
+        ],
+      ],
+    ];
   }
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
-
+  $pager_element = [
+    '#type' => 'pager',
+    '#quantity' => $limit,
+    '#element' => $pager_options['element'],
+  ];
+  $pager = \Drupal::service('renderer')->render($pager_element);
   $pager = islandora_basic_collection_append_fragment_to_pager_url($pager, $pager_options['fragment']);
   return [
     '#type' => 'tableselect',
@@ -221,7 +220,7 @@ function islandora_basic_collection_display_query_sparql($collection_object, $pa
   $map_to_pids = function ($result) {
     return $result['object']['value'];
   };
-  return array($total, array_map($map_to_pids, $results));
+  return [$total, array_map($map_to_pids, $results)];
 }
 
 /**
@@ -239,7 +238,7 @@ function islandora_basic_collection_display_query_sparql($collection_object, $pa
  */
 function islandora_basic_collection_append_fragment_to_pager_url($pager, $fragment) {
   $pattern = '/href="([^"]+)"/';
-  $replace = format_string('href="\1!fragment"', array('!fragment' => $fragment));
+  $replace = strtr('href="\1!fragment"', ['!fragment' => $fragment]);
   $pager = preg_replace($pattern, $replace, $pager);
   return $pager;
 }

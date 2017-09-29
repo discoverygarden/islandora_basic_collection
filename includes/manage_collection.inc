@@ -14,15 +14,15 @@ define('ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK', 'islandora_basic_c
 /**
  * Implements islandora_basic_collection_build_manage_object_hook().
  *
- * @param array $form_state
- *   The Form state of the form.
+ * @param array $render_array
+ *   The render array for the tab.
  * @param AbstractObject $object
  *   The Islandora object being processed.
  *
  * @return array
- *   Returning the built form.
+ *   The completed render array.
  */
-function islandora_basic_collection_islandora_basic_collection_build_manage_object(array $form_state, AbstractObject $object) {
+function islandora_basic_collection_islandora_basic_collection_build_manage_object(array $render_array, AbstractObject $object) {
   // Defines accessible elements.
   $access = [
     'policy_management' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object),
@@ -39,41 +39,39 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   // Build forms for only the accessible elements.
   foreach ($access as $element => $accessible) {
     $form = $forms[$element];
-    $forms[$element] = $accessible ? \Drupal::formBuilder()->getForm($form, $object) : NULL;
+  //  $forms[$element] = $accessible ? \Drupal::formBuilder()->getForm($form, $object) : NULL;
   }
-  $form_state['manage_collection_object']['policy_management'] = array(
+  $render_array['policy'] = [
     '#id' => 'policy-management',
     '#group' => 'manage_collection_object',
     '#access' => $access['policy_management'],
-    '#type' => 'fieldset',
+    '#type' => 'details',
     '#title' => t('Manage collection policy'),
-    'form' => $forms['policy_management'],
-  );
-  $form_state['manage_collection_object']['share_children'] = array(
+  //  'form' => $forms['policy_management'],
+  ];
+  $render_array['share_children'] = [
     '#id' => 'share-children',
-    '#group' => 'manage_collection_object',
     '#access' => $access['share_children'],
-    '#type' => 'fieldset',
+    '#type' => 'details',
     '#title' => t('Share members'),
-    'form' => $forms['share_children'],
-  );
-  $form_state['manage_collection_object']['migrate_children'] = array(
+  //  'form' => $forms['share_children'],
+  ];
+  $render_array['migrate_children'] = [
     '#id' => 'migrate-children',
-    '#group' => 'manage_collection_object',
     '#access' => $access['migrate_children'],
-    '#type' => 'fieldset',
+    '#type' => 'details',
     '#title' => t('Migrate members'),
-    'form' => $forms['migrate_children'],
-  );
-  $form_state['manage_collection_object']['delete_children'] = array(
+  //  'form' => $forms['migrate_children'],
+  ];
+  $render_array['delete_children'] = [
     '#id' => 'delete-children',
     '#group' => 'manage_collection_object',
     '#access' => $access['delete_children'],
-    '#type' => 'fieldset',
+    '#type' => 'details',
     '#title' => t('Delete members of this collection'),
-    'form' => $forms['delete_children'],
-  );
-  return $form_state;
+  //  'form' => $forms['delete_children'],
+  ];
+  return $render_array;
 }
 
 /**
