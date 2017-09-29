@@ -29,10 +29,8 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   $access = [
     'policy_management' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object),
     'share_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
-/*
     'migrate_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
     'delete_children' => islandora_object_access(ISLANDORA_PURGE, $object),
-  */
   ];
   $forms = [
     'policy_management' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionPolicyManagementForm',
@@ -61,7 +59,6 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     'form' => $forms['share_children'],
     '#open' => TRUE,
   ];
-/*
   $render_array['migrate_children'] = [
     '#id' => 'migrate-children',
     '#access' => $access['migrate_children'],
@@ -72,14 +69,12 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   ];
   $render_array['delete_children'] = [
     '#id' => 'delete-children',
-    '#group' => 'manage_collection_object',
     '#access' => $access['delete_children'],
     '#type' => 'details',
     '#title' => t('Delete members of this collection'),
     'form' => $forms['delete_children'],
     '#open' => TRUE,
   ];
- */
   return $render_array;
 }
 
@@ -113,7 +108,7 @@ EOT;
   }
   else {
     $children = array_keys(array_filter($form_state->getValue('children')));
-    if (array_intersect($children, array($new_collection))) {
+    if (array_intersect($children, [$new_collection])) {
       return FALSE;
     }
   }

@@ -71,14 +71,14 @@ function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
  $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
-  return array(
+  return [
     '#type' => $restrict_namespace ? 'select' : 'textfield',
     '#title' => 'Children namespace',
     '#description' => t('Namespace for objects with selected content models.'),
     '#size' => 15,
     '#options' => $restrict_namespace ? array_combine(islandora_get_allowed_namespaces(), islandora_get_allowed_namespaces()) : NULL,
     '#default_value' => $default_value,
-  );
+  ];
 }
 
 /**
