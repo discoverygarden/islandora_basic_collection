@@ -5,6 +5,8 @@
  * Miscellaneous helper functions.
  */
 
+use Drupal\Core\Link;
+
 /**
  * Converts given model descriptions into Drupal form select element #options.
  *
@@ -22,10 +24,10 @@
 function islandora_basic_collection_get_content_models_as_form_options(array $content_models) {
   $map_content_models_to_options = function($o) {
     $label = isset($o['label']) ? $o['label'] : $o['name'];
-    return format_string('@pid ~ @label', array(
+    return format_string('@pid ~ @label', [
       '@pid' => $o['pid'],
       '@label' => $label,
-    ));
+    ]);
   };
   return array_map($map_content_models_to_options, $content_models);
 }
@@ -119,9 +121,7 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
       ],
       'label' => [
         'data' => [
-          '#type' => 'link',
-          '#title' => $label,
-          '#href' => "islandora/object/{$pid}",
+          '#markup' => Link::createFromRoute($label, 'islandora.view_object', ['object' => $pid])->toString()
         ],
       ],
     ];
@@ -135,11 +135,11 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
   $pager = islandora_basic_collection_append_fragment_to_pager_url($pager, $pager_options['fragment']);
   return [
     '#type' => 'tableselect',
-    '#header' => array(
-      'label' => array('data' => t('Label')),
-      'owner' => array('data' => t('Owner')),
-      'date_modified' => array('data' => t('Date Modified')),
-    ),
+    '#header' => [
+      'label' => ['data' => t('Label')],
+      'owner' => ['data' => t('Owner')],
+      'date_modified' => ['data' => t('Date Modified')],
+    ],
     '#options' => $rows,
     '#empty' => t('Collection is empty.'),
     '#prefix' => $pager,

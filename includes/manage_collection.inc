@@ -8,6 +8,8 @@
 require_once dirname(__FILE__) . '/utilities.inc';
 require_once dirname(__FILE__) . '/batch.inc';
 
+use Drupal\Core\Form\FormStateInterface;
+
 // Hook definition.
 define('ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK', 'islandora_basic_collection_build_manage_object');
 
@@ -26,8 +28,8 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   // Defines accessible elements.
   $access = [
     'policy_management' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object),
-/*
     'share_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
+/*
     'migrate_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
     'delete_children' => islandora_object_access(ISLANDORA_PURGE, $object),
   */
@@ -45,26 +47,28 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   }
   $render_array['policy'] = [
     '#id' => 'policy-management',
-    '#group' => 'manage_collection_object',
     '#access' => $access['policy_management'],
     '#type' => 'details',
     '#title' => t('Manage collection policy'),
     'form' => $forms['policy_management'],
+    '#open' => TRUE,
   ];
-/*
   $render_array['share_children'] = [
     '#id' => 'share-children',
     '#access' => $access['share_children'],
     '#type' => 'details',
     '#title' => t('Share members'),
     'form' => $forms['share_children'],
+    '#open' => TRUE,
   ];
+/*
   $render_array['migrate_children'] = [
     '#id' => 'migrate-children',
     '#access' => $access['migrate_children'],
     '#type' => 'details',
     '#title' => t('Migrate members'),
     'form' => $forms['migrate_children'],
+    '#open' => TRUE,
   ];
   $render_array['delete_children'] = [
     '#id' => 'delete-children',
@@ -73,6 +77,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#type' => 'details',
     '#title' => t('Delete members of this collection'),
     'form' => $forms['delete_children'],
+    '#open' => TRUE,
   ];
  */
   return $render_array;
@@ -83,18 +88,18 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
  *
  * Ensures you don't share/migrate a collection into itself.
  *
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  *
  * @return bool
  *   Whether the form is valid or not.
  */
-function islandora_basic_collection_validate_form(array $form_state) {
-  $new_collection = $form_state['values']['collection'];
-  $clicked_button = end($form_state['clicked_button']['#parents']);
+function islandora_basic_collection_validate_form(FormStateInterface $form_state) {
+  $new_collection = $form_state->getValue('collection');
+  $clicked_button = end($form_state->getTriggeringElement()['#parents']);
 
   if ($clicked_button == 'submit_all') {
-    $source_collection = $form_state['collection'];
+    $source_collection = $form_state->get('collection');
     $query = <<<EOT
 PREFIX fedora-rels-ext: <info:fedora/fedora-system:def/relations-external#>
 SELECT ?object WHERE {
@@ -107,7 +112,7 @@ EOT;
     return ($num_results <= 0);
   }
   else {
-    $children = array_keys(array_filter($form_state['values']['children']));
+    $children = array_keys(array_filter($form_state->getValue('children')));
     if (array_intersect($children, array($new_collection))) {
       return FALSE;
     }
