@@ -26,9 +26,11 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   // Defines accessible elements.
   $access = [
     'policy_management' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object),
+/*
     'share_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
     'migrate_children' => islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object),
     'delete_children' => islandora_object_access(ISLANDORA_PURGE, $object),
+  */
   ];
   $forms = [
     'policy_management' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionPolicyManagementForm',
@@ -39,7 +41,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
   // Build forms for only the accessible elements.
   foreach ($access as $element => $accessible) {
     $form = $forms[$element];
-  //  $forms[$element] = $accessible ? \Drupal::formBuilder()->getForm($form, $object) : NULL;
+    $forms[$element] = $accessible ? \Drupal::formBuilder()->getForm($form, $object) : NULL;
   }
   $render_array['policy'] = [
     '#id' => 'policy-management',
@@ -47,21 +49,22 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#access' => $access['policy_management'],
     '#type' => 'details',
     '#title' => t('Manage collection policy'),
-  //  'form' => $forms['policy_management'],
+    'form' => $forms['policy_management'],
   ];
+/*
   $render_array['share_children'] = [
     '#id' => 'share-children',
     '#access' => $access['share_children'],
     '#type' => 'details',
     '#title' => t('Share members'),
-  //  'form' => $forms['share_children'],
+    'form' => $forms['share_children'],
   ];
   $render_array['migrate_children'] = [
     '#id' => 'migrate-children',
     '#access' => $access['migrate_children'],
     '#type' => 'details',
     '#title' => t('Migrate members'),
-  //  'form' => $forms['migrate_children'],
+    'form' => $forms['migrate_children'],
   ];
   $render_array['delete_children'] = [
     '#id' => 'delete-children',
@@ -69,8 +72,9 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#access' => $access['delete_children'],
     '#type' => 'details',
     '#title' => t('Delete members of this collection'),
-  //  'form' => $forms['delete_children'],
+    'form' => $forms['delete_children'],
   ];
+ */
   return $render_array;
 }
 

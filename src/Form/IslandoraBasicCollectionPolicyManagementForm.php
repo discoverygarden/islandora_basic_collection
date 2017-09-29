@@ -54,14 +54,14 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
           '#default_value' => $content_model_in_policy,
         ],
         'title' => [
-          '#markup' => Link::createFromRoute($this->t('@label (@pid)', ['@label' => $label, '@pid' => $pid]), 'islandora.view_object', ['object' => $pid]),
+          '#markup' => Link::createFromRoute($this->t('@label (@pid)', ['@label' => $label, '@pid' => $pid]), 'islandora.view_object', ['object' => $pid])->toString(),
         ],
         'prompt' => $prompt_element,
         'namespace' => $namespace_element,
       ];
     }
     return [
-      '#attached' => ['library' => ['islandora_basic_collection' => 'policy-table-css']],
+      '#attached' => ['library' => ['islandora_basic_collection' => 'xml_form_builder/policy-table-css']],
       '#action' => Url::fromRoute('<current>', [], ['fragment' => '#policy-management'])->toString(),
       'help' => [
         '#type' => 'item',
@@ -70,7 +70,7 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
       'table' => [
         '#tree' => TRUE,
         '#header' => [
-          'class' => ['select-all'],
+          '' => '',
           'pid' => ['data' => $this->t('PID'), 'class' => "collection_policy_pid"],
           'prompt' => ['data' => $this->t('Prompt'), 'class' => "collection_policy_prompt"],
           'namespace' => ['data' => $this->t('Namespace'), 'class' => "collection_policy_namespace"],
