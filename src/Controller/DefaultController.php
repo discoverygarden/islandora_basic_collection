@@ -9,7 +9,10 @@ namespace Drupal\islandora_basic_collection\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBuilderInterface;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 use AbstractObject;
 
@@ -41,26 +44,44 @@ class DefaultController extends ControllerBase {
     $this->formBuilder = $form_builder;
   }
 
-  public function islandora_basic_collection_manage_access($object = NULL, Drupal\Core\Session\AccountInterface $account) {
-    $collection_models = islandora_basic_collection_get_collection_content_models();
-    $is_a_collection = count(array_intersect($collection_models, $object->models)) > 0;
-
-    return $is_a_collection && (
-      islandora_object_access(ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY, $object) || islandora_object_access(ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS, $object) || islandora_object_access(ISLANDORA_INGEST, $object) || islandora_object_access(ISLANDORA_PURGE, $object)
-      );
+  /**
+   * Callback to determine whether or not to show this modules manage tab.
+   */
+  public function islandora_basic_collection_manage_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+    $object = islandora_object_load($object);
+    $perm = islandora_basic_collection_manage_access($object);
+    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
+  /**
+   * Callback to determine whether or not to show share/migrate actions.
+   */
+  public function islandora_basic_collection_share_migrate_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+    $object = islandora_object_load($object);
+    $perm = islandora_basic_collection_share_migrate_access($object);
+    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
+  }
+
+  /**
+   * Manage Collection local task.
+   *
+   * Defines the actions to appear in the collection section of the Manage tab.
+   */
   public function islandora_basic_collection_manage_object(AbstractObject $object) {
-    $return_form = ['manage_collection_object' => []];
+    module_load_include('inc', 'islandora_basic_collection', 'includes/manage_collection');
+    $render_array = ['manage_collection_object' => []];
     $data = islandora_invoke_hook_list(ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK, $object->models, [
-      $return_form,
+      $render_array,
       $object,
     ]);
-    $data['manage_collection_object']['#type'] = 'vertical_tabs';
     return $data;
   }
 
-  public function islandora_basic_collection_get_collections_filtered($search_value) {
+ /**
+  * Searches through available collection objects.
+  */
+  public function islandora_basic_collection_get_collections_filtered(Request $request) {
+    $search_value = $request->query->get('q');
     $tuque = islandora_get_tuque_connection();
     $sparql_query = <<<EOQ
 SELECT ?pid ?label
@@ -73,12 +94,15 @@ EOQ;
     $results = $tuque->repository->ri->sparqlQuery($sparql_query);
     $return = [];
     foreach ($results as $objects) {
-      $return[$objects['pid']['value']] = t('@label (@pid)', [
-        '@label' => $objects['label']['value'],
-        '@pid' => $objects['pid']['value'],
-      ]);
+      $return[] = [
+        'value' => $objects['pid']['value'],
+        'label' => t('@label (@pid)', [
+          '@label' => $objects['label']['value'],
+          '@pid' => $objects['pid']['value'],
+        ]),
+      ];
     }
-    drupal_json_output($return);
+    return new JsonResponse($return);
   }
 
   public function islandora_basic_collection_ingest_access(AbstractObject $object, \Drupal\Core\Session\AccountInterface $account) {

@@ -5,6 +5,8 @@
  * Miscellaneous helper functions.
  */
 
+use Drupal\Core\Link;
+
 /**
  * Converts given model descriptions into Drupal form select element #options.
  *
@@ -22,10 +24,10 @@
 function islandora_basic_collection_get_content_models_as_form_options(array $content_models) {
   $map_content_models_to_options = function($o) {
     $label = isset($o['label']) ? $o['label'] : $o['name'];
-    return format_string('@pid ~ @label', array(
+    return format_string('@pid ~ @label', [
       '@pid' => $o['pid'],
       '@label' => $label,
-    ));
+    ]);
   };
   return array_map($map_content_models_to_options, $content_models);
 }
@@ -69,14 +71,14 @@ function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
  $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
-  return array(
+  return [
     '#type' => $restrict_namespace ? 'select' : 'textfield',
     '#title' => 'Children namespace',
     '#description' => t('Namespace for objects with selected content models.'),
     '#size' => 15,
     '#options' => $restrict_namespace ? array_combine(islandora_get_allowed_namespaces(), islandora_get_allowed_namespaces()) : NULL,
     '#default_value' => $default_value,
-  );
+  ];
 }
 
 /**
@@ -99,52 +101,50 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
   $page = pager_find_page($pager_options['element']);
   list($count, $results) = islandora_basic_collection_get_member_objects($object, $page, $limit, 'manage');
   $page = pager_default_initialize($count, $limit, $pager_options['element']);
-  $rows = array();
+  $rows = [];
   foreach ($results as $result) {
     $pid = $result['object']['value'];
     $label = empty($result['title']['value']) ? t('Untitled') : \Drupal\Component\Utility\Xss::filter($result['title']['value']);
     $label = $label . " (" . $pid . ")";
     $owner = empty($result['owner']['value']) ? t('Unowned') : \Drupal\Component\Utility\Xss::filter($result['owner']['value']);
     $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : \Drupal\Component\Utility\Xss::filter($result['date_modified']['value']);
-    $rows[$pid] = array(
-      'owner' => array(
-        'data' => array(
+    $rows[$pid] = [
+      'owner' => [
+        'data' => [
           '#markup' => '<div>' . $owner . '</div>',
-        ),
-      ),
-      'date_modified' => array(
-        'data' => array(
+        ],
+      ],
+      'date_modified' => [
+        'data' => [
           '#markup' => '<div>' . $date_modified . '</div>',
-        ),
-      ),
-      'label' => array(
-        'data' => array(
-          '#type' => 'link',
-          '#title' => $label,
-          '#href' => "islandora/object/{$pid}")));
+        ],
+      ],
+      'label' => [
+        'data' => [
+          '#markup' => Link::createFromRoute($label, 'islandora.view_object', ['object' => $pid])->toString()
+        ],
+      ],
+    ];
   }
-  // @FIXME
-// theme() has been renamed to _theme() and should NEVER be called directly.
-// Calling _theme() directly can alter the expected output and potentially
-// introduce security issues (see https://www.drupal.org/node/2195739). You
-// should use renderable arrays instead.
-//
-//
-// @see https://www.drupal.org/node/2195739
-// $pager = theme('pager', array('quantity' => $limit, 'element' => $pager_options['element']));
-
+  $pager_element = [
+    '#type' => 'pager',
+    '#quantity' => $limit,
+    '#element' => $pager_options['element'],
+  ];
+  $pager = \Drupal::service('renderer')->render($pager_element);
   $pager = islandora_basic_collection_append_fragment_to_pager_url($pager, $pager_options['fragment']);
-  return array(
+  return [
     '#type' => 'tableselect',
-    '#header' => array(
-      'label' => array('data' => t('Label')),
-      'owner' => array('data' => t('Owner')),
-      'date_modified' => array('data' => t('Date Modified'))),
+    '#header' => [
+      'label' => ['data' => t('Label')],
+      'owner' => ['data' => t('Owner')],
+      'date_modified' => ['data' => t('Date Modified')],
+    ],
     '#options' => $rows,
     '#empty' => t('Collection is empty.'),
     '#prefix' => $pager,
     '#suffix' => $pager,
-  );
+  ];
 }
 
 /**
@@ -213,33 +213,6 @@ function islandora_basic_collection_remove_from_collection(AbstractObject $membe
 }
 
 /**
- * Searches through available collection objects.
- *
- * @param string $search_value
- *   Returns a json array of matching collections.
- */
-function islandora_basic_collection_get_collections_filtered($search_value) {
-  $tuque = islandora_get_tuque_connection();
-  $sparql_query = <<<EOQ
-SELECT ?pid ?label
-WHERE {
-  ?pid <fedora-model:label> ?label ;
-       <fedora-model:hasModel> <info:fedora/islandora:collectionCModel> .
-  FILTER(regex(?label, '$search_value', 'i') || regex(str(?pid), '$search_value', 'i'))
-}
-EOQ;
-  $results = $tuque->repository->ri->sparqlQuery($sparql_query);
-  $return = array();
-  foreach ($results as $objects) {
-    $return[$objects['pid']['value']] = t('@label (@pid)', array(
-      '@label' => $objects['label']['value'],
-      '@pid' => $objects['pid']['value'],
-    ));
-  }
-  drupal_json_output($return);
-}
-
-/**
  * Implements callback_islandora_basic_collection_query_backends().
  */
 function islandora_basic_collection_display_query_sparql($collection_object, $page, $limit) {
@@ -247,7 +220,7 @@ function islandora_basic_collection_display_query_sparql($collection_object, $pa
   $map_to_pids = function ($result) {
     return $result['object']['value'];
   };
-  return array($total, array_map($map_to_pids, $results));
+  return [$total, array_map($map_to_pids, $results)];
 }
 
 /**
@@ -265,7 +238,7 @@ function islandora_basic_collection_display_query_sparql($collection_object, $pa
  */
 function islandora_basic_collection_append_fragment_to_pager_url($pager, $fragment) {
   $pattern = '/href="([^"]+)"/';
-  $replace = format_string('href="\1!fragment"', array('!fragment' => $fragment));
+  $replace = strtr('href="\1!fragment"', ['!fragment' => $fragment]);
   $pager = preg_replace($pattern, $replace, $pager);
   return $pager;
 }

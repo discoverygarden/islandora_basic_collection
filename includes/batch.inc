@@ -331,46 +331,45 @@ function islandora_basic_collection_migrate_children_batch_operation(AbstractObj
  *   The batch definition.
  */
 function islandora_basic_collection_share_children_batch(AbstractObject $source, AbstractObject $destination, $children = NULL) {
-  $batch = array(
+  $batch = [
     'finished' => 'islandora_basic_collection_batch_finished',
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora_basic_collection') . '/includes/batch.inc',
-  );
+  ];
 
-  $message_parameters = array(
+  $message_parameters = [
     '@source' => $source->label,
     '@destination' => $destination->label,
-  );
+  ];
   if (is_array($children)) {
     $child_count = count($children);
-    $batch += array(
-      'operations' => array(
-        array(
+    $batch += [
+      'operations' => [
+        [
           'islandora_basic_collection_share_children_batch_operation',
-          array($source, $destination, $children),
-        ),
-      ),
+          [$source, $destination, $children],
+        ],
+      ],
       'title' => \Drupal::translation()->formatPlural($child_count,
         'Sharing 1 child from @source to @destination...',
         'Sharing @count children from @source to @destination...', $message_parameters),
       'init_message' => \Drupal::translation()->formatPlural($child_count,
         'Preparing to share 1 child from @source to @destination ...',
         'Preparing to share @count children from @source to @destination ...', $message_parameters),
-    );
+    ];
   }
   else {
-    $batch += array(
-      'operations' => array(
-        array(
+    $batch += [
+      'operations' => [
+        [
           'islandora_basic_collection_share_all_children_batch_operation',
-          array($source, $destination,
-          ),
-        ),
-      ),
+          [$source, $destination],
+        ],
+      ],
       'title' => t('Sharing all children of @source with @destination.', $message_parameters),
       'init_message' => t('Preparing to share all children of @source with @destination.', $message_parameters),
-    );
+    ];
   }
 
   return $batch;
@@ -450,6 +449,9 @@ function islandora_basic_collection_migrate_all_children_batch_operation(Abstrac
  *   The batch context.
  */
 function islandora_basic_collection_share_all_children_batch_operation(AbstractObject $source, AbstractObject $destination, &$context) {
+  if (!isset($context['sandbox']['page'])) {
+    $context['sandbox']['page'] = 0;
+  }
   $results = islandora_basic_collection_get_member_objects($source, $context['sandbox']['page'], 10, 'manage');
   $context['sandbox']['page']++;
   if ($results) {
@@ -468,9 +470,9 @@ function islandora_basic_collection_share_all_children_batch_operation(AbstractO
   }
 
   $context['finished'] = $context['sandbox']['current'] / $context['sandbox']['total_count'];
-  $context['message'] = t('Shared @current_num children from @source to @destination', array(
+  $context['message'] = t('Shared @current_num children from @source to @destination', [
                         '@current_num' => $context['sandbox']['current'],
                         '@source' => $source->label,
                         '@destination' => $destination->label,
-                        ));
+                        ]);
 }

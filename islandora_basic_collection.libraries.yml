@@ -5,3 +5,7 @@ islandora-basic-collection-block-count:
     - core/jquery
     - core/jquery.once
     - core/drupalSettings
+policy-table-css:
+  css:
+    layout:
+      css/collection_policy_table_css: {}
