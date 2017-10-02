@@ -22,12 +22,13 @@ class IslandoraBasicCollectionDeleteChildrenForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $object = NULL) {
-    // Caching necessary due to Drupal core bug. @see https://www.drupal.org/node/2821852
-    $form_state->setRequestMethod('POST');
-    $form_state->setCached(TRUE);
     $form_state->set('collection', $object);
     return [
-      '#action' => Url::fromRoute('<current>', [], ['fragment' => '#delete-children'])->toString(),
+      '#action' => Url::fromRoute(
+        '<current>',
+        [],
+        ['query' => $this->getRequest()->query->all(), 'fragment' => '#delete-children']
+      )->toString(),
       'children' => islandora_basic_collection_get_children_select_table_form_element($object, [
         'element' => 2,
         'fragment' => '#delete-children',
