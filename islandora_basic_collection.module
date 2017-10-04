@@ -269,15 +269,9 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     );
 
     // Add the metadata fieldset markup.
-    $to_return['wrapper']['metadata'] = array(
-      '#attached' => array(
-        'js' => array(
-          'misc/form.js',
-          'misc/collapse.js',
-        ),
-      ),
+    $to_return['wrapper']['metadata'] = [
       '#markup' => islandora_retrieve_metadata_markup($object),
-    );
+    ];
   }
 
   foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
