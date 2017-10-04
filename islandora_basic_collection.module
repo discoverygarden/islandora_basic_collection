@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * @file
  * Provides functionality for creating/managing/deleting/viewing collections.
@@ -6,6 +6,8 @@
 
 use Drupal\Core\Link;
 use Drupal\Core\Form\FormStateInterface;
+
+use Drupal\islandora\Form\IslandoraDeleteObjectForm;
 
 // Constants.
 define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child collection');
@@ -267,15 +269,9 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
     );
 
     // Add the metadata fieldset markup.
-    $to_return['wrapper']['metadata'] = array(
-      '#attached' => array(
-        'js' => array(
-          'misc/form.js',
-          'misc/collapse.js',
-        ),
-      ),
+    $to_return['wrapper']['metadata'] = [
       '#markup' => islandora_retrieve_metadata_markup($object),
-    );
+    ];
   }
 
   foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
@@ -728,18 +724,19 @@ function islandora_basic_collection_form_islandora_delete_object_form_alter(arra
  *
  * @param array $form
  *   The Drupal form.
- * @param array $form_state
+ * @param \Drupal\Core\Form\FormStateInterface  $form_state
  *   The Drupal form state.
  */
-function islandora_basic_collection_islandora_delete_object_form_delete_children_submit(array $form, array &$form_state) {
+function islandora_basic_collection_islandora_delete_object_form_delete_children_submit(array $form, FormStateInterface $form_state) {
   module_load_include('inc', 'islandora_basic_collection', 'includes/batch');
   // @todo This should be recursive.
-  batch_set(islandora_basic_collection_delete_children_batch($form_state['object']));
+  batch_set(islandora_basic_collection_delete_children_batch($form_state->get('object')));
   // Called from within this submit handler rather than from the Drupal Form API
   // as we need the object to exist to generate the pages and if we run this.
   // batch operation from a submit handler any submit handlers to be called
   // afterwards will not get called, which is a bug/feature of the Form API.
-  islandora_delete_object_form_submit($form, $form_state);
+  $delete_form = new IslandoraDeleteObjectForm();
+  $delete_form->submitForm($form, $form_state);
 }
 
 /**
@@ -781,16 +778,16 @@ function islandora_basic_collection_islandora_ingest_steps(FormStateInterface $f
   $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection_select_content_model');
   $step_storage['models'] = isset($step_storage['models']) ? $step_storage['models'] : $shared_storage['models'];
   if (count($step_storage['models']) > 0) {
-    return array(
-      'islandora_basic_collection_select_content_model' => array(
+    return [
+      'islandora_basic_collection_select_content_model' => [
         'type' => 'form',
         'form_class' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionSelectContentModelForm',
-        'args' => array($step_storage['models']),
+        'args' => [$step_storage['models']],
         'weight' => -50,
         'module' => 'islandora_basic_collection',
         'file' => 'includes/ingest.form.inc',
-      ),
-    );
+      ],
+    ];
   }
 }
 
