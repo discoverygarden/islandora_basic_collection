@@ -7,6 +7,8 @@
 
 require_once dirname(__FILE__) . '/utilities.inc';
 
+use Drupal\Core\Url;
+
 /**
  * Starts the batch operation.
  *
@@ -139,17 +141,14 @@ function islandora_basic_collection_delete_children_batch_operation(AbstractObje
     }
   }
   if (islandora_basic_collection_end_operation($context)) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// drupal_set_message(\Drupal::translation()->formatPlural(count($children),
-//       'Deleted 1 child from <a href="@collection-url">@collection</a>.',
-//       'Deleted @count children from <a href="@collection-url">@collection</a>.',
-//       array(
-//         '@collection' => $collection->label,
-//         '@collection-url' => url("islandora/object/{$collection->id}"),
-//       )
-//     ));
-
+    drupal_set_message(\Drupal::translation()->formatPlural(count($children),
+      'Deleted 1 child from <a href="@collection-url">@collection</a>.',
+      'Deleted @count children from <a href="@collection-url">@collection</a>.',
+      [
+        '@collection' => $collection->label,
+        '@collection-url' => Url::fromRoute('islandora.view_object', ['object' => $collection->id])->toString(),
+      ]
+    ));
   }
 }
 
@@ -210,17 +209,14 @@ function islandora_basic_collection_delete_all_children_batch_operation(Abstract
   }
 
   if (!$results || $context['finished'] == 1) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// drupal_set_message(\Drupal::translation()->formatPlural($context['sandbox']['current'],
-//       'Deleted 1 child from <a href="@collection-url">@collection</a>.',
-//       'Deleted @count children from <a href="@collection-url">@collection</a>.',
-//       array(
-//         '@collection' => $collection->label,
-//         '@collection-url' => url("islandora/object/{$collection->id}"),
-//       )
-//     ));
-
+    drupal_set_message(\Drupal::translation()->formatPlural($context['sandbox']['current'],
+      'Deleted 1 child from <a href="@collection-url">@collection</a>.',
+      'Deleted @count children from <a href="@collection-url">@collection</a>.',
+      [
+        '@collection' => $collection->label,
+        '@collection-url' => Url::fromRoute('islandora.view_object', ['object' => $collection->id])->toString(),
+      ]
+    ));
   }
 }
 
@@ -301,19 +297,16 @@ function islandora_basic_collection_migrate_children_batch_operation(AbstractObj
     islandora_basic_collection_remove_from_collection($child, $source);
   }
   if (islandora_basic_collection_end_operation($context)) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// drupal_set_message(\Drupal::translation()->formatPlural(count($children),
-//       'Migrated 1 child from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
-//       'Migrated @count children from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
-//       array(
-//         '@source' => $source->label,
-//         '@source-url' => url("islandora/object/{$source->id}"),
-//         '@destination' => $destination->label,
-//         '@destination-url' => url("islandora/object/{$destination->id}"),
-//       )
-//     ));
-
+    drupal_set_message(\Drupal::translation()->formatPlural(count($children),
+      'Migrated 1 child from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
+      'Migrated @count children from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
+      [
+        '@source' => $source->label,
+        '@source-url' => Url::fromRoute('islandora.view_object', ['object' => $source->id])->toString(),
+        '@destination' => $destination->label,
+        '@destination-url' => Url::fromRoute('islandora.view_object', ['object' => $destination->id])->toString(),
+      ]
+    ));
   }
 }
 
@@ -392,19 +385,16 @@ function islandora_basic_collection_share_children_batch_operation(AbstractObjec
     islandora_basic_collection_add_to_collection($child, $destination);
   }
   if (islandora_basic_collection_end_operation($context)) {
-    // @FIXME
-// url() expects a route name or an external URI.
-// drupal_set_message(\Drupal::translation()->formatPlural(count($children),
-//       'Shared 1 child from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
-//       'Shared @count children from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
-//       array(
-//         '@source' => $source->label,
-//         '@source-url' => url("islandora/object/{$source->id}"),
-//         '@destination' => $destination->label,
-//         '@destination-url' => url("islandora/object/{$destination->id}"),
-//       )
-//     ));
-
+    drupal_set_message(\Drupal::translation()->formatPlural(count($children),
+      'Shared 1 child from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
+      'Shared @count children from <a href="@source-url">@source</a> to <a href="@destination-url">@destination</a>.',
+      [
+        '@source' => $source->label,
+        '@source-url' => Url::fromRoute('islandora.view_object', ['object' => $source->id])->toString(),
+        '@destination' => $destination->label,
+        '@destination-url' => Url::fromRoute('islandora.view_object', ['object' => $destination->id])->toString(),
+      ]
+    ));
   }
 }
 
