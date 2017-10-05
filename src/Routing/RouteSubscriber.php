@@ -14,16 +14,17 @@ use Symfony\Component\Routing\RouteCollection;
 class RouteSubscriber extends RouteSubscriberBase {
 
   /**
-   * {@inheritdoc}
+   * Adds our perms to the manage object access check.
    */
   public function alterRoutes(RouteCollection $collection) {
-    /**
-     * @FIXME
-     * Parts of your hook_menu_alter() logic should be moved in here. You should NOT
-     * use this method to define new routes -- read the documentation at
-     * https://www.drupal.org/node/2122201 to learn how to define dynamic routes --
-     * but to alter existing ones.
-     */
+    $manage_route = $collection->get('islandora.manage_overview_object');
+    $current_access_arguments = $manage_route->getDefault('perms');
+    $new_access_arguments = [
+      ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY,
+      ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS,
+    ];
+    $access_arguments = array_merge($current_access_arguments, $new_access_arguments);
+    $manage_route->setDefault('perms', $access_arguments);
   }
 
 }
