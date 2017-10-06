@@ -14,17 +14,3 @@ function islandora_basic_collection_install() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
   islandora_install_solution_pack('islandora_basic_collection');
 }
-
-/**
- * Default collection paging update.
- */
-function islandora_basic_collection_update_7001() {
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_basic_collection.settings.yml and config/schema/islandora_basic_collection.schema.yml.
-$old_var = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size');
-  if ($old_var == '10') {
-    \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')->set('islandora_basic_collection_page_size', '12')->save();
-  }
-}

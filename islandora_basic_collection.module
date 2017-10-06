@@ -72,45 +72,6 @@ function islandora_basic_collection_share_migrate_access(AbstractObject $object)
 }
 
 /**
- * @FIXME
- * hook_menu_alter() is gone in Drupal 8. You will have to port its
- * functionality manually. The are several mechanisms for this:
- *
- * To alter routes, you must implement a route subscriber class. An empty one
- * has been generated for you in src/Routing/RouteSubscriber.php.
- *
- * To alter menu link definitions, see hook_menu_links_discovered_alter(). An
- * empty implementation has been created at the end of this file.
- *
- * To alter local task definitions, see hook_menu_local_tasks_alter(). An
- * empty implementation has been created for you at the end of this file.
- *
- * To alter local actions, see hook_menu_local_actions_alter(). An
- * empty implementation has been created for you at the end of this file.
- *
- * Contextual links are altered during rendering only. See
- * hook_contextual_links_view_alter(). An empty implementation has been
- * created for you at the end of this file.
- *
- * @see https://www.drupal.org/node/2118147#alter
- * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Menu%21menu.api.php/function/hook_menu_links_discovered_alter/8
- * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Menu%21menu.api.php/function/hook_menu_local_tasks_alter/8
- * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Menu%21menu.api.php/function/hook_menu_local_actions_alter/8
- * @see https://api.drupal.org/api/drupal/core%21modules%21contextual%21contextual.api.php/function/hook_contextual_links_view_alter/8
- */
-
-function islandora_basic_collection_menu_alter(array &$items) {
-  // We want to add more permissions to the access arguments for the manage tab.
-  $current_access_arguments = $items['islandora/object/%islandora_object/manage']['access arguments'][0];
-  $new_access_arguments = array(
-    ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY,
-    ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS,
-  );
-  $new_access_arguments = array_merge($current_access_arguments, $new_access_arguments);
-  $items['islandora/object/%islandora_object/manage']['access arguments'] = array($new_access_arguments, 2);
-}
-
-/**
  * Implements hook_islandora_required_objects().
  */
 function islandora_basic_collection_islandora_required_objects(IslandoraTuque $connection) {

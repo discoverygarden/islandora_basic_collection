@@ -1,0 +1,5 @@
+services:
+  islandora_basic_collection.route_subscriber:
+    class: Drupal\islandora_basic_collection\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
