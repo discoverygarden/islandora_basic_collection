@@ -9,23 +9,23 @@
  * Implements hook_drush_command().
  */
 function islandora_basic_collection_drush_command() {
-  return array(
-    'islandora-basic-collection-generate-thumbs-from-children' => array(
+  return [
+    'islandora-basic-collection-generate-thumbs-from-children' => [
       'description' => dt('Recursively grabs a thumbnail from a collections children for its thumbnail.'),
-      'examples' => array('drush -u 1 islandora-basic-collection-generate-thumbs-from-children --collection=islandora:root'),
+      'examples' => ['drush -u 1 islandora-basic-collection-generate-thumbs-from-children --collection=islandora:root'],
       'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
-      'drupal dependencies' => array(
+      'drupal dependencies' => [
         'islandora',
         'islandora_basic_collection',
-      ),
-      'options' => array(
-        'collection' => array(
+      ],
+      'options' => [
+        'collection' => [
           'description' => dt('Where to start creating thumbnails.'),
           'required' => TRUE,
-        ),
-      ),
-    ),
-  );
+        ],
+      ],
+    ],
+  ];
 }
 
 /**

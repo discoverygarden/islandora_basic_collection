@@ -35,8 +35,8 @@ function islandora_basic_collection_thumbs_batch_operation($collection, &$contex
   $sandbox = &$context['sandbox'];
   // Initial setup.
   if (!isset($sandbox['stack'])) {
-    $sandbox['stack'] = array($collection);
-    $sandbox['retry_stack'] = array($collection);
+    $sandbox['stack'] = [$collection];
+    $sandbox['retry_stack'] = [$collection];
     $sandbox['completed'] = 0;
   }
   if ($sandbox['stack']) {
@@ -97,7 +97,7 @@ EOQ;
       elseif (md5_file($copied_file_object->uri) == 'cb971815171163beb105f8074eae1bde') {
         $replace = TRUE;
       }
-      file_delete($copied_file_object);
+      $copied_file_object->delete();
     }
   }
   if ($replace) {
@@ -115,7 +115,7 @@ EOQ;
 
   // Throw a log if final try had no TN.
   if ($retry && !$replaced) {
-    \Drupal::logger('warning')->notice("Couldn't replace TN for @current_pid, this can still be done manually.", array('@current_pid', $current_pid));
+    \Drupal::logger('warning')->notice("Couldn't replace TN for @current_pid, this can still be done manually.", ['@current_pid', $current_pid]);
   }
   // Abort and return to stack if not retry and child has default TN.
   elseif (!$retry && !$replaced) {
