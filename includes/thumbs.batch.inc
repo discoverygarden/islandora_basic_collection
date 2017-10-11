@@ -89,12 +89,12 @@ EOQ;
       $copied_file_object = islandora_temp_file_entry($copied_file);
       // TN size check to avoid checksum expense, not trusting Fedora's size
       // (observed off by one errors).
-      if ($copied_file_object->filesize != 5137) {
+      if ($copied_file_object->getSize() != 5137) {
         $replace = TRUE;
       }
       // If size the same do checksum, also don't trust Fedora, some
       // checksums are lies (only observed with Fedora re-formating XML).
-      elseif (md5_file($copied_file_object->uri) == 'cb971815171163beb105f8074eae1bde') {
+      elseif (md5_file($copied_file_object->getFileUri()) == 'cb971815171163beb105f8074eae1bde') {
         $replace = TRUE;
       }
       $copied_file_object->delete();
@@ -115,7 +115,7 @@ EOQ;
 
   // Throw a log if final try had no TN.
   if ($retry && !$replaced) {
-    \Drupal::logger('warning')->notice("Couldn't replace TN for @current_pid, this can still be done manually.", ['@current_pid', $current_pid]);
+    \Drupal::logger('warning')->notice("Couldn't replace TN for @current_pid, this can still be done manually.", ['@current_pid' => $current_pid]);
   }
   // Abort and return to stack if not retry and child has default TN.
   elseif (!$retry && !$replaced) {
