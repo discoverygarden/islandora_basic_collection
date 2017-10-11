@@ -11,6 +11,7 @@ islandora_basic_collection.manage_object:
     _title: Collection
     _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_manage_object'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
