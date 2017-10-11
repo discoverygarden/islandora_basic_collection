@@ -6,11 +6,10 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Component\Utility\Xss;
 
 /**
  * Converts given model descriptions into Drupal form select element #options.
- *
- * @see islandora_get_content_models()
  *
  * @param array $content_models
  *   A list of content models as returned by islandora_get_content_models().
@@ -20,6 +19,8 @@ use Drupal\Core\Link;
  *   element options:
  *   - pid: The PID of the content model
  *     - label: The label to display to the user.
+ *
+ * @see islandora_get_content_models()
  */
 function islandora_basic_collection_get_content_models_as_form_options(array $content_models) {
   $map_content_models_to_options = function($o) {
@@ -49,8 +50,8 @@ function islandora_basic_collection_get_content_models_as_form_options(array $co
  *     - label: The label to display to the user.
  */
 function islandora_basic_collection_get_other_collections_as_form_options(AbstractObject $object) {
-  $map_options = function($o) {
-    return \Drupal\Component\Utility\Xss::filter($o['label']);
+  $map_options = function ($o) {
+    return Xss::filter($o['label']);
   };
   $options = array_map($map_options, islandora_basic_collection_get_collections());
   // Ignore given collection.
@@ -104,10 +105,10 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
   $rows = [];
   foreach ($results as $result) {
     $pid = $result['object']['value'];
-    $label = empty($result['title']['value']) ? t('Untitled') : \Drupal\Component\Utility\Xss::filter($result['title']['value']);
+    $label = empty($result['title']['value']) ? t('Untitled') : Xss::filter($result['title']['value']);
     $label = $label . " (" . $pid . ")";
-    $owner = empty($result['owner']['value']) ? t('Unowned') : \Drupal\Component\Utility\Xss::filter($result['owner']['value']);
-    $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : \Drupal\Component\Utility\Xss::filter($result['date_modified']['value']);
+    $owner = empty($result['owner']['value']) ? t('Unowned') : Xss::filter($result['owner']['value']);
+    $date_modified = empty($result['date_modified']['value']) ? t('Unknown') : Xss::filter($result['date_modified']['value']);
     $rows[$pid] = [
       'owner' => [
         'data' => [
@@ -121,7 +122,7 @@ function islandora_basic_collection_get_children_select_table_form_element(Abstr
       ],
       'label' => [
         'data' => [
-          '#markup' => Link::createFromRoute($label, 'islandora.view_object', ['object' => $pid])->toString()
+          '#markup' => Link::createFromRoute($label, 'islandora.view_object', ['object' => $pid])->toString(),
         ],
       ],
     ];
@@ -160,7 +161,7 @@ function islandora_basic_collection_get_parent_pids(AbstractObject $object) {
   $results = array_merge(
       $object->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOfCollection'),
       $object->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOf'));
-  $map_results = function($o) {
+  $map_results = function ($o) {
     return $o['object']['value'];
   };
   $collections = array_map($map_results, $results);

@@ -1,7 +1,4 @@
-<?php /**
- * @file
- * Contains \Drupal\islandora_basic_collection\Routing\RouteSubscriber.
- */
+<?php
 
 namespace Drupal\islandora_basic_collection\Routing;
 

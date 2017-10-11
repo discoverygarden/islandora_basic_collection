@@ -1,20 +1,17 @@
 <?php
-/**
- * @file
- * Defines CollectionPolicy class to process the COLLECTION_POLICY datastream.
- * As defined here http://syn.lib.umanitoba.ca/collection_policy.xsd.
- */
 
 namespace Drupal\islandora_basic_collection;
 
 /**
- * Collection Policy
+ * Collection Policy.
+ *
+ * The CollectionPolicy class to process the COLLECTION_POLICY datastream.
+ * As defined here http://syn.lib.umanitoba.ca/collection_policy.xsd.
  */
 class CollectionPolicy {
 
   /**
    * The Collection Policy xml file.
-   *
    * @var DOMDocument
    */
   protected $xml;
@@ -25,7 +22,7 @@ class CollectionPolicy {
    * @return CollectionPolicy
    *   An empty CollectionPolicy.
    */
-  static public function emptyPolicy() {
+  public static function emptyPolicy() {
     $xml = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <collection_policy xmlns="http://www.islandora.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="" xsi:schemaLocation="http://www.islandora.ca http://syn.lib.umanitoba.ca/collection_policy.xsd">
@@ -90,19 +87,19 @@ EOT;
    *     - namespace: The default namespace for new child objects of this type.
    */
   public function getContentModels() {
-    $ret = array();
+    $ret = [];
     $models = $this->xml->getElementsByTagName('content_models')->item(0)->getElementsByTagName('content_model');
     foreach ($models as $model) {
       $pid = $model->getAttribute('pid');
-      $matches = array();
+      $matches = [];
       // Clean up the namespace attribute as its wrong in most existing
       // COLLECTION_POLICY datastreams.
       preg_match('/^([^:]*)/', $model->getAttribute('namespace'), $matches);
-      $ret[$pid] = array(
+      $ret[$pid] = [
         'pid' => $pid,
         'name' => $model->getAttribute('name'),
         'namespace' => $matches[0],
-      );
+      ];
     }
     return $ret;
   }
@@ -115,7 +112,7 @@ EOT;
     $content_model_element = $content_models_element->item(0)->getElementsByTagName('content_model');
     $content_model_element = $this->xml->createElement('content_model');
     $content_model_element->setAttribute('name', $name);
-   $content_model_element->setAttribute('dsid', '');
+    $content_model_element->setAttribute('dsid', '');
 
     $content_model_element->setAttribute('namespace', $namespace);
     $content_model_element->setAttribute('pid', $pid);
@@ -162,4 +159,5 @@ EOT;
   public function getXML() {
     return $this->xml->saveXML();
   }
+
 }

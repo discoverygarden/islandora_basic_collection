@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_basic_collection\Plugin\Block\IslandoraBasicCollectionCollectionListinig.
- */
-
 namespace Drupal\islandora_basic_collection\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
@@ -81,4 +76,5 @@ class IslandoraBasicCollectionCollectionListing extends BlockBase {
     $config->set('islandora_basic_collection_listing_block_content_models_to_restrict', $form_state->getValue('content_models'));
     $config->save();
   }
+
 }
