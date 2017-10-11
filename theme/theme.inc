@@ -2,8 +2,10 @@
 
 /**
  * @file
- * This file contains all theme and preprocess functions
+ * This file contains all theme and preprocess functions.
  */
+
+use Drupal\Core\Render\Element;
 
 /**
  * Theme the collection policy management table.
@@ -19,15 +21,14 @@ function islandora_basic_collection_policy_management_table(array $variables) {
   $row_elements = $table['rows'];
 
   $rows = [];
-  foreach (\Drupal\Core\Render\Element::children($row_elements) as $key) {
+  foreach (Element::children($row_elements) as $key) {
     $columns = array();
     $row_element = $row_elements[$key];
-    foreach (\Drupal\Core\Render\Element::children($row_element) as $key) {
+    foreach (Element::children($row_element) as $key) {
       $column_element = $row_element[$key];
-      $class = "collection_policy_table_${key}";
       $columns[] = [
         'data' => \Drupal::service('renderer')->render($column_element),
-        'class' => isset($cell_element['#attributes']['class']) ? $column_element['#attributes']['class'] : $class,
+        'class' => "collection_policy_table_${key}",
       ];
     }
     $rows[] = $columns;
