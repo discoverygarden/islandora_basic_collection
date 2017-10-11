@@ -211,7 +211,7 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_view_ob
       ];
       foreach ($parent_collections as $parent) {
         $to_return['collections']['list'][] = [
-          '#markup' => l($parent->label, "islandora/object/{$parent->id}"),
+          '#markup' => Link::createFromRoute($parent->label, 'islandora.view_object', ['object' => $parent->id])->toString(),
           '#prefix' => '<li>',
           '#suffix' => '</li>',
         ];
@@ -279,49 +279,49 @@ function islandora_basic_collection_xml_form_builder_forms() {
  * Implements hook_xml_form_builder_form_associations().
  */
 function islandora_basic_collection_xml_form_builder_form_associations() {
-  return array(
-    'islandora_basic_collection_mods_form' => array(
+  return [
+    'islandora_basic_collection_mods_form' => [
       'content_model' => 'islandora:collectionCModel',
       'form_name' => 'Collection MODS form',
       'dsid' => 'MODS',
-      'title_field' => array(
+      'title_field' => [
         'titleInfo', 'title',
-      ),
+      ],
       'transform' => 'mods_to_dc.xsl',
       'template' => FALSE,
-    ),
-  );
+    ],
+  ];
 }
 
 /**
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
 function islandora_basic_collection_islandora_collectionCModel_islandora_overview_object(AbstractObject $object) {
-  $rows = array();
-  $model_query = islandora_basic_collection_get_query_info(array(
+  $rows = [];
+  $model_query = islandora_basic_collection_get_query_info([
     'object' => $object,
     'page_size' => -1,
     'page_number' => 0,
     'vars' => '?model',
     'order_by' => FALSE,
-  ));
+  ]);
   $models = (array) $object->repository->ri->query($model_query['query'], $model_query['type']);
-  $ignore_models = array(
+  $ignore_models = [
     'fedora-system:FedoraObject-3.0',
-  );
+  ];
   $disable_count = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_count_object');
   foreach ($models as $model) {
     $model_pid = $model['model']['value'];
     if (in_array($model_pid, $ignore_models)) {
       continue;
     }
-    $model_count_query = islandora_basic_collection_get_query_info(array(
+    $model_count_query = islandora_basic_collection_get_query_info([
       'object' => $object,
       'page_size' => -1,
       'page_number' => 0,
       'order_by' => FALSE,
       'model' => "<info:fedora/$model_pid>",
-    ));
+    ]);
     $model_object = islandora_object_load($model_pid);
     if ($model_object) {
       $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $model_object->id]);
@@ -335,19 +335,20 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     }
   }
 
-  $content = array(
-    'table' => array(
+  $content = [
+    'table' => [
       '#theme' => 'table',
-      '#header' => array(
-        'type' => array('data' => t('Type')),
-      ),
+      '#header' => [
+        'type' => ['data' => t('Type')],
+      ],
       '#rows' => $rows,
-      '#empty' => t('Collection is empty.')),
-  );
+      '#empty' => t('Collection is empty.')
+    ],
+  ];
   if (!$disable_count) {
     list($total_count, $all_results) = islandora_basic_collection_get_member_objects($object, 0, 0);
-    $content['total'] = array('#markup' => t('Total members: %total', array('%total' => $total_count)));
-    $content['table']['#header']['count'] = array('data' => t('Count'));
+    $content['total'] = ['#markup' => t('Total members: %total', ['%total' => $total_count])];
+    $content['table']['#header']['count'] = ['data' => t('Count')];
   }
   return [
     '#markup' => \Drupal::service("renderer")->render($content),
@@ -382,7 +383,7 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
       '#empty' => t('No parent collections'),
     ];
 
-    return array('collection' => $table);
+    return ['collection' => $table];
   }
 }
 
