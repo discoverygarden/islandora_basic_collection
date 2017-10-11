@@ -22,7 +22,7 @@ function islandora_basic_collection_policy_management_table(array $variables) {
 
   $rows = [];
   foreach (Element::children($row_elements) as $key) {
-    $columns = array();
+    $columns = [];
     $row_element = $row_elements[$key];
     foreach (Element::children($row_element) as $key) {
       $column_element = $row_element[$key];

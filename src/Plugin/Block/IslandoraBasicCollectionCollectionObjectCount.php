@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_basic_collection\Plugin\Block\IslandoraBasicCollectionCollectionObjectCount.
- */
-
 namespace Drupal\islandora_basic_collection\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
@@ -87,4 +82,5 @@ class IslandoraBasicCollectionCollectionObjectCount extends BlockBase {
     $config->set('islandora_basic_collection_object_count_listing_placeholder', $form_state->getValue('islandora_basic_collection_title_placeholder'));
     $config->save();
   }
+
 }

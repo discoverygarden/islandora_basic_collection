@@ -346,7 +346,7 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     ],
   ];
   if (!$disable_count) {
-    list($total_count, $all_results) = islandora_basic_collection_get_member_objects($object, 0, 0);
+    $total_count = islandora_basic_collection_get_member_objects($object, 0, 0)[0];
     $content['total'] = ['#markup' => t('Total members: %total', ['%total' => $total_count])];
     $content['table']['#header']['count'] = ['data' => t('Count')];
   }
@@ -421,21 +421,21 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
  */
 function islandora_basic_collection_get_query_info(array $params, $type = 'view') {
   if (!isset($params['object'])) {
-    throw new Exception(t('@function requires "@object_parameter" to be given in the array of parameters.', array(
+    throw new Exception(t('@function requires "@object_parameter" to be given in the array of parameters.', [
       '@function' => __FUNCTION__,
       '@object_parameter' => 'object',
-    )));
+    ]));
   }
 
   // Add in defaults.
-  $params += array(
+  $params += [
     'page_number' => 0,
     'page_size' => 10,
     'vars' => '?object ?title ?owner ?date_modified',
     'order_by' => '?title',
     'model' => '?model',
     'context' => $type,
-  );
+  ];
 
   $object = $params['object'];
 
@@ -465,17 +465,17 @@ EOQ;
   foreach ($query_filters as $filter) {
     $filters[] = "FILTER($filter)";
   }
-  $query = strtr($query, array(
+  $query = strtr($query, [
     '!statements' => implode(' . ', $query_statements),
     '!optionals' => (!empty($query_optionals) ? ('OPTIONAL {{' . implode('} UNION {', $query_optionals) . '}}') : ''),
     '!filters' => implode(' ', $filters),
     '!vars' => $params['vars'],
-  ));
+  ]);
 
-  $query = strtr($query, array(
+  $query = strtr($query, [
     '!pid' => $object->id,
     '!model' => $params['model'],
-  ));
+  ]);
 
   if ($params['order_by']) {
     $query .= <<<EOQO
@@ -483,11 +483,11 @@ ORDER BY {$params['order_by']}
 EOQO;
   }
 
-  $query_array = $params + array(
+  $query_array = $params + [
     'query' => $query,
     'type' => 'sparql',
     'pid' => $object->id,
-  );
+  ];
   \Drupal::moduleHandler()->alter('islandora_basic_collection_query', $query_array);
   return $query_array;
 }
@@ -496,7 +496,7 @@ EOQO;
  * Implements hook_islandora_basic_collection_get_query_statements().
  */
 function islandora_basic_collection_islandora_basic_collection_get_query_statements($type = 'view') {
-  $to_return = array();
+  $to_return = [];
   $to_return[] = <<<EOQ
 ?object ?collection_predicate <info:fedora/!pid> ;
         <fedora-model:label> ?title ;
@@ -544,11 +544,11 @@ function islandora_basic_collection_islandora_basic_collection_get_query_filters
  *   or boolean FALSE if the query fails.
  */
 function islandora_basic_collection_get_member_objects(AbstractObject $object, $page_number = 0, $page_size = 20, $type = 'view', $cmodel = NULL) {
-  $params = array(
+  $params = [
     'object' => $object,
     'page_number' => $page_number,
     'page_size' => $page_size,
-  );
+  ];
 
   if (isset($cmodel)) {
     $params['model'] = "<info:fedora/$cmodel>";
@@ -584,14 +584,14 @@ function islandora_basic_collection_get_member_objects(AbstractObject $object, $
     $results = $object->repository->ri->query($query_array['query'], $query_array['type']);
   }
   catch (Exception $e) {
-    $variables = array(
+    $variables = [
       '@message' => $e->getMessage(),
       '@stack' => $e->getTraceAsString(),
-    );
+    ];
     \Drupal::logger('islandora_basic_collection')->error('Islandora basic collection failed to retrieve associated objects.<br/>Error:<br/>@message<br/>Stack: <br/>@stack', $variables);
     return FALSE;
   }
-  return array($count, $results);
+  return [$count, $results];
 }
 
 /**
@@ -617,14 +617,14 @@ WHERE {
 ORDER BY ?label
 EOQ;
   $results = $tuque->repository->ri->sparqlQuery($query, 'unlimited');
-  $collections = array();
+  $collections = [];
   foreach ($results as $result) {
     $pid = $result['object']['value'];
     if (islandora_namespace_accessible($pid)) {
-      $collections[$pid] = array(
+      $collections[$pid] = [
         'pid' => $pid,
         'label' => $result['label']['value'] . " (" . $pid . ")",
-      );
+      ];
     }
   }
   return $collections;
@@ -636,7 +636,7 @@ EOQ;
 function islandora_basic_collection_islandora_undeletable_datastreams($models) {
   if (in_array('islandora:collectionCModel', $models)) {
     if (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_collection_policy_delete')) {
-      return array('COLLECTION_POLICY');
+      return ['COLLECTION_POLICY'];
     }
   }
 }
@@ -646,18 +646,18 @@ function islandora_basic_collection_islandora_undeletable_datastreams($models) {
  */
 function islandora_basic_collection_permission() {
   return array(
-    ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION => array(
+    ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION => [
       'title' => t('Create child collections'),
       'description' => t('Create new collections within an existing collection.'),
-    ),
-    ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY => array(
+    ],
+    ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY => [
       'title' => t('Manage collection policies'),
       'description' => t('Define which content models are available for each collection.'),
-    ),
-    ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS => array(
+    ],
+    ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS => [
       'title' => t('Migrate collection members'),
       'description' => t('Move objects from one collection to another.'),
-    ),
+    ],
   );
 }
 
@@ -687,7 +687,7 @@ function islandora_basic_collection_form_islandora_delete_object_form_alter(arra
  *
  * @param array $form
  *   The Drupal form.
- * @param \Drupal\Core\Form\FormStateInterface  $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
 function islandora_basic_collection_islandora_delete_object_form_delete_children_submit(array $form, FormStateInterface $form_state) {
@@ -723,8 +723,8 @@ function islandora_basic_collection_form_islandora_repository_admin_alter(&$form
  */
 function islandora_basic_collection_islandora_repository_admin_form_submit($form, FormStateInterface $form_state) {
   \Drupal::configFactory()->getEditable('islandora_basic_collection.settings')
-  ->set('islandora_basic_collection_generate_uuid', $form_state->getValue('islandora_basic_collection_generate_uuid'))
-  ->save();
+    ->set('islandora_basic_collection_generate_uuid', $form_state->getValue('islandora_basic_collection_generate_uuid'))
+    ->save();
 }
 
 /**
