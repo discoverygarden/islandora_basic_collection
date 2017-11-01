@@ -715,7 +715,7 @@ function islandora_basic_collection_form_islandora_repository_admin_alter(&$form
     '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_generate_uuid'),
     '#description' => t('Generate Fedora object PIDs with v4 UUIDs.'),
   ];
-  $form['actions']['submit']['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
+  $form['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
 }
 
 /**
