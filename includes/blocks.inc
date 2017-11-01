@@ -70,10 +70,10 @@ function islandora_basic_collection_object_count_callback() {
   }
   $total_collection_count = count($collections);
 
-  $substitutions = array(
+  $substitutions = [
     '!objects' => $total_object_count,
     '!collections' => $total_collection_count,
-  );
+  ];
 
   $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
   $text = strtr($title_phrase, $substitutions);
@@ -87,7 +87,7 @@ function islandora_basic_collection_object_count_callback() {
  *   The markup to be rendered in the block.
  */
 function islandora_basic_collection_collection_listing_content() {
-  $block = array();
+  $block = [];
   $tuque = islandora_get_tuque_connection();
   $collection_query_array = islandora_basic_collection_get_query_info([
     'object' => islandora_object_load('islandora:root'),
@@ -96,8 +96,8 @@ function islandora_basic_collection_collection_listing_content() {
   ]);
   $collections_to_display = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render');
   $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
-  $collections = array();
-  $stored_collections = array();
+  $collections = [];
+  $stored_collections = [];
   foreach ($collection_objects as $collection) {
     $pid = $collection['object']['value'];
     $collections[$pid] = $pid;
@@ -108,16 +108,15 @@ function islandora_basic_collection_collection_listing_content() {
     $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
   }
 
-  $formatted_objects = array();
+  $formatted_objects = [];
   foreach ($collections as $pid) {
     $formatted_objects[$pid] = Link::createFromRoute($stored_collections[$pid], 'islandora.view_object', ['object' => $pid])->toString();
   }
-  $block['collections'] = array(
+  $block['collections'] = [
     '#theme' => 'item_list',
     '#items' => array_slice($formatted_objects, 0, $collections_to_display),
     '#type' => 'ul',
-  );
-  $root_pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
+  ];
   $block['browse_repository'] = [
     '#type' => 'item',
     '#markup' => Link::createFromRoute(t('Browse repository'), 'islandora.view_object', ['object' => $pid])->toString(),
@@ -128,7 +127,6 @@ function islandora_basic_collection_collection_listing_content() {
 
   return \Drupal::service("renderer")->render($block);
 }
-
 
 /**
  * Filters out collections that only contain included content models.
@@ -141,7 +139,7 @@ function islandora_basic_collection_collection_listing_content() {
  * @return array
  *   An array of collections to be used.
  */
-function islandora_basic_collection_filter_collection_by_cmodel($collections, $models) {
+function islandora_basic_collection_filter_collection_by_cmodel(array $collections, array $models) {
   $collection_filter = function ($collection) use ($models) {
     $tuque = islandora_get_tuque_connection();
     $models_query = <<<EOQ
@@ -151,7 +149,7 @@ function islandora_basic_collection_filter_collection_by_cmodel($collections, $m
 }
 EOQ;
     $models_results = $tuque->repository->ri->sparqlQuery($models_query);
-    $collection_models = array();
+    $collection_models = [];
     foreach ($models_results as $result) {
       $collection_models[$result['model']['value']] = $result['model']['value'];
     }

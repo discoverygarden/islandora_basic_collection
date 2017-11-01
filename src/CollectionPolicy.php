@@ -12,6 +12,7 @@ class CollectionPolicy {
 
   /**
    * The Collection Policy xml file.
+   *
    * @var DOMDocument
    */
   protected $xml;
@@ -144,7 +145,6 @@ EOT;
 
         if ($found !== FALSE && $models->length > 0) {
           $content_models_element->item(0)->removeChild($found);
-          $ret = TRUE;
         }
         $count++;
       }

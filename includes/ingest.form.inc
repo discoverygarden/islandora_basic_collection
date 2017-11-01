@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Handles the ingestion of child objects that are not collections.
@@ -30,19 +31,19 @@ function islandora_basic_collection_ingest_action(AbstractObject $collection) {
 /**
  * Generates an ingest configuration from the given collection object.
  *
- * @see islandora_ingest_form()
- *
  * @param AbstractObject $collection
  *   A collection object to generate the configuration from.
  *
  * @return array
  *   An ingest configuration array as defined by islandora_ingest_form().
+ *
+ * @see islandora_ingest_form()
  */
 function islandora_basic_collection_get_ingest_configuration(AbstractObject $collection) {
   $is_collection_object = in_array('islandora:collectionCModel', $collection->models);
   $has_policy = isset($collection['COLLECTION_POLICY']);
   if (!$is_collection_object || !$has_policy) {
-    return array();
+    return [];
   }
   // The ISLANDORA_BASIC_COLLECTION_FAKE_PID is needed such that
   // constructObject() won't call getNextIdentifier(), needlessly.
@@ -52,12 +53,12 @@ function islandora_basic_collection_get_ingest_configuration(AbstractObject $col
   module_load_include('inc', 'islandora_basic_collection', 'includes/utilities');
   islandora_basic_collection_add_to_collection($object, $collection);
   $policy = new CollectionPolicy($collection['COLLECTION_POLICY']->content);
-  return array(
+  return [
     'collection' => $collection,
     'models' => array_keys($policy->getContentModels()),
-    'objects' => array($object),
+    'objects' => [$object],
     'parent' => $collection->id,
-  );
+  ];
 }
 
 /**
@@ -129,7 +130,7 @@ function islandora_basic_collection_ingest_form_select_model(FormStateInterface 
   // such a time we can create a form for selecting content models and
   // have it control what models are availible. Until then this will have to
   // stand in.
-  $shared_storage['models'] = array($model['pid']);
+  $shared_storage['models'] = [$model['pid']];
 }
 
 /**

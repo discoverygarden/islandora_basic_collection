@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
 use Drupal\islandora\Form\IslandoraDeleteObjectForm;
@@ -324,8 +325,8 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
     ]);
     $model_object = islandora_object_load($model_pid);
     if ($model_object) {
-      $url = \Drupal\Core\Url::fromRoute('islandora.view_object', ['object' => $model_object->id]);
-      $rows[$model_pid][] = \Drupal\Core\Link::fromTextAndUrl($model_object->label, $url);
+      $url = Url::fromRoute('islandora.view_object', ['object' => $model_object->id]);
+      $rows[$model_pid][] = Link::fromTextAndUrl($model_object->label, $url);
     }
     else {
       $rows[$model_pid][] = $model_pid;
@@ -342,7 +343,7 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
         'type' => ['data' => t('Type')],
       ],
       '#rows' => $rows,
-      '#empty' => t('Collection is empty.')
+      '#empty' => t('Collection is empty.'),
     ],
   ];
   if (!$disable_count) {
@@ -361,7 +362,7 @@ function islandora_basic_collection_islandora_collectionCModel_islandora_overvie
 function islandora_basic_collection_islandora_overview_object(AbstractObject $object) {
   module_load_include('inc', 'islandora_basic_collection', 'includes/utilities');
   if (!in_array('islandora:collectionCModel', $object->models)) {
-    $map_to_row = function($pid) {
+    $map_to_row = function ($pid) {
       $map_object = islandora_object_load($pid);
       if ($map_object) {
         $link = Link::createFromRoute(
@@ -449,7 +450,7 @@ WHERE {
 }
 EOQ;
 
-  $filters = array();
+  $filters = [];
   $query_filters = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_filters', [$type]);
   $query_optionals = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_optionals', [$type]);
   $query_statements = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_get_query_statements', [$type]);
@@ -645,7 +646,7 @@ function islandora_basic_collection_islandora_undeletable_datastreams($models) {
  * Implements hook_permission().
  */
 function islandora_basic_collection_permission() {
-  return array(
+  return [
     ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION => [
       'title' => t('Create child collections'),
       'description' => t('Create new collections within an existing collection.'),
@@ -658,7 +659,7 @@ function islandora_basic_collection_permission() {
       'title' => t('Migrate collection members'),
       'description' => t('Move objects from one collection to another.'),
     ],
-  );
+  ];
 }
 
 /**
@@ -715,7 +716,7 @@ function islandora_basic_collection_form_islandora_repository_admin_alter(&$form
     '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_generate_uuid'),
     '#description' => t('Generate Fedora object PIDs with v4 UUIDs.'),
   ];
-  $form['actions']['submit']['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
+  $form['#submit'][] = 'islandora_basic_collection_islandora_repository_admin_form_submit';
 }
 
 /**

@@ -23,7 +23,7 @@ use Drupal\Component\Utility\Xss;
  * @see islandora_get_content_models()
  */
 function islandora_basic_collection_get_content_models_as_form_options(array $content_models) {
-  $map_content_models_to_options = function($o) {
+  $map_content_models_to_options = function ($o) {
     $label = isset($o['label']) ? $o['label'] : $o['name'];
     return format_string('@pid ~ @label', [
       '@pid' => $o['pid'],
@@ -38,8 +38,6 @@ function islandora_basic_collection_get_content_models_as_form_options(array $co
  *
  * Ignores the given collection.
  *
- * @see islandora_get_collections()
- *
  * @param AbstractObject $object
  *   A collection object to ignore.
  *
@@ -48,6 +46,8 @@ function islandora_basic_collection_get_content_models_as_form_options(array $co
  *   element options:
  *   - pid: The PID of the collection object.
  *     - label: The label to display to the user.
+ *
+ * @see islandora_get_collections()
  */
 function islandora_basic_collection_get_other_collections_as_form_options(AbstractObject $object) {
   $map_options = function ($o) {
@@ -70,7 +70,7 @@ function islandora_basic_collection_get_other_collections_as_form_options(Abstra
  */
 function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
- $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
+  $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
   return [
     '#type' => $restrict_namespace ? 'select' : 'textfield',

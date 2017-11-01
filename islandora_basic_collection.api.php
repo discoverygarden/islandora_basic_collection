@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Hook documentation
+ * Hook documentation.
  */
 
 /**
@@ -85,23 +85,23 @@ function hook_islandora_basic_collection_get_query_filters() {
 /**
  * Hook into the manage object page.
  *
- * @param array $form_state
- *   Current form state.
+ * @param array $render_array
+ *   Current render array.
  * @param AbstractObject $object
  *   Form object.
  */
-function hook_islandora_basic_collection_build_manage_object($form_state, $object) {
+function hook_islandora_basic_collection_build_manage_object(array $render_array, AbstractObject $object) {
   // Example implementation.
-  $form_state['manage_collection_object']['manage_obj_lock'] = array(
+  $render_array['manage_collection_object']['manage_obj_lock'] = [
     '#id' => 'manage-obj-lock',
     '#group' => 'manage_obj_object',
     '#access' => TRUE,
     '#type' => 'fieldset',
     '#title' => t('Manage lock objects'),
     'form' => \Drupal::formBuilder()->getForm('islandora_object_lock_length_manage_lock_form', $object),
-  );
-  $form_state['manage_collection_object']['manage_obj_lock']['form']['#submit'][] = 'islandora_object_lock_length_manage_lock_form_submit';
-  return $form_state;
+  ];
+  $render_array['manage_collection_object']['manage_obj_lock']['form']['#submit'][] = 'islandora_object_lock_length_manage_lock_form_submit';
+  return $render_array;
 }
 
 /**
@@ -153,14 +153,14 @@ function hook_islandora_basic_collection_query_backends() {
   $a_callable = function ($object, $page, $limit) {
     // Do something to get the total number of objects and this page return
     // them.
-    return array($total, $pids);
+    return [1, ['islandora:root']];
   };
-  return array(
-    'awesome_backend' => array(
+  return [
+    'awesome_backend' => [
       'title' => t('Awesome Backend'),
       'callable' => $a_callable,
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -184,5 +184,5 @@ function hook_islandora_basic_collection_query_backends() {
 function callback_islandora_basic_collection_query_backends(AbstractObject $object, $page, $limit) {
   // Do something to get the total number of objects and this page return
   // them.
-  return array($total, $pids);
+  return [1, ['islandora:root']];
 }

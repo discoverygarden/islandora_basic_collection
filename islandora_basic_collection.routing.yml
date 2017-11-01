@@ -63,4 +63,5 @@ islandora_basic_collection.object_count_callback:
     _title: 'AJAX callback to get count'
     _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandora_basic_collection_object_count_callback'
   requirements:
+    # No access restriction due to D7 legacy.
     _access: 'TRUE'
