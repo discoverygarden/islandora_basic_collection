@@ -9,16 +9,16 @@
  * Construct a bath for pulling thumbnails from children to collections.
  */
 function islandora_basic_collection_thumbs_batch($collection) {
-  return array(
+  return [
     'title' => t('Pull Thumbnails from Children'),
     'init_message' => t('Preparing to pull thumbnails from children.'),
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora_basic_collection') . '/includes/thumbs.batch.inc',
-    'operations' => array(
-      array('islandora_basic_collection_thumbs_batch_operation', array($collection)),
-    ),
-  );
+    'operations' => [
+      ['islandora_basic_collection_thumbs_batch_operation', [$collection]],
+    ],
+  ];
 }
 
 /**
@@ -29,7 +29,7 @@ function islandora_basic_collection_thumbs_batch($collection) {
  * @param array $context
  *   Context array for this batch. Used to tell batch when we're finished.
  */
-function islandora_basic_collection_thumbs_batch_operation($collection, &$context) {
+function islandora_basic_collection_thumbs_batch_operation($collection, array &$context) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $tuque = islandora_get_tuque_connection();
   $sandbox = &$context['sandbox'];
@@ -51,7 +51,7 @@ function islandora_basic_collection_thumbs_batch_operation($collection, &$contex
 
   // If not a retry check TN and push children collections to stack.
   if (!$retry) {
-    $map_results = function($o) {
+    $map_results = function ($o) {
       return $o['child']['value'];
     };
     $child_collections_query = <<<EOQ

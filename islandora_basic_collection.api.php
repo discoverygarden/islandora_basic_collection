@@ -85,14 +85,14 @@ function hook_islandora_basic_collection_get_query_filters() {
 /**
  * Hook into the manage object page.
  *
- * @param array $form_state
- *   Current form state.
+ * @param array $render_array
+ *   Current render array.
  * @param AbstractObject $object
  *   Form object.
  */
-function hook_islandora_basic_collection_build_manage_object($form_state, $object) {
+function hook_islandora_basic_collection_build_manage_object(array $render_array, AbstractObject $object) {
   // Example implementation.
-  $form_state['manage_collection_object']['manage_obj_lock'] = [
+  $render_array['manage_collection_object']['manage_obj_lock'] = [
     '#id' => 'manage-obj-lock',
     '#group' => 'manage_obj_object',
     '#access' => TRUE,
@@ -100,8 +100,8 @@ function hook_islandora_basic_collection_build_manage_object($form_state, $objec
     '#title' => t('Manage lock objects'),
     'form' => \Drupal::formBuilder()->getForm('islandora_object_lock_length_manage_lock_form', $object),
   ];
-  $form_state['manage_collection_object']['manage_obj_lock']['form']['#submit'][] = 'islandora_object_lock_length_manage_lock_form_submit';
-  return $form_state;
+  $render_array['manage_collection_object']['manage_obj_lock']['form']['#submit'][] = 'islandora_object_lock_length_manage_lock_form_submit';
+  return $render_array;
 }
 
 /**

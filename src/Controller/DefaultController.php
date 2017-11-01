@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_basic_collection\Controller\DefaultController.
- */
-
 namespace Drupal\islandora_basic_collection\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
