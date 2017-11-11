@@ -36,7 +36,7 @@ class IslandoraBasicCollectionMigrateChildrenForm extends FormBase {
       ]),
       'collection' => [
         '#title' => $this->t('Migrate members to collection'),
-        '#description' => $this->t('Removes members from their current collection (%label) and adds them to the selected collection.', array('%label' => $object->label)),
+        '#description' => $this->t('Removes members from their current collection (%label) and adds them to the selected collection.', ['%label' => $object->label]),
         '#type' => 'select',
         '#options' => islandora_basic_collection_get_other_collections_as_form_options($object),
       ],

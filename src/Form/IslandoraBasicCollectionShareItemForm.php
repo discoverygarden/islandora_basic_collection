@@ -17,6 +17,9 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     return 'islandora_basic_collection_share_item_form';
   }
 
+  /**
+   * The form build function.
+   */
   public function buildForm(array $form, FormStateInterface $form_state, $object = NULL) {
     $form['description'] = [
       '#type' => 'item',
@@ -35,6 +38,9 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $new_collection = islandora_object_load($form_state->getValue(
       'new_collection_name'
@@ -55,6 +61,9 @@ class IslandoraBasicCollectionShareItemForm extends FormBase {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/utilities');
     $object = islandora_object_load($form_state->get('basic_collection_share'));

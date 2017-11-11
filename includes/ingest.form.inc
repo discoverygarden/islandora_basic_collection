@@ -12,23 +12,6 @@ use Drupal\Core\Form\FormStateInterface;
 define('ISLANDORA_BASIC_COLLECTION_FAKE_PID', 'fake:pid');
 
 /**
- * Manage action that for ingestion of an object into the given collection.
- *
- * @param AbstractObject $collection
- *   The collection to ingest into.
- *
- * @return array
- *   The ingest form.
- */
-function islandora_basic_collection_ingest_action(AbstractObject $collection) {
-  if (($configuration = islandora_basic_collection_get_ingest_configuration($collection)) !== FALSE) {
-    module_load_include('inc', 'islandora', 'includes/ingest.form');
-    return \Drupal::formBuilder()->getForm('islandora_ingest_form', $configuration);
-  }
-  drupal_not_found();
-}
-
-/**
  * Generates an ingest configuration from the given collection object.
  *
  * @param AbstractObject $collection

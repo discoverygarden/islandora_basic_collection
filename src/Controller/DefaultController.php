@@ -43,7 +43,7 @@ class DefaultController extends ControllerBase {
   /**
    * Callback to determine whether or not to show this modules manage tab.
    */
-  public function islandora_basic_collection_manage_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+  public function islandora_basic_collection_manage_access($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_manage_access($object);
     return $perm ? AccessResult::allowed() : AccessResult::forbidden();
@@ -52,7 +52,7 @@ class DefaultController extends ControllerBase {
   /**
    * Callback to determine whether or not to show share/migrate actions.
    */
-  public function islandora_basic_collection_share_migrate_access($object = NULL, \Drupal\Core\Session\AccountInterface $account) {
+  public function islandora_basic_collection_share_migrate_access($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_share_migrate_access($object);
     return $perm ? AccessResult::allowed() : AccessResult::forbidden();
@@ -73,9 +73,9 @@ class DefaultController extends ControllerBase {
     return $data;
   }
 
- /**
-  * Searches through available collection objects.
-  */
+  /**
+   * Searches through available collection objects.
+   */
   public function islandora_basic_collection_get_collections_filtered(Request $request) {
     $search_value = $request->query->get('q');
     $tuque = islandora_get_tuque_connection();
@@ -92,7 +92,7 @@ EOQ;
     foreach ($results as $objects) {
       $return[] = [
         'value' => $objects['pid']['value'],
-        'label' => t('@label (@pid)', [
+        'label' => $this->t('@label (@pid)', [
           '@label' => $objects['label']['value'],
           '@pid' => $objects['pid']['value'],
         ]),
@@ -101,7 +101,18 @@ EOQ;
     return new JsonResponse($return);
   }
 
-  public function islandora_basic_collection_ingest_access(AbstractObject $object, \Drupal\Core\Session\AccountInterface $account) {
+  /**
+   * Access callback for ingest.
+   *
+   * @param \AbstractObject $object
+   *   The object to test if we're allowed to ingest... Check that it actually
+   *   is a collection and we have sufficient info to show the form.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Allowed if $object represents a collection, we can show the ingest form
+   *   and we have permission to ingest; otherwise forbidden.
+   */
+  public function islandora_basic_collection_ingest_access(AbstractObject $object) {
     $collection_models = islandora_basic_collection_get_collection_content_models();
     $is_a_collection = (
       (count(array_intersect($collection_models, $object->models)) > 0) && isset($object['COLLECTION_POLICY'])
@@ -119,6 +130,9 @@ EOQ;
     return AccessResult::allowedIf($has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object));
   }
 
+  /**
+   * Manage action that for ingestion of an object into the given collection.
+   */
   public function islandora_basic_collection_ingest_action(AbstractObject $object) {
     if (($configuration = islandora_basic_collection_get_ingest_configuration($object)) !== FALSE) {
       module_load_include('inc', 'islandora', 'includes/ingest.form');
@@ -127,6 +141,9 @@ EOQ;
     drupal_not_found();
   }
 
+  /**
+   * AJAX callback to get info about the count of objects and collections.
+   */
   public function islandora_basic_collection_object_count_callback() {
     module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
     return islandora_basic_collection_object_count_callback();

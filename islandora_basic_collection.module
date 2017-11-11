@@ -19,36 +19,6 @@ define('ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS', 'migrate collect
 const ISLANDORA_BASIC_COLLECTION_SPARQL_QUERY_BACKEND = 'islandora_basic_collection_sparql_query_backend';
 
 /**
- * Access callback for ingest.
- *
- * @param AbstractObject $object
- *   The object to test if we're allowed to ingest... Check that it actually
- *   is a collection and we have sufficient info to show the form.
- *
- * @return bool
- *   TRUE if $object represents a collection, we can show the ingest form and
- *   we have permission to ingest; otherwise, FALSE.
- */
-function islandora_basic_collection_ingest_access(AbstractObject $object) {
-  $collection_models = islandora_basic_collection_get_collection_content_models();
-  $is_a_collection = (
-    (count(array_intersect($collection_models, $object->models)) > 0) &&
-    isset($object['COLLECTION_POLICY'])
-  );
-
-  if (!$is_a_collection) {
-    return FALSE;
-  }
-
-  module_load_include('inc', 'islandora', 'includes/ingest.form');
-  module_load_include('inc', 'islandora_basic_collection', 'includes/ingest.form');
-  $configuration = islandora_basic_collection_get_ingest_configuration($object);
-  $has_ingest_steps = islandora_ingest_can_display_ingest_form($configuration);
-
-  return $has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object);
-}
-
-/**
  * Access callback for share/migrate.
  *
  * @param AbstractObject $object
@@ -99,7 +69,7 @@ function islandora_basic_collection_islandora_required_objects(IslandoraTuque $c
 /**
  * Determine whether or not to show this modules manage tab.
  *
- * @param AbstractObject $object
+ * @param AbstractObject|null $object
  *   The object being managed.
  *
  * @return bool

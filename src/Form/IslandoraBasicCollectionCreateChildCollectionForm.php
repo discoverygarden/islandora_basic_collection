@@ -29,10 +29,12 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/utilities');
     $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
 
-    // If the form has step_storage values set, use them instead of the defaults.
+    // If the form has step_storage values set, use them.
     $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
     $form_values = isset($step_storage['values']) ? $step_storage['values'] : NULL;
-    $parent_object = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
+    $parent_object = islandora_object_load(
+      $form_state->get(['islandora', 'shared_storage', 'parent'])
+    );
     // Permissions handling.
     if (!$this->currentUser()->hasPermission(ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION)) {
       drupal_set_message($this->t('You do not have permissions to create collections.'), 'error');
@@ -44,7 +46,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     $form_state->setValue('content_models', $content_models);
     $default_namespace = islandora_get_namespace($policy_content_models['islandora:collectionCModel']['namespace']);
     $the_namespace = isset($form_values['namespace']) ? $form_values['namespace'] : $default_namespace;
-    $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : array();
+    $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : [];
 
     return [
       '#action' => $this->getRequest()->getUri() . '#create-child-collection',
@@ -93,7 +95,9 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     }
 
     // Add COLLECTION_POLICY datastream.
-    $parent_collection = islandora_object_load($form_state->get(['islandora', 'shared_storage', 'parent']));
+    $parent_collection = islandora_object_load(
+      $form_state->get(['islandora', 'shared_storage', 'parent'])
+    );
     if ($form_state->getValue('inherit_policy')) {
       $collection_policy = $parent_collection['COLLECTION_POLICY']->content;
     }
@@ -101,7 +105,11 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
       $policy = CollectionPolicy::emptyPolicy();
       $content_models = array_filter($form_state->getValue(['values', 'content_models']));
       foreach (array_keys($content_models) as $pid) {
-        $policy->addContentModel($pid, $form_state->get(['content_models', $pid, 'label']), $form_state->getValue('namespace'));
+        $policy->addContentModel(
+          $pid,
+          $form_state->get(['content_models', $pid, 'label']),
+          $form_state->getValue('namespace')
+        );
       }
       $collection_policy = $policy->getXML();
     }
@@ -131,14 +139,14 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
   }
 
   /**
-   * Undo setting the COLLECTION_POLICY, purging the datastream that was created.
+   * Undo setting the COLLECTION_POLICY, purging the created datastream.
    *
    * @param array $form
    *   The Drupal form definition.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The Drupal form state.
    */
-  function undoSubmit(array &$form, FormStateInterface $form_state) {
+  public function undoSubmit(array &$form, FormStateInterface $form_state) {
     $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
     $object = islandora_ingest_form_get_object($form_state);
     foreach ($step_storage['created'] as $dsid => $created) {

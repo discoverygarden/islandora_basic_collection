@@ -4,8 +4,9 @@ namespace Drupal\islandora_basic_collection\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Link;
-use Drupal\Core\URL;
+use Drupal\Core\Url;
 
 use Drupal\islandora_basic_collection\CollectionPolicy;
 
@@ -35,7 +36,7 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
     }
     $policy_content_models = $policy->getContentModels();
     $content_models = islandora_get_content_models();
-    $default_namespace = \Drupal\Component\Utility\Unicode::substr($object->id, 0, strpos($object->id, ":"));
+    $default_namespace = Unicode::substr($object->id, 0, strpos($object->id, ":"));
     $rows = [];
     foreach ($content_models as $pid => $content_model) {
       $label = $content_model['label'];
@@ -65,7 +66,7 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
       '#action' => Url::fromRoute('<current>', [], ['fragment' => '#policy-management'])->toString(),
       'help' => [
         '#type' => 'item',
-        '#markup' => \Drupal::l($this->t('About Collection Policies'), \Drupal\Core\Url::fromUri('https://wiki.duraspace.org/display/ISLANDORA715/How+to+Manage+Collection+Policies')),
+        '#markup' => Link::fromTextAndUrl($this->t('About Collection Policies'), Url::fromUri('https://wiki.duraspace.org/display/ISLANDORA715/How+to+Manage+Collection+Policies'))->toString(),
       ],
       'table' => [
         '#tree' => TRUE,
@@ -90,13 +91,12 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $collection = $form_state->get('collection');
-    $filter_selected = function($o) {
+    $filter_selected = function ($o) {
       return $o['selected'];
     };
     $selected = array_filter($form_state->getValue(['table', 'rows']), $filter_selected);
     $policy = CollectionPolicy::emptyPolicy();
     foreach ($selected as $pid => $properties) {
-      $content_model = islandora_object_load($pid);
       $policy->addContentModel($pid, $properties['prompt'], $properties['namespace']);
     }
     if (!isset($collection['COLLECTION_POLICY'])) {
