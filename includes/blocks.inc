@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Provides block functionality for the basic collection module.
@@ -7,6 +8,7 @@
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Component\Utility\Html;
 
 /**
  * Constructs the contents of the object count block.
@@ -16,7 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 function islandora_basic_collection_object_count_listing_content() {
   $block = [];
-  $id = \Drupal\Component\Utility\Html::getId('islandora_basic_collection_object_count_block_count');
+  $id = Html::getId('islandora_basic_collection_object_count_block_count');
   $block['counts'] = [
     '#attached' => [
       'library' => ['islandora_basic_collection/islandora-basic-collection-block-count'],

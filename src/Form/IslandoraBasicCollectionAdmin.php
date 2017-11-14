@@ -1,16 +1,13 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionAdmin.
- */
-
 namespace Drupal\islandora_basic_collection\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 
+/**
+ * Module administration form.
+ */
 class IslandoraBasicCollectionAdmin extends ConfigFormBase {
 
   /**
@@ -50,7 +47,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $backend_options = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
     $map_to_title = function ($backend) {
       return $backend['title'];
@@ -131,7 +128,6 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
       ],
     ];
 
-
     // Define the elements that appear on a collection objects display page.
     // The key's match up with the form elements array keys.
     $page_content = [
@@ -165,18 +161,23 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
           [
             'action' => 'order',
             'relationship' => 'sibling',
-           'group' => 'collection-display-table-order-weight',
+            'group' => 'collection-display-table-order-weight',
           ],
         ],
-        '#header' => [$this->t('Attribute'), $this->t('Description'), $this->t('Weight'), $this->t('Hide from display')],
-        '#attributes' => array(
+        '#header' => [
+          $this->t('Attribute'),
+          $this->t('Description'),
+          $this->t('Weight'),
+          $this->t('Hide from display'),
+        ],
+        '#attributes' => [
           'id' => 'collection-display-table',
-        ),
+        ],
       ],
       '#states' => [
         'visible' => [
           ':input[name="islandora_collection_metadata_display"]' => [
-            'checked' => TRUE
+            'checked' => TRUE,
           ],
         ],
       ],
@@ -206,7 +207,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
         '#type' => 'item',
         '#markup' => $data['description'],
       ];
-      $element['weight'] = array(
+      $element['weight'] = [
         '#type' => 'weight',
         '#title' => $this->t('Weight'),
         '#title_display' => 'invisible',
@@ -216,7 +217,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase {
             'collection-display-table-order-weight',
           ],
         ],
-      );
+      ];
       $element['omit'] = [
         '#type' => 'checkbox',
         '#default_value' => $config[$key]['omit'],

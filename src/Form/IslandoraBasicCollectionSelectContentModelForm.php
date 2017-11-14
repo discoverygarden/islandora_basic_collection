@@ -39,7 +39,7 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, array $models = []) {
     $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
-    $options = array();
+    $options = [];
     $steps = islandora_ingest_form_get_shared_storage($form_state);
     $parent_pid = $steps['parent'];
 
@@ -55,29 +55,28 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
 
     $model = $form_state->getValue('models') ? $form_state->getValue('models') : key($options);
     $shared_storage = &islandora_ingest_form_get_shared_storage($form_state);
-    $shared_storage['models'] = array($model);
-    $return_form = array(
+    $shared_storage['models'] = [$model];
+    $return_form = [
       '#prefix' => '<div id="islandora-select-content-model-wrapper">',
       '#suffix' => '</div>',
-      'models' => array(
+      'models' => [
         '#type' => 'select',
-        '#title' => t('Select a Content Model to Ingest'),
+        '#title' => $this->t('Select a Content Model to Ingest'),
         '#options' => $options,
         '#default_value' => $model,
-        '#ajax' => array(
+        '#ajax' => [
           'callback' => 'islandora_basic_collection_select_content_model_form_ajax_callback',
           'wrapper' => 'islandora-select-content-model-wrapper',
           'method' => 'replace',
           'effect' => 'fade',
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
     return $return_form;
   }
 
   /**
    * Select a content model for the ingest object.
-   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/ingest.form');
@@ -88,7 +87,7 @@ class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
   /**
    * Undo selection of a content model for the ingest object.
    */
-  function undoSubmit(array &$form, FormStateInterface $form_state) {
+  public function undoSubmit(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_basic_collection', 'inc', 'includes/ingest.form');
     islandora_basic_collection_ingest_form_unselect_model($form_state);
   }
