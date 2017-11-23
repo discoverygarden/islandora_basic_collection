@@ -12,9 +12,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\Form\IslandoraDeleteObjectForm;
 
 // Constants.
-define('ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION', 'create child collection');
-define('ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY', 'manage collection policy');
-define('ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS', 'migrate collection members');
+const ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION = 'create child collection';
+const ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY = 'manage collection policy';
+const ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS = 'migrate collection members';
 
 const ISLANDORA_BASIC_COLLECTION_SPARQL_QUERY_BACKEND = 'islandora_basic_collection_sparql_query_backend';
 
@@ -103,7 +103,9 @@ function islandora_basic_collection_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
+// @codingStandardsIgnoreStart
 function islandora_basic_collection_islandora_collectionCModel_islandora_view_object(AbstractObject $object) {
+// @codingStandardsIgnoreEnd
   // Completely disable view of object.
   $disable = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_display_generation');
   if ($disable) {
@@ -267,7 +269,9 @@ function islandora_basic_collection_xml_form_builder_form_associations() {
 /**
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
+// @codingStandardsIgnoreStart
 function islandora_basic_collection_islandora_collectionCModel_islandora_overview_object(AbstractObject $object) {
+// @codingStandardsIgnoreEnd
   $rows = [];
   $model_query = islandora_basic_collection_get_query_info([
     'object' => $object,
