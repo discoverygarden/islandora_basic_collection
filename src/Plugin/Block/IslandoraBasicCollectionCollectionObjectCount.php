@@ -5,8 +5,9 @@ namespace Drupal\islandora_basic_collection\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a block.

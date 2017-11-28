@@ -4,9 +4,10 @@ namespace Drupal\islandora_basic_collection\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Module administration form.
