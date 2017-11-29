@@ -96,7 +96,7 @@ class IslandoraBasicCollectionCollectionListing extends BlockBase implements Con
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
-    $config = self::config->getEditable('islandora_basic_collection.settings');
+    $config = $this->config->getEditable('islandora_basic_collection.settings');
     $config->set('islandora_basic_collection_listing_block_links_to_render', $form_state->getValue('islandora_basic_collection_links_to_render'));
     $config->set('islandora_basic_collection_listing_block_content_models_to_restrict', $form_state->getValue('content_models'));
     $config->save();
