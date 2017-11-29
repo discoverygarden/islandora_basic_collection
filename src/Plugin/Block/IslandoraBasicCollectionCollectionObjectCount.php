@@ -60,20 +60,20 @@ class IslandoraBasicCollectionCollectionObjectCount extends BlockBase implements
       '#type' => 'textfield',
       '#title' => $this->t('The sentence to appear to describe the number of objects and collections present.'),
       '#description' => $this->t('For the number of objects use !objects, for the number of container objects use !collections.'),
-      '#default_value' => $this->config->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
+      '#default_value' => $this->configFactory->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase'),
     ];
     $form['islandora_basic_collection_title_placeholder'] = [
       '#type' => 'textfield',
       '#title' => $this->t('AJAX Placeholder'),
       '#description' => $this->t('Placeholder to output, to be replaced by phrase populated by AJAX.'),
-      '#default_value' => $this->config->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
+      '#default_value' => $this->configFactory->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
     ];
     $formatted_models = [];
     $models = islandora_get_content_models();
     foreach ($models as $pid => $values) {
       $formatted_models[$pid] = $values['label'];
     }
-    $default_cmodel_options = $this->config->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
+    $default_cmodel_options = $this->configFactory->get('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
     $default_checked = [];
     // If we have default values previously set, add them now.
     if ($default_cmodel_options) {
