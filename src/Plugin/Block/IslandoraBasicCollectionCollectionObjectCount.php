@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class IslandoraBasicCollectionCollectionObjectCount extends BlockBase implements ContainerFactoryPluginInterface {
 
-  protected $config;
+  protected $configFactory;
 
   /**
    * {@inheritdoc}
@@ -36,9 +36,9 @@ class IslandoraBasicCollectionCollectionObjectCount extends BlockBase implements
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $configFactory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->config = $config;
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -102,7 +102,7 @@ class IslandoraBasicCollectionCollectionObjectCount extends BlockBase implements
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
-    $config = $this->config->getEditable('islandora_basic_collection.settings');
+    $config = $this->configFactory->getEditable('islandora_basic_collection.settings');
     $config->set('islandora_basic_collection_object_count_listing_content_models_to_restrict', $form_state->getValue('content_models'));
     $config->set('islandora_basic_collection_object_count_listing_phrase', $form_state->getValue('islandora_basic_collection_title_phrase'));
     $config->set('islandora_basic_collection_object_count_listing_placeholder', $form_state->getValue('islandora_basic_collection_title_placeholder'));
