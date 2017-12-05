@@ -90,19 +90,19 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase implements ContainerI
           'islandora_basic_collection_page_size' => [
             '#type' => 'textfield',
             '#title' => $this->t('Default collection objects per page'),
-            '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size'),
+            '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size'),
             '#description' => $this->t('The default number of objects to show in a collection view.'),
           ],
           'islandora_basic_collection_disable_count_object' => [
             '#type' => 'checkbox',
             '#title' => $this->t('Disable object count query in collection overview'),
-            '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_count_object'),
+            '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_count_object'),
             '#description' => $this->t('Disabling the object count query can improve performance when loading the overview for large collections.'),
           ],
           'islandora_basic_collection_default_view' => [
             '#type' => 'select',
             '#title' => $this->t('Default collection view style.'),
-            '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
+            '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
             '#options' => [
               'list' => $this->t('List'),
               'grid' => $this->t('Grid'),
@@ -112,20 +112,20 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase implements ContainerI
             '#type' => 'radios',
             '#title' => $this->t('Display Generation'),
             '#options' => array_map($map_to_title, $backend_options),
-            '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend'),
+            '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend'),
           ],
         ],
       ],
       'islandora_basic_collection_disable_display_generation' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Completely disable default collection display generation.'),
-        '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_display_generation'),
+        '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_display_generation'),
         '#description' => $this->t('Disabling display generation allows for alternate collection displays to be used.'),
       ],
       'islandora_basic_collection_admin_page_size' => [
         '#type' => 'number',
         '#title' => $this->t('Objects per page during collection management'),
-        '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_admin_page_size'),
+        '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_admin_page_size'),
         '#description' => $this->t('The number of child objects to show per page in the migrate/share/delete interface.'),
         '#required' => TRUE,
         '#min' => 0,
@@ -133,7 +133,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase implements ContainerI
       'islandora_basic_collection_disable_collection_policy_delete' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Disable deleting the collection policy'),
-        '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_collection_policy_delete'),
+        '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_collection_policy_delete'),
         '#description' => $this->t("Disables the 'delete' link for the COLLECTION_POLICY datastream."),
       ],
       // Metadata display.
@@ -145,7 +145,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase implements ContainerI
           '#type' => 'checkbox',
           '#title' => $this->t('Display object metadata'),
           '#description' => $this->t('Display object metadata below the collection display.'),
-          '#default_value' => self::config('islandora_basic_collection.settings')->get('islandora_collection_metadata_display'),
+          '#default_value' => $this->config('islandora_basic_collection.settings')->get('islandora_collection_metadata_display'),
         ],
       ],
     ];
@@ -205,7 +205,7 @@ class IslandoraBasicCollectionAdmin extends ConfigFormBase implements ContainerI
       ],
     ];
 
-    $config = self::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes');
+    $config = $this->config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes');
 
     foreach ($page_content as $key => $data) {
       $form['metadata_display_details']['islandora_basic_collection_metadata_info_table_drag_attributes']['collection_display'][$key] = [];

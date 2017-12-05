@@ -12,11 +12,13 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\Form\IslandoraDeleteObjectForm;
 
 // Constants.
+// @codingStandardsIgnoreStart
 const ISLANDORA_BASIC_COLLECTION_CREATE_CHILD_COLLECTION = 'create child collection';
 const ISLANDORA_BASIC_COLLECTION_MANAGE_COLLECTION_POLICY = 'manage collection policy';
 const ISLANDORA_BASIC_COLLECTION_MIGRATE_COLLECTION_MEMBERS = 'migrate collection members';
 
 const ISLANDORA_BASIC_COLLECTION_SPARQL_QUERY_BACKEND = 'islandora_basic_collection_sparql_query_backend';
+// @codingStandardsIgnoreEnd
 
 /**
  * Access callback for share/migrate.
