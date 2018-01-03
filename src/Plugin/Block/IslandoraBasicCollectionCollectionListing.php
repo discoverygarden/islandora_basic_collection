@@ -3,6 +3,7 @@
 namespace Drupal\islandora_basic_collection\Plugin\Block;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\islandora\Plugin\Block\AbstractConfiguredBlockBase;
 
 /**
  * Provides a block.
@@ -12,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   admin_label = @Translation("Islandora Collection Listing"),
  * )
  */
-class IslandoraBasicCollectionCollectionListing extends AbstractBaseBlock {
+class IslandoraBasicCollectionCollectionListing extends AbstractConfiguredBlockBase {
 
   /**
    * {@inheritdoc}
