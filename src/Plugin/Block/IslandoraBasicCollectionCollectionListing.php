@@ -2,11 +2,7 @@
 
 namespace Drupal\islandora_basic_collection\Plugin\Block;
 
-use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Provides a block.
@@ -16,29 +12,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
  *   admin_label = @Translation("Islandora Collection Listing"),
  * )
  */
-class IslandoraBasicCollectionCollectionListing extends BlockBase implements ContainerFactoryPluginInterface {
-
-  protected $configFactory;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('config.factory')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $configFactory) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->configFactory = $configFactory;
-  }
+class IslandoraBasicCollectionCollectionListing extends AbstractBaseBlock {
 
   /**
    * {@inheritdoc}
