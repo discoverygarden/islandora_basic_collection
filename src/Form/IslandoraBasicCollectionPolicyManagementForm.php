@@ -103,11 +103,11 @@ class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
       $cp_ds = $collection->constructDatastream('COLLECTION_POLICY', 'M');
       $cp_ds->mimetype = 'application/xml';
       $cp_ds->label = 'Collection Policy';
-      $cp_ds->setContentFromString($policy->getXML());
+      $cp_ds->setContentFromString($policy->getXml());
       $collection->ingestDatastream($cp_ds);
     }
     else {
-      $collection['COLLECTION_POLICY']->setContentFromString($policy->getXML());
+      $collection['COLLECTION_POLICY']->setContentFromString($policy->getXml());
     }
     drupal_set_message($this->t('Updated collection policy.'));
   }

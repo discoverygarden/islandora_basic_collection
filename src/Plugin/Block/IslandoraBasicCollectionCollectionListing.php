@@ -2,8 +2,8 @@
 
 namespace Drupal\islandora_basic_collection\Plugin\Block;
 
-use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\islandora\Plugin\Block\AbstractConfiguredBlockBase;
 
 /**
  * Provides a block.
@@ -13,7 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   admin_label = @Translation("Islandora Collection Listing"),
  * )
  */
-class IslandoraBasicCollectionCollectionListing extends BlockBase {
+class IslandoraBasicCollectionCollectionListing extends AbstractConfiguredBlockBase {
 
   /**
    * {@inheritdoc}
@@ -35,14 +35,14 @@ class IslandoraBasicCollectionCollectionListing extends BlockBase {
       '#type' => 'number',
       '#min' => 0,
       '#title' => $this->t('Number of collections to display'),
-      '#default_value' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render'),
+      '#default_value' => $this->configFactory->get('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render'),
     ];
     $formatted_models = [];
     $models = islandora_get_content_models();
     foreach ($models as $pid => $values) {
       $formatted_models[$pid] = $values['label'];
     }
-    $default_cmodel_options = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_content_models_to_restrict');
+    $default_cmodel_options = $this->configFactory->get('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_content_models_to_restrict');
     $default_checked = [];
     // If we have default values previously set, add them now.
     if ($default_cmodel_options) {
@@ -71,7 +71,7 @@ class IslandoraBasicCollectionCollectionListing extends BlockBase {
    * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
-    $config = \Drupal::configFactory()->getEditable('islandora_basic_collection.settings');
+    $config = $this->configFactory->getEditable('islandora_basic_collection.settings');
     $config->set('islandora_basic_collection_listing_block_links_to_render', $form_state->getValue('islandora_basic_collection_links_to_render'));
     $config->set('islandora_basic_collection_listing_block_content_models_to_restrict', $form_state->getValue('content_models'));
     $config->save();

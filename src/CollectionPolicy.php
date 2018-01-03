@@ -156,7 +156,7 @@ EOT;
   /**
    * Dump out the XML for this collection policy.
    */
-  public function getXML() {
+  public function getXml() {
     return $this->xml->saveXML();
   }
 

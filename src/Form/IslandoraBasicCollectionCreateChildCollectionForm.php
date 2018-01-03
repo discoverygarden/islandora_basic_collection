@@ -103,7 +103,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
     }
     else {
       $policy = CollectionPolicy::emptyPolicy();
-      $content_models = array_filter($form_state->getValue(['values', 'content_models']));
+      $content_models = array_filter($form_state->getValue('content_models'));
       foreach (array_keys($content_models) as $pid) {
         $policy->addContentModel(
           $pid,
@@ -111,7 +111,7 @@ class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
           $form_state->getValue('namespace')
         );
       }
-      $collection_policy = $policy->getXML();
+      $collection_policy = $policy->getXml();
     }
     $policy_datastream = $new_collection->constructDatastream('COLLECTION_POLICY', 'X');
     $policy_datastream->setContentFromString($collection_policy);
