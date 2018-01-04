@@ -9,7 +9,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
-use Drupal\islandora\Form\IslandoraDeleteObjectForm;
+use Drupal\islandora\Form\DeleteObjectForm;
 
 // Constants.
 // @codingStandardsIgnoreStart
@@ -671,7 +671,7 @@ function islandora_basic_collection_islandora_delete_object_form_delete_children
   // as we need the object to exist to generate the pages and if we run this.
   // batch operation from a submit handler any submit handlers to be called
   // afterwards will not get called, which is a bug/feature of the Form API.
-  $delete_form = new IslandoraDeleteObjectForm();
+  $delete_form = new DeleteObjectForm();
   $delete_form->submitForm($form, $form_state);
 }
 
