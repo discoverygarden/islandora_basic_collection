@@ -136,7 +136,7 @@ EOQ;
   public function islandoraBasicCollectionIngestAction(AbstractObject $object) {
     if (($configuration = islandora_basic_collection_get_ingest_configuration($object)) !== FALSE) {
       module_load_include('inc', 'islandora', 'includes/ingest.form');
-      return $this->formBuilder->getForm('Drupal\islandora\Form\IslandoraIngestForm', $configuration);
+      return $this->formBuilder->getForm('Drupal\islandora\Form\IngestForm', $configuration);
     }
     drupal_not_found();
   }
