@@ -717,7 +717,7 @@ function islandora_basic_collection_islandora_ingest_steps(FormStateInterface $f
     return [
       'islandora_basic_collection_select_content_model' => [
         'type' => 'form',
-        'form_class' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionSelectContentModelForm',
+        'form_class' => 'Drupal\islandora_basic_collection\Form\SelectContentModelForm',
         'args' => [$step_storage['models']],
         'weight' => -50,
         'module' => 'islandora_basic_collection',
@@ -821,7 +821,7 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_ingest_
     'islandora_basic_collection' => [
       'weight' => -11,
       'type' => 'form',
-      'form_class' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionCreateChildCollectionForm',
+      'form_class' => 'Drupal\islandora_basic_collection\Form\CreateChildCollectionForm',
       'module' => 'islandora_basic_collection',
       'file' => 'includes/manage_collection.inc',
     ],

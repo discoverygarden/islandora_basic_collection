@@ -13,7 +13,7 @@ use Drupal\islandora_basic_collection\CollectionPolicy;
 /**
  * Define collection policy management form.
  */
-class IslandoraBasicCollectionPolicyManagementForm extends FormBase {
+class PolicyManagementForm extends FormBase {
 
   /**
    * {@inheritdoc}

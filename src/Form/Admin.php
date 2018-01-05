@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Module administration form.
  */
-class IslandoraBasicCollectionAdmin extends ModuleHandlerAdminForm {
+class Admin extends ModuleHandlerAdminForm {
 
   /**
    * {@inheritdoc}

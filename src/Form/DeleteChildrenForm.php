@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 /**
  * Delete child objects form.
  */
-class IslandoraBasicCollectionDeleteChildrenForm extends FormBase {
+class DeleteChildrenForm extends FormBase {
 
   /**
    * {@inheritdoc}

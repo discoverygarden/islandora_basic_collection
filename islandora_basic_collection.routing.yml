@@ -2,66 +2,66 @@ islandora_basic_collection.admin:
   path: /admin/config/islandora/solution_pack_config/basic_collection
   defaults:
     _title: 'Collection Solution Pack'
-    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionAdmin
+    _form: \Drupal\islandora_basic_collection\Form\Admin
   requirements:
     _permission: 'administer site configuration'
 islandora_basic_collection.manage_object:
   path: '/islandora/object/{object}/manage/collection'
   defaults:
     _title: Collection
-    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionManageObject'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::manageObject'
   options:
     _admin_route: TRUE
     parameters:
       object:
         type: object
   requirements:
-    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionManageAccess'
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::manageAccess'
 islandora_basic_collection.get_collections_filtered:
   path: /islandora/basic_collection/find_collections
   defaults:
     _title: 'Autocomplete Collection Search'
-    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionGetCollectionsFiltered'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::getCollectionsFiltered'
   requirements:
     _permission: 'migrate collection members'
 islandora_basic_collection.share_item_form:
   path: '/islandora/object/{object}/manage/object/share'
   defaults:
     _title: 'Share this Object with another collection'
-    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionShareItemForm
+    _form: \Drupal\islandora_basic_collection\Form\ShareItemForm
   options:
     parameters:
       object:
         type: object
   requirements:
-    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionShareMigrateAccess'
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::shareMigrateAccess'
 islandora_basic_collection.migrate_item_form:
   path: '/islandora/object/{object}/manage/object/migrate'
   defaults:
     _title: 'Migrate this Object to another collection'
-    _form: \Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionMigrateItemForm
+    _form: \Drupal\islandora_basic_collection\Form\MigrateItemForm
   options:
     parameters:
       object:
         type: object
   requirements:
-    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionShareMigrateAccess'
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::shareMigrateAccess'
 islandora_basic_collection.ingest_action:
   path: '/islandora/object/{object}/manage/overview/ingest'
   defaults:
     _title: 'Add an object to this Collection'
-    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionIngestAction'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::ingestAction'
   options:
     parameters:
       object:
         type: object
   requirements:
-    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionIngestAccess'
+    _custom_access: '\Drupal\islandora_basic_collection\Controller\DefaultController::ingestAccess'
 islandora_basic_collection.object_count_callback:
   path: /islandora/collection/count_ajax
   defaults:
     _title: 'AJAX callback to get count'
-    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::islandoraBasicCollectionObjectCountCallback'
+    _controller: '\Drupal\islandora_basic_collection\Controller\DefaultController::objectCountCallback'
   requirements:
     # No access restriction due to D7 legacy.
     _access: 'TRUE'
