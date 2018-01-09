@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Shares an object that is not a collection to an additional collection.
  */
-class IslandoraBasicCollectionShareItemForm extends FormBase {
+class ShareItemForm extends FormBase {
 
   /**
    * {@inheritdoc}

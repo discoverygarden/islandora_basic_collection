@@ -13,7 +13,7 @@ use Drupal\islandora\Plugin\Block\AbstractConfiguredBlockBase;
  *   admin_label = @Translation("Islandora Collection Listing"),
  * )
  */
-class IslandoraBasicCollectionCollectionListing extends AbstractConfiguredBlockBase {
+class CollectionListing extends AbstractConfiguredBlockBase {
 
   /**
    * {@inheritdoc}

@@ -43,7 +43,7 @@ class DefaultController extends ControllerBase {
   /**
    * Callback to determine whether or not to show this modules manage tab.
    */
-  public function islandoraBasicCollectionManageAccess($object = NULL) {
+  public function manageAccess($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_manage_access($object);
     return $perm ? AccessResult::allowed() : AccessResult::forbidden();
@@ -52,7 +52,7 @@ class DefaultController extends ControllerBase {
   /**
    * Callback to determine whether or not to show share/migrate actions.
    */
-  public function islandoraBasicCollectionShareMigrateAccess($object = NULL) {
+  public function shareMigrateAccess($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_share_migrate_access($object);
     return $perm ? AccessResult::allowed() : AccessResult::forbidden();
@@ -63,7 +63,7 @@ class DefaultController extends ControllerBase {
    *
    * Defines the actions to appear in the collection section of the Manage tab.
    */
-  public function islandoraBasicCollectionManageObject(AbstractObject $object) {
+  public function manageObject(AbstractObject $object) {
     module_load_include('inc', 'islandora_basic_collection', 'includes/manage_collection');
     $render_array = ['manage_collection_object' => []];
     $data = islandora_invoke_hook_list(ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK, $object->models, [
@@ -76,7 +76,7 @@ class DefaultController extends ControllerBase {
   /**
    * Searches through available collection objects.
    */
-  public function islandoraBasicCollectionGetCollectionsFiltered(Request $request) {
+  public function getCollectionsFiltered(Request $request) {
     $search_value = $request->query->get('q');
     $tuque = islandora_get_tuque_connection();
     $sparql_query = <<<EOQ
@@ -112,7 +112,7 @@ EOQ;
    *   Allowed if $object represents a collection, we can show the ingest form
    *   and we have permission to ingest; otherwise forbidden.
    */
-  public function islandoraBasicCollectionIngestAccess(AbstractObject $object) {
+  public function ingestAccess(AbstractObject $object) {
     $collection_models = islandora_basic_collection_get_collection_content_models();
     $is_a_collection = (
       (count(array_intersect($collection_models, $object->models)) > 0) && isset($object['COLLECTION_POLICY'])
@@ -133,10 +133,10 @@ EOQ;
   /**
    * Manage action that for ingestion of an object into the given collection.
    */
-  public function islandoraBasicCollectionIngestAction(AbstractObject $object) {
+  public function ingestAction(AbstractObject $object) {
     if (($configuration = islandora_basic_collection_get_ingest_configuration($object)) !== FALSE) {
       module_load_include('inc', 'islandora', 'includes/ingest.form');
-      return $this->formBuilder->getForm('Drupal\islandora\Form\IslandoraIngestForm', $configuration);
+      return $this->formBuilder->getForm('Drupal\islandora\Form\IngestForm', $configuration);
     }
     drupal_not_found();
   }
@@ -144,7 +144,7 @@ EOQ;
   /**
    * AJAX callback to get info about the count of objects and collections.
    */
-  public function islandoraBasicCollectionObjectCountCallback() {
+  public function objectCountCallback() {
     module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
     return islandora_basic_collection_object_count_callback();
   }

@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Migrates an object that is not a collection to a collection.
  */
-class IslandoraBasicCollectionMigrateItemForm extends FormBase {
+class MigrateItemForm extends FormBase {
 
   /**
    * {@inheritdoc}

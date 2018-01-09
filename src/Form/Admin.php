@@ -2,13 +2,13 @@
 
 namespace Drupal\islandora_basic_collection\Form;
 
-use Drupal\islandora\Form\IslandoraModuleHandlerAdminForm;
+use Drupal\islandora\Form\ModuleHandlerAdminForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Module administration form.
  */
-class IslandoraBasicCollectionAdmin extends IslandoraModuleHandlerAdminForm {
+class Admin extends ModuleHandlerAdminForm {
 
   /**
    * {@inheritdoc}

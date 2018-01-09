@@ -13,7 +13,7 @@ use Drupal\islandora\Plugin\Block\AbstractConfiguredBlockBase;
  *   admin_label = @Translation("Islandora Collection Object Count Listing"),
  * )
  */
-class IslandoraBasicCollectionCollectionObjectCount extends AbstractConfiguredBlockBase {
+class CollectionObjectCount extends AbstractConfiguredBlockBase {
 
   /**
    * {@inheritdoc}

@@ -15,7 +15,7 @@ use Drupal\islandora_basic_collection\CollectionPolicy;
  *
  * @package \Drupal\islandora_basic_collection\Form
  */
-class IslandoraBasicCollectionSelectContentModelForm extends FormBase {
+class SelectContentModelForm extends FormBase {
 
   /**
    * {@inheritdoc}

@@ -33,10 +33,10 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     'delete_children' => islandora_object_access(ISLANDORA_PURGE, $object),
   ];
   $forms = [
-    'policy_management' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionPolicyManagementForm',
-    'share_children' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionShareChildrenForm',
-    'migrate_children' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionMigrateChildrenForm',
-    'delete_children' => 'Drupal\islandora_basic_collection\Form\IslandoraBasicCollectionDeleteChildrenForm',
+    'policy_management' => 'Drupal\islandora_basic_collection\Form\PolicyManagementForm',
+    'share_children' => 'Drupal\islandora_basic_collection\Form\ShareChildrenForm',
+    'migrate_children' => 'Drupal\islandora_basic_collection\Form\MigrateChildrenForm',
+    'delete_children' => 'Drupal\islandora_basic_collection\Form\DeleteChildrenForm',
   ];
   // Build forms for only the accessible elements.
   foreach ($access as $element => $accessible) {

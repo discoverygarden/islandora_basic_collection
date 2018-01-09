@@ -12,7 +12,7 @@ use Drupal\islandora_basic_collection\CollectionPolicy;
  *
  * @package \Drupal\islandora_basic_collection\Form
  */
-class IslandoraBasicCollectionCreateChildCollectionForm extends FormBase {
+class CreateChildCollectionForm extends FormBase {
 
   /**
    * {@inheritdoc}
