@@ -19,9 +19,8 @@ is enabled in Fedora, as it does all of its queries using the resource index.
 
 ## Installation
 
-Install as usual, see
-[this](https://drupal.org/documentation/install/modules-themes/modules-7) for
-further information.
+Install as
+[usual](https://www.drupal.org/docs/8/extending-drupal-8/installing-drupal-8-modules).
 
 ## Configuration
 
