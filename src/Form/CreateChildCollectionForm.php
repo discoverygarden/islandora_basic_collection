@@ -43,7 +43,7 @@ class CreateChildCollectionForm extends FormBase {
     $policy = new CollectionPolicy($parent_object['COLLECTION_POLICY']->content);
     $policy_content_models = $policy->getContentModels();
     $content_models = islandora_get_content_models();
-    $form_state->setValue('content_models', $content_models);
+    $step_storage['content_models'] = $content_models;
     $default_namespace = islandora_get_namespace($policy_content_models['islandora:collectionCModel']['namespace']);
     $the_namespace = isset($form_values['namespace']) ? $form_values['namespace'] : $default_namespace;
     $content_models_values = isset($form_values['content_models']) ? array_filter($form_values['content_models']) : [];
@@ -87,6 +87,7 @@ class CreateChildCollectionForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora', 'inc', 'includes/ingest.form');
+    $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
 
     // Prepare Object.
     $new_collection = $form_state->get(['islandora', 'objects', 0]);
@@ -107,7 +108,7 @@ class CreateChildCollectionForm extends FormBase {
       foreach (array_keys($content_models) as $pid) {
         $policy->addContentModel(
           $pid,
-          $form_state->get(['content_models', $pid, 'label']),
+          $step_storage['content_models'][$pid]['label'],
           $form_state->getValue('namespace')
         );
       }
@@ -118,7 +119,6 @@ class CreateChildCollectionForm extends FormBase {
     $policy_datastream->label = 'Collection policy';
     $new_collection->ingestDatastream($policy_datastream);
 
-    $step_storage = &islandora_ingest_form_get_step_storage($form_state, 'islandora_basic_collection');
     $step_storage['created']['COLLECTION_POLICY'] = TRUE;
   }
 
