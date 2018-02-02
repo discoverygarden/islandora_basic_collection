@@ -55,6 +55,10 @@ class ShareChildrenForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $children = array_filter($form_state->getValue('children'));
+    if (empty($children)) {
+      $form_state->setErrorByName('children', $this->t('No children available to share.'));
+    }
     if (!islandora_basic_collection_validate_form($form_state)) {
       $form_state->setErrorByName('collection', $this->t('One cannot share a collection with itself.'));
     }
