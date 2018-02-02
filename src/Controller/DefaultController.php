@@ -77,6 +77,7 @@ class DefaultController extends ControllerBase {
    * Searches through available collection objects.
    */
   public function getCollectionsFiltered(Request $request) {
+    module_load_include('inc', 'islandora', 'includes/utilities');
     $search_value = $request->query->get('q');
     $tuque = islandora_get_tuque_connection();
     $sparql_query = <<<EOQ
@@ -90,13 +91,15 @@ EOQ;
     $results = $tuque->repository->ri->sparqlQuery($sparql_query);
     $return = [];
     foreach ($results as $objects) {
-      $return[] = [
-        'value' => $objects['pid']['value'],
-        'label' => $this->t('@label (@pid)', [
-          '@label' => $objects['label']['value'],
-          '@pid' => $objects['pid']['value'],
-        ]),
-      ];
+      if (islandora_namespace_accessible($objects['pid']['value'])) {
+        $return[] = [
+          'value' => $objects['pid']['value']),
+          'label' => $this->t('@label (@pid)', [
+            '@label' => $objects['label']['value'],
+            '@pid' => $objects['pid']['value']),
+          ],
+        ];
+      }
     }
     return new JsonResponse($return);
   }
