@@ -93,11 +93,11 @@ EOQ;
     foreach ($results as $objects) {
       if (islandora_namespace_accessible($objects['pid']['value'])) {
         $return[] = [
-          'value' => $objects['pid']['value']),
+          'value' => $objects['pid']['value'],
           'label' => $this->t('@label (@pid)', [
             '@label' => $objects['label']['value'],
-            '@pid' => $objects['pid']['value']),
-          ],
+            '@pid' => $objects['pid']['value'],
+          ]),
         ];
       }
     }
