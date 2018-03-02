@@ -10,7 +10,7 @@ Islandora to have collection functionality.
 
 This module requires the following modules/libraries:
 
-* [Islandora](https://github.com/islandora/islandora)
+* [Islandora](https://github.com/discoverygarden/islandora)
 * [Tuque](https://github.com/islandora/tuque)
 
 **NOTE**: The collection solution pack requires that the
