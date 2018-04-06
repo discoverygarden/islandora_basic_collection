@@ -3,6 +3,7 @@ description: 'Models simple collections'
 dependencies:
   - :islandora
 package: 'Islandora Solution Packs'
+configure: islandora_basic_collection.admin
 core: 8.x
 php: '5.5.9'
 type: module
