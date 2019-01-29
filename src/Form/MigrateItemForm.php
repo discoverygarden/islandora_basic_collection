@@ -70,8 +70,7 @@ class MigrateItemForm extends FormBase {
     $new_collection = islandora_object_load($form_state->getValue('new_collection_name'));
     $current_parents = islandora_basic_collection_get_parent_pids($object);
     if ($object && $new_collection) {
-      foreach ($current_parents as $parents) {
-        $parent = islandora_object_load($parents);
+      foreach ($current_parents as $parent) {
         islandora_basic_collection_remove_from_collection($object, $parent);
       }
       islandora_basic_collection_add_to_collection($object, $new_collection);
