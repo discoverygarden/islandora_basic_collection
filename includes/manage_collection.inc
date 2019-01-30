@@ -49,7 +49,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#type' => 'details',
     '#title' => t('Manage collection policy'),
     'form' => $forms['policy_management'],
-    '#open' => TRUE,
+    '#open' => FALSE,
   ];
   $render_array['share_children'] = [
     '#id' => 'share-children',
@@ -57,7 +57,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#type' => 'details',
     '#title' => t('Share members'),
     'form' => $forms['share_children'],
-    '#open' => TRUE,
+    '#open' => FALSE,
   ];
   $render_array['migrate_children'] = [
     '#id' => 'migrate-children',
@@ -65,7 +65,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#type' => 'details',
     '#title' => t('Migrate members'),
     'form' => $forms['migrate_children'],
-    '#open' => TRUE,
+    '#open' => FALSE,
   ];
   $render_array['delete_children'] = [
     '#id' => 'delete-children',
@@ -73,7 +73,7 @@ function islandora_basic_collection_islandora_basic_collection_build_manage_obje
     '#type' => 'details',
     '#title' => t('Delete members of this collection'),
     'form' => $forms['delete_children'],
-    '#open' => TRUE,
+    '#open' => FALSE,
   ];
   return $render_array;
 }
