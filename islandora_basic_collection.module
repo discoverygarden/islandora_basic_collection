@@ -39,7 +39,9 @@ function islandora_basic_collection_share_migrate_access(AbstractObject $object)
   );
 
   if ($is_a_collection) {
-    return FALSE;
+    if ($object->id == "islandora:root") {
+      return FALSE;
+    }
   }
   return islandora_object_access(ISLANDORA_MANAGE_PROPERTIES, $object);
 }
