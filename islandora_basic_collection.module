@@ -921,3 +921,17 @@ EOQ;
     }
   }
 }
+
+/**
+ * Implements hook_islandora_solution_pack_child_relationships().
+ */
+function islandora_basic_collection_islandora_solution_pack_child_relationships($cmodels) {
+  if ($cmodels === 'all' || in_array('islandora:collectionCModel', $cmodels)) {
+    return [
+      'predicate' => [
+        '<fedora-rels-ext:isMemberOfCollection>',
+        '<fedora-rels-ext:isMemberOf>',
+      ],
+    ];
+  }
+}
