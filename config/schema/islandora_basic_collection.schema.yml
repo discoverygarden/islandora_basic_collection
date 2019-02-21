@@ -1,5 +1,5 @@
 islandora_basic_collection.settings:
-  type: mapping
+  type: config_object
   label: Settings
   mapping:
     islandora_basic_collection_admin_page_size:
