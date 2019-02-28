@@ -32,3 +32,10 @@ islandora_basic_collection.settings:
       type: boolean
     islandora_basic_collection_metadata_info_table_drag_attributes:
       type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          weight:
+            type: integer
+          omit:
+            type: boolean
