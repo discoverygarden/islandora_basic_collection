@@ -202,10 +202,12 @@ class Admin extends ModuleHandlerAdminForm {
       $element['label'] = [
         '#type' => 'item',
         '#markup' => $data['name'],
+        '#input' => FALSE,
       ];
       $element['textfield'] = [
         '#type' => 'item',
         '#markup' => $data['description'],
+        '#input' => FALSE,
       ];
       $element['weight'] = [
         '#type' => 'weight',
