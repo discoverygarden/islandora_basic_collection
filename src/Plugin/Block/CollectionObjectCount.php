@@ -20,8 +20,7 @@ class CollectionObjectCount extends AbstractConfiguredBlockBase {
    */
   public function build() {
     module_load_include('inc', 'islandora_basic_collection', 'includes/blocks');
-    $block = islandora_basic_collection_object_count_listing_content();
-    return $block;
+    return islandora_basic_collection_object_count_listing_content();
   }
 
   /**

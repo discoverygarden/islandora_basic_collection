@@ -8,8 +8,10 @@
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 
 use Drupal\islandora\Form\DeleteObjectForm;
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 
 // Constants.
 // @codingStandardsIgnoreStart
@@ -106,16 +108,30 @@ function islandora_basic_collection_theme($existing, $type, $theme, $path) {
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
 function islandora_basic_collection_islandora_collectioncmodel_islandora_view_object(AbstractObject $object) {
+  $config = \Drupal::config('islandora_basic_collection.settings');
+  $cache_meta = (new CacheableMetadata())
+    ->addCacheableDependency($config)
+    ->addCacheableDependency($object);
+
   // Completely disable view of object.
-  $disable = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_disable_display_generation');
+  $disable = $config->get('islandora_basic_collection_disable_display_generation');
   if ($disable) {
     $to_return = ['Collection View' => ''];
   }
   else {
-    $backend = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_display_backend');
+    $cache_meta
+      ->addCacheContexts([
+        'url.query_args.pagers',
+        'url.query_args:pagesize',
+      ])
+      ->addCacheTags([
+        IslandoraController::LISTING_TAG,
+      ]);
+
+    $backend = $config->get('islandora_basic_collection_display_backend');
     $backends = \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_query_backends');
     $limit = ((empty($_GET['pagesize'])) ?
-      \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_page_size') :
+      $config->get('islandora_basic_collection_page_size') :
       $_GET['pagesize']);
     $pager_element = 0;
     $passed_page = pager_find_page($pager_element);
@@ -137,7 +153,7 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
         '#total' => $total,
         '#limit' => $limit,
         '#pager_element' => $pager_element,
-        '#display' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_default_view'),
+        '#display' => $config->get('islandora_basic_collection_default_view'),
         '#theme_wrappers' => ['container'],
         '#attributes' => [
           'class' => [
@@ -149,7 +165,7 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
   }
 
   // Add collection description metadata.
-  if (\Drupal::config('islandora_basic_collection.settings')->get('islandora_collection_metadata_display')) {
+  if ($config->get('islandora_collection_metadata_display')) {
     module_load_include('inc', 'islandora', 'includes/metadata');
 
     $to_return['description'] = [
@@ -182,7 +198,11 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
         '#prefix' => '<ul>',
         '#suffix' => '</ul>',
       ];
+      $cache_meta->addCacheTags([
+        IslandoraController::LISTING_TAG,
+      ]);
       foreach ($parent_collections as $parent) {
+        $cache_meta->addCacheableDependency($parent);
         $to_return['collections']['list'][] = [
           '#markup' => Link::createFromRoute($parent->label, 'islandora.view_object', ['object' => $parent->id])->toString(),
           '#prefix' => '<li>',
@@ -209,7 +229,7 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
     ];
   }
 
-  foreach (\Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
+  foreach ($config->get('islandora_basic_collection_metadata_info_table_drag_attributes') as $key => $config) {
     if ($config['omit']) {
       unset($to_return[$key]);
     }
@@ -218,6 +238,8 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
     }
     $to_return[$key]['#weight'] = $config['weight'];
   }
+
+  $cache_meta->applyTo($to_return);
 
   return $to_return;
 }
@@ -267,7 +289,7 @@ function islandora_basic_collection_xml_form_builder_form_associations() {
 }
 
 /**
- * Implements hook_CMODEL_PID_islandora_view_object().
+ * Implements hook_CMODEL_PID_islandora_overview_object().
  */
 function islandora_basic_collection_islandora_collectioncmodel_islandora_overview_object(AbstractObject $object) {
   $rows = [];
@@ -329,13 +351,16 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_overvie
 }
 
 /**
- * Implements hook_islandora_view_object().
+ * Implements hook_islandora_overview_object().
  */
 function islandora_basic_collection_islandora_overview_object(AbstractObject $object) {
   module_load_include('inc', 'islandora_basic_collection', 'includes/utilities');
   if (!in_array('islandora:collectionCModel', $object->models)) {
-    $map_to_row = function ($pid) {
+    $cache_meta = (new CacheableMetadata())
+      ->addCacheableDependency($object);
+    $map_to_row = function ($pid) use ($cache_meta) {
       $map_object = islandora_object_load($pid);
+      $cache_meta->addCachableDependency($map_object);
       if ($map_object) {
         $link = Link::createFromRoute(
           $map_object->label,
@@ -355,6 +380,8 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
       '#rows' => $rows,
       '#empty' => t('No parent collections'),
     ];
+
+    $cache_meta->applyTo($table);
 
     return ['collection' => $table];
   }
