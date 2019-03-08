@@ -2,7 +2,6 @@
 
 namespace Drupal\islandora_basic_collection\Controller;
 
-use Drupal\islandora\Controller\DefaultController as IslandoraController;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBuilderInterface;
@@ -11,7 +10,9 @@ use Drupal\Core\Cache\CacheableMetadata;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 use AbstractObject;
 
 /**
@@ -50,7 +51,10 @@ class DefaultController extends ControllerBase {
     $perm = islandora_basic_collection_manage_access($object);
 
     return AccessResult::allowedIf($perm)
-      ->addCacheableDependency($object);
+      ->addCacheableDependency($object)
+      // XXX: islandora_basic_collection_manage_access() deals with multiple
+      // permissions... let's deal with them.
+      ->cachePerPermissions();
   }
 
   /**
@@ -61,7 +65,10 @@ class DefaultController extends ControllerBase {
     $perm = islandora_basic_collection_share_migrate_access($object);
 
     return AccessResult::allowedIf($perm)
-      ->addCacheableDependency($object);
+      ->addCacheableDependency($object)
+      // XXX: islandora_basic_collection_share_migrate_access() deals with
+      // permissions... let's deal with them.
+      ->cachePerPermissions();
   }
 
   /**
@@ -156,6 +163,7 @@ EOQ;
 
     return AccessResult::allowedIf($has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object))
       ->addCacheableDependency($object)
+      ->cachePerPermissions()
       // XXX: Prevent caching of result, due to the dynamic nature of ingest
       // steps.
       ->mergeCacheMaxAge(0);
@@ -169,7 +177,7 @@ EOQ;
       module_load_include('inc', 'islandora', 'includes/ingest.form');
       return $this->formBuilder->getForm('Drupal\islandora\Form\IngestForm', $configuration);
     }
-    drupal_not_found();
+    throw new NotFoundHttpException();
   }
 
   /**
