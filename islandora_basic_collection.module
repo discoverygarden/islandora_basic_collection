@@ -360,7 +360,7 @@ function islandora_basic_collection_islandora_overview_object(AbstractObject $ob
       ->addCacheableDependency($object);
     $map_to_row = function ($pid) use ($cache_meta) {
       $map_object = islandora_object_load($pid);
-      $cache_meta->addCachableDependency($map_object);
+      $cache_meta->addCacheableDependency($map_object);
       if ($map_object) {
         $link = Link::createFromRoute(
           $map_object->label,
