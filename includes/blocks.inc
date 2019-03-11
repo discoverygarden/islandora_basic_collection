@@ -21,6 +21,9 @@ use Drupal\islandora\Controller\DefaultController as IslandoraController;
  */
 function islandora_basic_collection_object_count_listing_content() {
   $config = \Drupal::config('islandora_basic_collection.settings');
+
+  // XXX: Doesn't need Islandora's LISTING_TAG, since this does AJAX for the
+  // content proper (which _does_ take this tag into effect).
   $cache_meta = (new CacheableMetadata())
     ->addCacheableDependency($config);
 
@@ -92,7 +95,9 @@ function islandora_basic_collection_object_count_callback() {
 
   $title_phrase = $config->get('islandora_basic_collection_object_count_listing_phrase');
   $text = strtr($title_phrase, $substitutions);
+
   $response = new JsonResponse($text);
+
   $response->getCacheableMetadata()
     ->addCacheableDependency($root_object)
     ->addCacheableDependency($config)
@@ -100,6 +105,7 @@ function islandora_basic_collection_object_count_callback() {
     ->addCacheTags([
       IslandoraController::LISTING_TAG,
     ]);
+
   return $response;
 }
 
