@@ -5,11 +5,14 @@ namespace Drupal\islandora_basic_collection\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Cache\CacheableJsonResponse as JsonResponse;
+use Drupal\Core\Cache\CacheableMetadata;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 use AbstractObject;
 
 /**
@@ -46,7 +49,12 @@ class DefaultController extends ControllerBase {
   public function manageAccess($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_manage_access($object);
-    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
+
+    return AccessResult::allowedIf($perm)
+      ->addCacheableDependency($object)
+      // XXX: islandora_basic_collection_manage_access() deals with multiple
+      // permissions... let's deal with them.
+      ->cachePerPermissions();
   }
 
   /**
@@ -55,7 +63,12 @@ class DefaultController extends ControllerBase {
   public function shareMigrateAccess($object = NULL) {
     $object = islandora_object_load($object);
     $perm = islandora_basic_collection_share_migrate_access($object);
-    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
+
+    return AccessResult::allowedIf($perm)
+      ->addCacheableDependency($object)
+      // XXX: islandora_basic_collection_share_migrate_access() deals with
+      // permissions... let's deal with them.
+      ->cachePerPermissions();
   }
 
   /**
@@ -65,11 +78,18 @@ class DefaultController extends ControllerBase {
    */
   public function manageObject(AbstractObject $object) {
     module_load_include('inc', 'islandora_basic_collection', 'includes/manage_collection');
+
+    $cache_meta = (new CacheableMetadata())
+      ->addCacheableDependency($object);
+
     $render_array = ['manage_collection_object' => []];
     $data = islandora_invoke_hook_list(ISLANDORA_BASIC_COLLECTION_BUILD_MANAGE_OBJECT_HOOK, $object->models, [
       $render_array,
       $object,
     ]);
+
+    $cache_meta->applyTo($data);
+
     return $data;
   }
 
@@ -101,7 +121,17 @@ EOQ;
         ];
       }
     }
-    return new JsonResponse($return);
+    $response = new JsonResponse($return);
+    $response->getCacheableMetadata()
+      ->addCacheableDependency($this->config('islandora.settings'))
+      ->addCacheableDependency($tuque->repository)
+      ->addCacheContexts([
+        'url.query_args:q',
+      ])
+      ->addCacheTags([
+        IslandoraController::LISTING_TAG,
+      ]);
+    return $response;
   }
 
   /**
@@ -122,7 +152,8 @@ EOQ;
       );
 
     if (!$is_a_collection) {
-      return AccessResult::forbidden();
+      return AccessResult::forbidden()
+        ->addCacheableDependency($object);
     }
 
     module_load_include('inc', 'islandora', 'includes/ingest.form');
@@ -130,7 +161,12 @@ EOQ;
     $configuration = islandora_basic_collection_get_ingest_configuration($object);
     $has_ingest_steps = islandora_ingest_can_display_ingest_form($configuration);
 
-    return AccessResult::allowedIf($has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object));
+    return AccessResult::allowedIf($has_ingest_steps && islandora_object_access(ISLANDORA_INGEST, $object))
+      ->addCacheableDependency($object)
+      ->cachePerPermissions()
+      // XXX: Prevent caching of result, due to the dynamic nature of ingest
+      // steps.
+      ->mergeCacheMaxAge(0);
   }
 
   /**
@@ -141,7 +177,7 @@ EOQ;
       module_load_include('inc', 'islandora', 'includes/ingest.form');
       return $this->formBuilder->getForm('Drupal\islandora\Form\IngestForm', $configuration);
     }
-    drupal_not_found();
+    throw new NotFoundHttpException();
   }
 
   /**

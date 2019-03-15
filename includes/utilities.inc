@@ -7,6 +7,7 @@
 
 use Drupal\Core\Link;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Cache\CacheableMetadata;
 
 /**
  * Converts given model descriptions into Drupal form select element #options.
@@ -70,9 +71,14 @@ function islandora_basic_collection_get_other_collections_as_form_options(Abstra
  */
 function islandora_basic_collection_get_namespace_form_element($default_value) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $restrict_namespace = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
+  $config = \Drupal::config('islandora.settings');
 
-  return [
+  $cache_meta = (new CacheableMetadata())
+    ->addCacheableDependency($config);
+
+  $restrict_namespace = $config->get('islandora_namespace_restriction_enforced');
+
+  $element = [
     '#type' => $restrict_namespace ? 'select' : 'textfield',
     '#title' => 'Children namespace',
     '#description' => t('Namespace for objects with selected content models.'),
@@ -80,6 +86,10 @@ function islandora_basic_collection_get_namespace_form_element($default_value) {
     '#options' => $restrict_namespace ? array_combine(islandora_get_allowed_namespaces(), islandora_get_allowed_namespaces()) : NULL,
     '#default_value' => $default_value,
   ];
+
+  $cache_meta->applyTo($element);
+
+  return $element;
 }
 
 /**

@@ -7,8 +7,11 @@
 
 use Drupal\Core\Url;
 use Drupal\Core\Link;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Cache\CacheableJsonResponse as JsonResponse;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Cache\CacheableMetadata;
+
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 
 /**
  * Constructs the contents of the object count block.
@@ -17,6 +20,13 @@ use Drupal\Component\Utility\Html;
  *   The markup to be rendered inside the block.
  */
 function islandora_basic_collection_object_count_listing_content() {
+  $config = \Drupal::config('islandora_basic_collection.settings');
+
+  // XXX: Doesn't need Islandora's LISTING_TAG, since this does AJAX for the
+  // content proper (which _does_ take this tag into effect).
+  $cache_meta = (new CacheableMetadata())
+    ->addCacheableDependency($config);
+
   $block = [];
   $id = Html::getId('islandora_basic_collection_object_count_block_count');
   $block['counts'] = [
@@ -33,8 +43,10 @@ function islandora_basic_collection_object_count_listing_content() {
     ],
     '#prefix' => "<span id='$id'>",
     '#suffix' => '</span>',
-    '#markup' => \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_placeholder'),
+    '#markup' => $config->get('islandora_basic_collection_object_count_listing_placeholder'),
   ];
+
+  $cache_meta->applyTo($block);
 
   return $block;
 }
@@ -45,16 +57,20 @@ function islandora_basic_collection_object_count_listing_content() {
  * Outputs a JSON string to the buffer.
  */
 function islandora_basic_collection_object_count_callback() {
+  $config = \Drupal::config('islandora_basic_collection.settings');
+  $islandora_config = \Drupal::config('islandora.settings');
   $tuque = islandora_get_tuque_connection();
-  $root_pid = \Drupal::config('islandora.settings')->get('islandora_repository_pid');
+  $root_pid = $islandora_config->get('islandora_repository_pid');
+
+  $root_object = islandora_object_load($root_pid);
   $objects_query_array = islandora_basic_collection_get_query_info([
-    'object' => islandora_object_load($root_pid),
+    'object' => $root_object,
     'collection_listing' => TRUE,
     'all_objects' => TRUE,
   ]);
 
   $collection_query_array = islandora_basic_collection_get_query_info([
-    'object' => islandora_object_load($root_pid),
+    'object' => $root_object,
     'collection_listing' => TRUE,
     'all_objects' => FALSE,
   ]);
@@ -66,7 +82,7 @@ function islandora_basic_collection_object_count_callback() {
   foreach ($collection_objects as $collection) {
     $collections[$collection['object']['value']] = $collection['object']['value'];
   }
-  $models_to_exclude = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
+  $models_to_exclude = $config->get('islandora_basic_collection_object_count_listing_content_models_to_restrict');
   if ($models_to_exclude) {
     $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
   }
@@ -77,9 +93,20 @@ function islandora_basic_collection_object_count_callback() {
     '!collections' => $total_collection_count,
   ];
 
-  $title_phrase = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_object_count_listing_phrase');
+  $title_phrase = $config->get('islandora_basic_collection_object_count_listing_phrase');
   $text = strtr($title_phrase, $substitutions);
-  return new JsonResponse($text);
+
+  $response = new JsonResponse($text);
+
+  $response->getCacheableMetadata()
+    ->addCacheableDependency($root_object)
+    ->addCacheableDependency($config)
+    ->addCacheableDependency($islandora_config)
+    ->addCacheTags([
+      IslandoraController::LISTING_TAG,
+    ]);
+
+  return $response;
 }
 
 /**
@@ -89,14 +116,40 @@ function islandora_basic_collection_object_count_callback() {
  *   The markup to be rendered in the block.
  */
 function islandora_basic_collection_collection_listing_content() {
+  $function = '_' . __FUNCTION__;
+  $elements = $function();
+  return \Drupal::service('renderer')->render($elements);
+}
+
+/**
+ * Constructs the content of the collection listing block.
+ *
+ * @return array
+ *   Renderable array of block content.
+ */
+function _islandora_basic_collection_collection_listing_content() {
+  $config = \Drupal::config('islandora_basic_collection.settings');
+  $islandora_config = \Drupal::config('islandora.settings');
+
+  $cache_meta = (new CacheableMetadata())
+    ->addCacheableDependency($config)
+    ->addCacheableDependency($islandora_config)
+    ->addCacheTags([
+      IslandoraController::LISTING_TAG,
+    ]);
+
   $block = [];
   $tuque = islandora_get_tuque_connection();
+
+  $object = islandora_object_load($islandora_config->get('islandora_repository_pid'));
+  $cache_meta->addCacheableDependency($object);
+
   $collection_query_array = islandora_basic_collection_get_query_info([
-    'object' => islandora_object_load('islandora:root'),
+    'object' => $object,
     'collection_listing' => TRUE,
     'all_objects' => FALSE,
   ]);
-  $collections_to_display = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_links_to_render');
+  $collections_to_display = $config->get('islandora_basic_collection_listing_block_links_to_render');
   $collection_objects = $tuque->repository->ri->sparqlQuery($collection_query_array['query'], $collection_query_array['type']);
   $collections = [];
   $stored_collections = [];
@@ -105,7 +158,7 @@ function islandora_basic_collection_collection_listing_content() {
     $collections[$pid] = $pid;
     $stored_collections[$pid] = $collection['title']['value'];
   }
-  $models_to_exclude = \Drupal::config('islandora_basic_collection.settings')->get('islandora_basic_collection_listing_block_content_models_to_restrict');
+  $models_to_exclude = $config->get('islandora_basic_collection_listing_block_content_models_to_restrict');
   if ($models_to_exclude) {
     $collections = islandora_basic_collection_filter_collection_by_cmodel($collections, array_filter($models_to_exclude));
   }
@@ -127,7 +180,9 @@ function islandora_basic_collection_collection_listing_content() {
     ],
   ];
 
-  return \Drupal::service("renderer")->render($block);
+  $cache_meta->applyTo($block);
+
+  return $block;
 }
 
 /**
