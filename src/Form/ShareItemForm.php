@@ -46,6 +46,10 @@ class ShareItemForm extends FormBase {
       'new_collection_name'
       ));
     $collection_models = islandora_basic_collection_get_collection_content_models();
+    if ($form_state->getValue('new_collection_name') == $form_state->getBuildInfo()['args'][0]->id) {
+      $form_state->setErrorByName('new_collection_name', $this->t('Collections may not be children of themselves.'));
+    }
+
     $is_a_collection = FALSE;
     if (is_object($new_collection)) {
       $is_a_collection = (
