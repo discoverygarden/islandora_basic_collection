@@ -280,6 +280,7 @@ function islandora_basic_collection_xml_form_builder_form_associations() {
     'islandora_basic_collection_mods_form' => [
       'content_model' => 'islandora:collectionCModel',
       'form_name' => 'Collection MODS form',
+      'self_transform' => 'islandora_cleanup_mods_extended.xsl',
       'dsid' => 'MODS',
       'title_field' => [
         'titleInfo', 'title',
