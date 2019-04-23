@@ -174,7 +174,13 @@ function _islandora_basic_collection_collection_listing_content() {
   ];
   $block['browse_repository'] = [
     '#type' => 'item',
-    '#markup' => Link::createFromRoute(t('Browse repository'), 'islandora.view_object', ['object' => $pid])->toString(),
+    '#markup' => Link::createFromRoute(
+      t('Browse repository'),
+     'islandora.view_object',
+     [
+       'object' => $object->id,
+     ]
+    )->toString(),
     '#attributes' => [
       'class' => ['islandora-basic-collection-read-more'],
     ],
