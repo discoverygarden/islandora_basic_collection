@@ -118,7 +118,7 @@ function islandora_basic_collection_islandora_collectioncmodel_islandora_view_ob
   // Completely disable view of object.
   $disable = $config->get('islandora_basic_collection_disable_display_generation');
   if ($disable) {
-    $to_return = ['Collection View' => ''];
+    $to_return = ['Collection View' => []];
   }
   else {
     $cache_meta
