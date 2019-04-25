@@ -4,6 +4,8 @@ namespace Drupal\islandora_basic_collection\Plugin\Block;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora\Plugin\Block\AbstractConfiguredBlockBase;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Provides a block.
@@ -80,6 +82,13 @@ class CollectionObjectCount extends AbstractConfiguredBlockBase {
     $config->set('islandora_basic_collection_object_count_listing_phrase', $form_state->getValue('islandora_basic_collection_title_phrase'));
     $config->set('islandora_basic_collection_object_count_listing_placeholder', $form_state->getValue('islandora_basic_collection_title_placeholder'));
     $config->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function blockAccess(AccountInterface $account) {
+    return AccessResult::allowedIfHasPermission($account, ISLANDORA_VIEW_OBJECTS);
   }
 
 }
