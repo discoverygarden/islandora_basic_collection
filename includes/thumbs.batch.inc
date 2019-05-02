@@ -26,10 +26,10 @@ function islandora_basic_collection_thumbs_batch($collection) {
  *
  * @param string $collection
  *   PID of the collection to start the recursal at.
- * @param array $context
- *   Context array for this batch. Used to tell batch when we're finished.
+ * @param DrushBatchContext|array $context
+ *   Context for this batch. Used to tell batch when we're finished.
  */
-function islandora_basic_collection_thumbs_batch_operation($collection, array &$context) {
+function islandora_basic_collection_thumbs_batch_operation($collection, &$context) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $tuque = islandora_get_tuque_connection();
   $sandbox = &$context['sandbox'];
