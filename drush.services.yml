@@ -1,0 +1,5 @@
+services:
+  islandora_basic_collection.commands:
+    class: \Drupal\islandora_basic_collection\Commands\IslandoraBasicCollectionCommands
+    tags:
+      - { name: drush.command }
