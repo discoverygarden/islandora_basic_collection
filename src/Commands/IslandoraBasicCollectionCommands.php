@@ -5,15 +5,7 @@ namespace Drupal\islandora_basic_collection\Commands;
 use Drush\Commands\DrushCommands;
 
 /**
- * A Drush commandfile.
- *
- * In addition to this file, you need a drush.services.yml
- * in root of your module, and a composer.json file that provides the name
- * of the services file to use.
- *
- * See these files for an example of injecting Drupal services:
- *   - http://cgit.drupalcode.org/devel/tree/src/Commands/DevelCommands.php
- *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml
+ * Drush commandfile for Islandora Basic Collection.
  */
 class IslandoraBasicCollectionCommands extends DrushCommands {
 
@@ -22,7 +14,7 @@ class IslandoraBasicCollectionCommands extends DrushCommands {
    *
    * @option collection
    *   Where to start creating thumbnails.
-   * @usage drush -u 1 islandora-basic-collection-generate-thumbs-from-children --collection=islandora:root
+   * @usage drush -u1 islandora-basic-collection-generate-thumbs-from-children --collection=islandora:root
    *   Start generation from the root collection.
    * @validate-module-enabled islandora,islandora_basic_collection
    *
