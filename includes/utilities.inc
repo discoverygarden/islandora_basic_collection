@@ -207,6 +207,12 @@ function islandora_basic_collection_add_to_collection(AbstractObject $new_member
   $results = $new_member->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOfCollection', $collection->id);
   if (empty($results)) {
     $new_member->relationships->add(FEDORA_RELS_EXT_URI, 'isMemberOfCollection', $collection->id);
+    // Create hook_islandora_basic_collection_share_migrate().
+    // Do not trigger when this for fake pids (ingest).
+    module_load_include('inc', 'islandora_basic_collection', 'includes/ingest.form');
+    if ($new_member->id != ISLANDORA_BASIC_COLLECTION_FAKE_PID) {
+      \Drupal::moduleHandler()->invokeAll('islandora_basic_collection_share_migrate', [$new_member, $collection]);
+    }
   }
 }
 

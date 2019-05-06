@@ -186,3 +186,12 @@ function callback_islandora_basic_collection_query_backends(AbstractObject $obje
   // them.
   return [1, ['islandora:root']];
 }
+
+/**
+ * Provides object and collection details when an object is shared or migrated.
+ *
+ * Works only if the migration method uses
+ * islandora_basic_collection_add_to_colection().
+ */
+function hook_islandora_basic_collection_share_migrate(AbstractObject $new_member, AbstractObject $collection) {
+}
