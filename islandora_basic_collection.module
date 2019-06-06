@@ -976,7 +976,8 @@ function islandora_basic_collection_help($route) {
       // About section.
       $output = '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t(
-        '
+        'The Islandora Basic Collection module allows users to add and manage
+        collections and their contents.
         See the <a href=":wiki">Islandora Collection Solution Pack wiki*</a>
         for more information.', [
           ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Colleciton+Solution+Pack',
@@ -985,11 +986,13 @@ function islandora_basic_collection_help($route) {
       '</p>';
       // Uses section.
       $output .= '<h3>' . t('Uses') . '</h3>';
-      $output .= '<dt>' . t('Manage Repositories and Objects') . '</dt>' . '<dd>' . t(
-        'Islandora can be used to manage repositories and objects at various levels.
-        More information can be found on specific usage in the
-        <a href=":usage">usage section of wiki*</a>.', [
-          ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Usage',
+      $output .= '<dt>' . t('Manage Collections and Their Objects') . '</dt><dd>' . t(
+        'Islandora Basic Collection module can be used to perform multiple
+        operations on collections within the Islandora Repository on your website.
+        More information can be found on specific use cases in the "How to" links
+        on the
+        <a href=":usage">Getting Started section of wiki*</a>.', [
+          ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Getting+Started+with+Islandora',
         ]
       ) .
       '</dd>';
