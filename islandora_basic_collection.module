@@ -982,7 +982,7 @@ function islandora_basic_collection_help($route) {
       // Uses section.
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dt>' . t('Manage Collections and Their Objects') . '</dt><dd>';
-      $output .= t('Islandora Basic Collection module can be used to perform multiple operations on collections within the Islandora Repository on your website. More information can be found on specific use cases in the "How to" links on the <a href=":usage">Getting Started section of wiki*</a>.', [
+      $output .= t('Islandora Basic Collection module can be used to perform multiple operations on collections within Islandora on your website. More information can be found on specific use cases in the "How to" links on the <a href=":usage">Getting Started section of wiki*</a>.', [
         ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Getting+Started+with+Islandora',
       ]) .
       '</dd>';
@@ -992,6 +992,5 @@ function islandora_basic_collection_help($route) {
       '</p>';
       return $output;
 
-    // Other cases can be added for various admin pages.
   }
 }
