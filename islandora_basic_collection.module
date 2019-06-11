@@ -965,3 +965,32 @@ function islandora_basic_collection_islandora_solution_pack_child_relationships(
     ];
   }
 }
+
+/**
+ * Implements hook_help().
+ */
+function islandora_basic_collection_help($route) {
+  switch ($route) {
+    // Main help page for the module.
+    case 'help.page.islandora_basic_collection':
+      // About section.
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Islandora Basic Collection module allows users to add and manage collections and their contents. See the <a href=":wiki">Islandora Collection Solution Pack wiki*</a> for more information.', [
+        ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Colleciton+Solution+Pack',
+      ]) .
+      '</p>';
+      // Uses section.
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dt>' . t('Manage Collections and Their Objects') . '</dt><dd>';
+      $output .= t('Islandora Basic Collection module can be used to perform multiple operations on collections within Islandora on your website. More information can be found on specific use cases in the "How to" links on the <a href=":usage">Getting Started section of the wiki*</a>.', [
+        ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Getting+Started+with+Islandora',
+      ]) .
+      '</dd>';
+
+      $output .= '</br></br><p>';
+      $output .= t('*Links go to documentation for the Drupal 7 version of the module, as documentation for the Drupal 8 version of the module has not yet been written. There may be some small discrepencies; however, most key points remain useful.') .
+      '</p>';
+      return $output;
+
+  }
+}

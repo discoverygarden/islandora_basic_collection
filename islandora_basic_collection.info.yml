@@ -1,5 +1,5 @@
 name: 'Islandora basic collection'
-description: 'Models simple collections'
+description: 'Models simple collections.'
 dependencies:
   - :islandora
 package: 'Islandora Solution Packs'
